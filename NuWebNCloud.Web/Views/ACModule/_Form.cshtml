@@ -1,0 +1,55 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.AccessControl.ModuleModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @* Parent *@
+    <div class="form-group" id="divParentCate">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Parent Module:</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="ParentCate">
+                @Html.DropDownListFor(model => model.ParentID,
+               new SelectList(Model.ListParent, "Value", "Text", Model.ParentID),
+               "Please choose parent module", new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "ddlParent",
+                   @style = "width:100%;"
+               })
+            </div>
+            @Html.ValidationMessageFor(model => model.ParentID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Module Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Name: </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = "Name", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Controller*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Alias Controller: </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Controller, new { @class = "form-control", placeholder = "Controller", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Controller, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Index Number*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Sequence: </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.IndexNum, new { @class = "form-control", placeholder = "Sequence", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.IndexNum, null, new { @class = "label" })
+        </div>
+    </div>
+
+</div>

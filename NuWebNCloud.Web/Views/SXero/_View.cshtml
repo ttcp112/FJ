@@ -1,0 +1,165 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.XeroSettingModels
+@{
+    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+}
+
+<style>
+    .table {
+        padding-bottom: 0px !important;
+    }
+
+    .td1 .td2 .td3 .td4 .td5 td6 {
+        width: 15% !important;
+    }
+</style>
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Settings")).ToString() }, { "B", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Xero Setting")).ToString() }, { "C", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Detail")).ToString() } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                            <div class="">
+                                <label class="control-label col-md-1 col-sm-1 col-xs-12"></label>
+                                <h3>@Model.StoreName</h3>
+                            </div>
+                            <table class="table dt-responsive nowrap table jambo_table bulk_action clsdatatable" cellspacing="0" style="width:100%; display: table;">
+                                <tbody>
+                                    @*Business Date Settings*@
+                                    <tr style="background-color: #34495e; width: 100%; color: #fff; ">
+                                        <td colspan="6">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Date Settings"))</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cost of goods sold"))</td>
+                                        <td class="td2">
+                                            @Model.DisplayCostOfGoodSold
+                                        </td>
+                                        <td class="td3">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock on-hand"))</td>
+                                        <td class="td4">
+                                            @Model.DisplayStockOnHand
+                                        </td>
+                                        <td class="td5">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Post of goods sold to vend"))</td>
+                                        <td class="text-right td6">@Model.IsPostToVend</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Miscellaneous"))
+                                        </td>
+                                        <td class="td2">
+                                            @Model.DisplayMiscellaneous
+                                        </td>
+                                        <td class="td3"></td>
+                                        <td class="td4"></td>
+                                        <td class="td5"></td>
+                                        <td class="td6"></td>
+                                    </tr>
+                                    @*Inventory Orders and Account Sales*@
+                                    <tr style="background-color: #34495e; width: 100%; color: #fff; ">
+                                        <td colspan="6">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Orders and Account Sales"))</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Send bill as"))</td>
+                                        <td class="td2">
+                                            @Model.DisplaySendBillAs
+                                        </td>
+                                        <td class="td3"></td>
+                                        <td class="td4"></td>
+                                        <td class="td5"></td>
+                                        <td class="td6"></td>
+                                    </tr>
+                                    @*Accounts for Payments*@
+                                    <tr style="background-color: #34495e; width: 100%; color: #fff; ">
+                                        <td colspan="6">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accounts for Payments"))</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Rouding errors"))</td>
+                                        <td class="td2">
+                                            @Model.DisplayRoundingError
+                                        </td>
+                                        <td class="td3">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Default discount account"))</td>
+                                        <td class="td4">
+                                            @Model.DisplayDiscountAccount
+                                        </td>
+                                        <td class="td5"></td>
+                                        <td class="td6"></td>
+                                    </tr>
+                                    @*Accounts for Liability and Expiry*@
+                                    <tr style="background-color: #34495e; width: 100%; color: #fff; ">
+                                        <td colspan="6">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accounts for Liability and Expiry"))</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Loyalty liability"))</td>
+                                        <td class="td2">
+                                            @Model.DisplayLoyaltyLiability
+                                        </td>
+                                        <td class="td3">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Loyalty expense"))</td>
+                                        <td class="td4">
+                                            @Model.DisplayLoyaltyexpense
+                                        </td>
+                                        <td class="td5">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Gift card liability"))</td>
+                                        <td class="td6">
+                                            @Model.DisplayGCLiability
+                                        </td>
+                                    </tr>
+                                    @*Accounts for Cash Management*@
+                                    <tr style="background-color: #34495e; width: 100%; color: #fff; ">
+                                        <td colspan="6">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accounts for Cash Management"))</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deposit"))</td>
+                                        <td class="td2">
+                                            @Model.DisplayDeposit
+                                        </td>
+                                        <td class="td3">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payout"))</td>
+                                        <td class="td4">
+                                            @Model.DisplayPayout
+                                        </td>
+                                        <td class="td5">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Till payment discrepancies"))</td>
+                                        <td class="td6">
+                                            @Model.DisplayTillPaymentDiscrepanceis
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td1">
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cash float"))
+                                        </td>
+                                        <td class="td2">
+                                            @Model.DisplayCashFloat
+                                        </td>
+                                        <td class="td3">
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Refund by gift card"))
+                                        </td>
+                                        <td class="td4">
+                                            @Model.DisplayRefundByGC
+                                        </td>
+                                        <td class="td5">
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return gift card as Cash"))
+                                        </td>
+                                        <td class="td6">
+                                            @Model.DisplayCostOfGoodSold
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

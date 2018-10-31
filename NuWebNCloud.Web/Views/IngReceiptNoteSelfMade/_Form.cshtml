@@ -1,0 +1,614 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreId", Model.StoreId)
+    @Html.Hidden("ReceiptNo", Model.ReceiptNo)
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreId,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId),
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreId, (SelectList)ViewBag.StoreID, new
+                {
+	                @class = "form-control select2_multiple",
+	                @id = "storeDdl",
+	                @style = "width:100%;"
+                })
+
+            @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger", @id = "validationStore" })
+        </div>
+    </div>
+
+    @*WO No*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO No."))</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            @Html.TextBoxFor(model => model.WONo, new
+       {
+           @class = "form-control",
+           @id = "txtWONo",
+           @autocomplete = "off"
+       })
+            @Html.ValidationMessageFor(model => model.WONo, null, new { @class = "label label-danger", @id = "validationWONo" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-2">
+            <a class="btn btn-primary" onclick="return LoadWorkerOrder();">
+                <i class="fa fa-search"></i> &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Work Order"))
+            </a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose WO"))</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <table class="tbCustom">
+                <thead>
+                    <tr>
+                        <td class="text-center"><input type="checkbox" onchange="ToogleCheckAll(this, '#divListWO')" id="chkPOAll" /></td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Work Order"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Completed Date"))</td>
+                    </tr>
+                </thead>
+                <tbody id="divListWO">
+                    @Html.Partial("_ListWO", Model)
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*Receipt Date*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Date"))</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            @Html.TextBoxFor(model => model.ReceiptDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker text-center", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.ReceiptDate, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Add Ingredient*@
+    <div class="form-group">
+        <div class="col-md-10 col-sm-12 col-xs-12 col-md-offset-2">
+            <a class="btn btn-primary" data-toggle="modal" onclick="AddToReceiptNoteSelfMade();">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add To RN Self Made"))
+            </a>
+            <a class="btn btn-primary" data-toggle="modal" onclick="ShowModalAddIngredient();">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add More Ingredient"))
+            </a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-10 col-sm-12 col-xs-12 col-md-offset-2">
+            <p class="label label-danger" id="ltrMsgAddRN"></p>
+            <br />
+            <span class="label label-danger" id="ltrMsgAddRN"></span>
+        </div>
+    </div>
+
+    <div class="box-body form-group" style="text-align:center; padding-bottom:30px;">
+        <table class="tbCustom">
+            <thead>
+                <tr>
+                    <td class="text-center" style="width: 10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                    <td class="text-center" style="width: 30%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                    <td class="text-center" style="width: 10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                    <td class="text-center" style="width:15%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Quantity"))</td>
+                    <td class="text-center" style="width: 20%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Quantity"))</td>
+                    <td class="text-center" style="width:10%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remaining Quantity"))</td>
+                    <td style="width: 5%;"></td>
+                    @*@Html.ValidationMessage("error_msg")*@
+                </tr>
+            </thead>
+            <tbody id="divListItemNew">
+                @Html.Partial("_ListItem", Model)
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Add Ingredient-->
+<div class="modal fade" id="modalIngredient" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" style="color:#34495e; font-weight:bold;">
+                    <i class="fa fa-plus"></i>&nbsp;
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more ingredients"))
+                </h4>
+            </div>
+            <div class="modal-body scroll" style="padding:0;">
+                <div class="form-group" style="padding:10px 5px 0 5px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control col-md-10" placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Name"))"
+                               onkeypress="HandleKeyPress(event)" />
+                        <div class="input-group-btn">
+                            <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="tbl-add-ingredient" class="form-group-sm">
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center;">
+                <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var listItem;
+
+    $(document).ready(function () {
+        $("#modalIngredient").on('show.bs.modal', function (event) {
+            listItem = [];
+            $('.ng-IngredientNew:visible').each(function (index, value) {
+                listItem.push($(this).attr('data-ingreId'));
+            });
+        });
+
+        //=== Select Store
+        $("#storeDdl").select2().val('@Model.StoreId').trigger('change.select2');
+    });
+
+
+    /* Add To RN Self Made *****/
+    function AddToReceiptNoteSelfMade() {
+        $("#ltrMsgAddRN").html("");
+        var countWO = $('.WorkOrder').length;
+        if (countWO == 0) {
+            $("#ltrMsgAddRN").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("List Work Order is empty !!!"))');
+            return false;
+        }
+        //select
+        countPO = $("input.chkWO:checkbox:checked").length;
+        if (countPO == 0) {
+            $("#ltrMsgAddRN").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose at least work order !!!"))');
+            return false;
+        }
+        //====
+        var data = [];
+        var ListItem = [];
+        $.each($("input.chkWO:checkbox:checked"), function () {
+            var chk = $(this);
+            var id = $(chk).attr("data-id");
+            var ponumber = $(chk).attr("data-ponumber");
+            var WorkOrderModels = {
+                Id: id,
+                WONumber: ponumber
+            };
+            data.push(WorkOrderModels);
+        });
+        $.each($('.ng-IngredientNew'), function () {
+            var _tableRow = $(this);
+            if ($(_tableRow).css('display') !== 'none') {
+
+                var IngredientId = $(_tableRow).find('#hidIngredientId').val();
+                var IngredientCode = $(_tableRow).find('#hidIngredientCode').val();
+                var IngredientName = $(_tableRow).find('#hidIngredientName').val();
+                var BaseUOM = $(_tableRow).find('#hidBaseUOM').val();
+
+                var IsSelfMode = $(_tableRow).find('#hidIsSelfMode').val();
+                var IsStockAble = $(_tableRow).find('#hidIsStockAble').val();
+                var BaseQty = $(_tableRow).find('#hidBaseQty').val();
+                var IsVisible = $(_tableRow).find('#hidIsVisible').val();
+                //var IngredientStatus = $(_tableRow).find('#IngredientStatus').val();
+                var Qty = $(_tableRow).find('#Quantity').val();
+                var ReceivingQty = $(_tableRow).find('#txtReceivingQty').val();
+                var RemainingQty = $(_tableRow).find('#RemainingQty').val();
+                var WOId = $(_tableRow).find('#hidenWOIdRow').val();
+                var WONumber = $(_tableRow).find('#hidenWONumber').val();
+                var OffSetId = $(_tableRow).find('#hidOffSetId').val();
+                var status = $(_tableRow).find('#IngredientStatus').val();
+                var id = $(_tableRow).find('#IngredientIdRow').val();
+                //alert(status);
+                var ReceiptNoteSelfMadeDetailModels = {
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    BaseUOM: BaseUOM,
+                    IsSelfMode: IsSelfMode,
+                    IsStockAble: IsStockAble,
+                    BaseQty: BaseQty,
+                    IsVisible: IsVisible,
+
+                    //IngredientStatus: IngredientStatus,
+                    Qty: Qty,
+                    ReceivingQty: ReceivingQty,
+                    RemainingQty: RemainingQty,
+                    WOId: WOId,
+
+                    WONumber: WONumber,
+
+                    OffSet: OffSetId,
+                    Status: status,
+                    Id: id
+                };
+                ListItem.push(ReceiptNoteSelfMadeDetailModels);
+            }
+        });
+        var ReceiptNoteSelfMadeModels = {
+            ListWorkOrder: data,
+            ListItem: ListItem
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddReceiptNoteSelfMade", "IngReceiptNoteSelfMade")',
+                traditional: true,
+                data: JSON.stringify(ReceiptNoteSelfMadeModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                    $('#ltrMsgAddRN').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Have a error when you add a work order"))');
+                },
+                success: function (data) {
+                    $('#divListItemNew').html(data);
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    /*Load List Work Order*/
+    function LoadWorkerOrder() {
+        $('#validationStore').html('');
+        $('#validationWONo').html('');
+        $('#chkPOAll').prop('checked', false);
+        var StoreId = $("#storeDdl").val();
+        var WONo = $("#txtWONo").val();
+        if (StoreId === '' || StoreId == null) {
+            $('#validationStore').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        }
+
+        $('#divListWO').html('');
+        // $('#divListItemNew').html('');
+        var ListItem = [];
+        $.each($('.ng-IngredientNew'), function () {
+            var _tableRow = $(this);
+            if ($(_tableRow).css('display') !== 'none') {
+                var IngredientId = $(_tableRow).find('#hidIngredientId').val();
+                var IngredientCode = $(_tableRow).find('#hidIngredientCode').val();
+                var IngredientName = $(_tableRow).find('#hidIngredientName').val();
+                var BaseUOM = $(_tableRow).find('#hidBaseUOM').val();
+
+                var IsSelfMode = $(_tableRow).find('#hidIsSelfMode').val();
+                var IsStockAble = $(_tableRow).find('#hidIsStockAble').val();
+                var BaseQty = $(_tableRow).find('#hidBaseQty').val();
+                var IsVisible = $(_tableRow).find('#hidIsVisible').val();
+                var IngredientStatus = $(_tableRow).find('#IngredientStatus').val();
+                var Qty = $(_tableRow).find('#Quantity').val();
+                var ReceivingQty = $(_tableRow).find('#txtReceivingQty').val();
+                //alert(ReceivingQty);
+                var RemainingQty = $(_tableRow).find('#RemainingQty').val();
+                var ReceiptNoteSelfMadeDetailModels = {
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    BaseUOM: BaseUOM,
+                    IsSelfMode: IsSelfMode,
+                    IsStockAble: IsStockAble,
+                    BaseQty: BaseQty,
+                    IsVisible: IsVisible,
+
+                    IngredientStatus: IngredientStatus,
+                    Qty: Qty,
+                    ReceivingQty: ReceivingQty,
+                    RemainingQty: RemainingQty,
+                };
+                ListItem.push(ReceiptNoteSelfMadeDetailModels);
+            }
+        });
+        var ReceiptNoteSelfMadeModels = {
+            StoreId: StoreId,
+            WONo: WONo,
+            ListItem: ListItem
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LoadWorkOrder", "IngReceiptNoteSelfMade")',
+            traditional: true,
+            data: JSON.stringify(ReceiptNoteSelfMadeModels),
+            //data: {
+            //    StoreId: StoreId,
+            //    WONo: WONo,
+            //},
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $('#divListWO').html(data);
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+
+    function TickItemCheckBox() {
+        var length = $('.chkWO').length;
+        var countSelected = $('.chkWO:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkPOAll').prop('checked', true);
+        } else {
+            $('#chkPOAll').prop('checked', false);
+        }
+    }
+
+    /**/
+    function ShowModalAddIngredient() {
+        //$('#validationStore').text('');
+        //if (StoreID == '') {
+        //    $('#validationStore').text('Please choose store');
+        //    return false;
+        //}
+        $('#tbl-add-ingredient').html();
+        var modal = $("#modalIngredient");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        $(modal).modal({
+            show: true,
+            backdrop: 'static',
+            keyboard: false
+        });
+        LoadIngredient('#tbl-add-ingredient', modal);
+    }
+
+    function LoadIngredient(container, modal) {
+        $(container).html('');
+        var obj = {
+            //StoreId: StoreID
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LoadIngredient", "IngReceiptNoteSelfMade")',
+            traditional: true,
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $(modal).modal({
+                    keyboard: false,
+                    show: true,
+                    //backdrop: false
+                });
+                $(container).html(data);
+
+                $('.SpecificItems').each(function (index, value) {
+                    var dataId = $(this).attr('data-id');
+                    if (listItem.indexOf(dataId) != -1) {
+                        $(this).addClass('hide');
+                    }
+                });
+
+                ResizeModal(container, 300)
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function AddIngredient(btn) {
+        var trs = $('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var IsActived = $(tr).find('td input[type="checkbox"]').prop('checked');
+            var IngredientName = $(tr).find('td #hidIngredientName').val();
+            var IngredientCode = $(tr).find('td #hidIngredientCode').val();
+            var Description = $(tr).find('td #hidDescription').val();
+            var IngredientId = $(tr).find('td #hidIngredientId').val();
+            var BaseUOMId = $(tr).find('td #hidUOMId').val();
+            var BaseUOM = $(tr).find('td #hidBaseUOM').val();
+
+            var BaseReceivingQty = $(tr).find('td #hidBaseReceivingQty').val();
+            var BaseQty = $(tr).find('td #hidBaseQty').val();
+            var IsStockAble = $(tr).find('td #hidIsStockAble').val();
+            var IsSelfMode = $(tr).find('td #hidIsSelfMode').val();
+            //var id = $(_tableRow).find('#IngredientIdRow').val();
+            //var OffSetId = $(_tableRow).find('#hidOffSetId').val();
+            //var status = $(_tableRow).find('#IngredientStatus').val();
+            //var WOId = $(_tableRow).find('#hidenWOIdRow').val();
+            //var WONumber = $(_tableRow).find('#hidenWONumber').val();
+
+            if (IsActived) {
+                var Ingredient = {
+                    IngredientId: IngredientId,
+                    IngredientName: IngredientName,
+                    IngredientCode: IngredientCode,
+                    Description: Description,
+                    BaseUOM: BaseUOM,
+                    UOMId: BaseUOMId,
+                    IsActived: IsActived,
+
+                    BaseReceivingQty: BaseReceivingQty,
+                    BaseQty: BaseQty,
+
+                    IsStockAble: IsStockAble,
+                    IsSelfMode: IsSelfMode,
+                    //WOId: WOId,
+                    //WONumber: WONumber,
+                    //Status: status,
+                    //Id: id,
+                    //OffSet: OffSetId
+                };
+                data.push(Ingredient);
+            }
+        }
+        $.each($('.ng-IngredientNew'), function () {
+            var _tableRow = $(this);
+            if ($(_tableRow).css('display') !== 'none') {
+
+                var IngredientId = $(_tableRow).find('#hidIngredientId').val();
+                var IngredientCode = $(_tableRow).find('#hidIngredientCode').val();
+                var IngredientName = $(_tableRow).find('#hidIngredientName').val();
+                var BaseUOM = $(_tableRow).find('#hidBaseUOM').val();
+
+                var IsSelfMode = $(_tableRow).find('#hidIsSelfMode').val();
+                var IsStockAble = $(_tableRow).find('#hidIsStockAble').val();
+                var BaseQty = $(_tableRow).find('#hidBaseQty').val();
+                var IsVisible = $(_tableRow).find('#hidIsVisible').val();
+                var IngredientStatus = $(_tableRow).find('#IngredientStatus').val();
+                var Qty = $(_tableRow).find('#Quantity').val();
+                var ReceivingQty = $(_tableRow).find('#txtReceivingQty').val();
+
+                var WOId = $(_tableRow).find('#hidenWOIdRow').val();
+                var WONumber = $(_tableRow).find('#hidenWONumber').val();
+                var id = $(_tableRow).find('#IngredientIdRow').val();
+                var OffSetId = $(_tableRow).find('#hidOffSetId').val();
+                var status = $(_tableRow).find('#IngredientStatus').val();
+
+                //alert(ReceivingQty);
+                var RemainingQty = $(_tableRow).find('#RemainingQty').val();
+                var ReceiptNoteSelfMadeDetailModels = {
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    BaseUOM: BaseUOM,
+                    IsSelfMode: IsSelfMode,
+                    IsStockAble: IsStockAble,
+                    BaseQty: BaseQty,
+                    IsVisible: IsVisible,
+
+                    IngredientStatus: IngredientStatus,
+                    Qty: Qty,
+                    ReceivingQty: ReceivingQty,
+                    RemainingQty: RemainingQty,
+
+                    WOId: WOId,
+                    WONumber: WONumber,
+                    Status: status,
+                    Id: id,
+                    OffSet: OffSetId
+                };
+                data.push(ReceiptNoteSelfMadeDetailModels);
+            }
+        });
+        var ReceiptNoteSelfMadeModels = {
+            ListItem: data
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddIngredient", "IngReceiptNoteSelfMade")',
+                traditional: true,
+                data: JSON.stringify(ReceiptNoteSelfMadeModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $('#modalIngredient').modal('hide');
+                    $('#divListItemNew').html(data);
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function DeleteTabPanel(id, WONumber) {
+        var div = $(".tbCustom").find("[data-offset='" + id + "']");
+        $(div).find('input#IngredientStatus').val(9);
+        $(div).css('display', 'none');
+
+        //var index = 1;
+        //$.each($('.ng-IngredientNew:visible'), function () {
+        //    var div = $(this);
+        //    //if ($(div).css('display') !== 'none')
+        //    {
+        //        var IngredientId = $(div).find('#hidIngredientId').val();
+        //        $('#index_' + IngredientId).html(index);
+        //        index++;
+        //    }
+        //});
+
+        var count = $('.ng-woItem-' + WONumber + ':visible').length;
+        //alert(WONumber + '|' + count);
+        if (count == 0) {
+            $('#_woParent-' + WONumber + ':visible').css('display', 'none');
+        }
+    }
+
+    function SearchIngredient(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td#search').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+</script>

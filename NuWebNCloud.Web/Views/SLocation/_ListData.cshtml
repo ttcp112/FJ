@@ -1,0 +1,90 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.GeneralSettingViewModels
+
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Location"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+                                <td style="text-align:center; color:#34495e; font-weight:bold;">@item.Name</td>
+                                <td style="text-align:center;">
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("View", "SLocation", new { StoreID = Model.ListItem[i].Id })')"
+                                       class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Edit", "SLocation", new { StoreID = Model.ListItem[i].Id  })')"
+                                       class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Edit"))</a>&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [1] },
+                { "width": "10%", "targets": 1 },
+            ],
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

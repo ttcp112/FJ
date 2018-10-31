@@ -1,0 +1,1661 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.GeneralSettingModels
+@{
+    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+}
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+     new Dictionary<string, string> { { "A", "Settings" }, { "B", "General Settings" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                @*Home Page Background*@
+                                <div class="form-group">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Home Page Background"))
+                                            </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label"></label>
+                                                <div class="col-sm-3">
+                                                    @if (!string.IsNullOrEmpty(Model.ImgBackgroundURL))
+                                                    {
+                                                        <img id="background-preview" src="@Model.ImgBackgroundURL" height="100" width="200" class="col-sm-offset-2" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img id="background-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Signature*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Signature"))</h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Insert text in footer of Receipt")) </label>
+                                                <div class="col-sm-1">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.SigInserText ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Message")) </label>
+                                                <div class="col-sm-6">
+                                                    @Model.SigMessage
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Sign_Image" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Signature Image")) </label>
+                                                <div class="col-sm-3">
+                                                    @if (!string.IsNullOrEmpty(Model.SigImgURL))
+                                                    {
+                                                        <img id="signimage-preview" src="@Model.SigImgURL" height="100" width="200" class="col-sm-offset-2" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img id="signimage-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Sign_Image" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image Position")) </label>
+                                                <div class="col-sm-3">
+                                                    @string.Format("{0}", (Model.IsPositionSigImg ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Top")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Bottom"))))
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Check Prefix*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Prefix")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Prefix")) </label>
+                                                <div class="col-sm-6">
+                                                    @Model.ReceiptPrefix
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reset daily for receipt")) </label>
+                                                <div class="col-sm-1">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.ResetDailyForReceipt ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")).ToString() : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False")).ToString()))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Prefix ")) </label>
+                                                <div class="col-sm-6">
+                                                    @Model.OrderPrefix
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reset daily for order")) </label>
+                                                <div class="col-sm-1">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.ResetDailyForOrder ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Number")) </label>
+                                                <div class="col-sm-1">
+                                                    <label>
+                                                        @Model.StartNumber
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Reservation*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reservation")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time in advance of valid reservation(minutes)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.ReAdvanceForValid
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time in advance to remind customer for reservation(minutes)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.ReAdvanceToRemind
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time for holding reserved table(minutes)")) </label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Before")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.ReBefore
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("After")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.ReHAfter
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Timeslot Period (minutes)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.TimeslotPeriod
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Maximum of person(s) come")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.MaximunOfPersonCome
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add on")) </label>
+                                                <div class="col-sm-1">
+                                                    @Model.AddOnOfPersonForReservationOrBooking
+                                                </div>
+                                                <label class="col-sm-6 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("of persons for reservation/ booking")) </label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Duplicates")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.NumberofDuplicates
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow Duplicate Booking")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.AllowDuplicateBooking ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Delivery Time Setup *@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Setup")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Auto Send Order(minutes)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.AutoSendOrderTime
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Notification Reminder(minutes)"))</label>
+                                                <div class="col-sm-3">
+                                                    @Model.NotificationReminder
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Notification Push Time(minutes)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.NotificationPushTime
+                                                </div>
+                                            </div>
+                                            @if (user.POSInstanceVersion.HasValue)
+                                            {
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Minium Amount for Delivery Order")) </label>
+                                                    <div class="col-sm-3">
+                                                        @Model.MinimumAmountForDeliveryOrder
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of Time in Advance of Valid Delivery/Pickup(min)")) </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("After Starting Bussiness")) </label>
+                                                    <div class="col-sm-3">
+                                                        @Model.AfterStartingBusiness
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Before Ending Bussiness")) </label>
+                                                    <div class="col-sm-3">
+                                                        @Model.BeforeEndingBusiness
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time slot")) </label>
+                                                    <div class="col-sm-3">
+                                                        @Model.DeliveryTimeSlot
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Need Pincode to Confirm Delivery/Pickup(min)")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @*@Html.CheckBoxFor(model => model.NeedPincodeToConfirmPickupDeliveryNupos)*@
+                                                            @string.Format("{0}", (Model.NeedPincodeToConfirmPickupDeliveryNupos ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to auto accept")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @*@Html.CheckBoxFor(model => model.DeliveryAllowToAutoAccept)*@
+                                                            @string.Format("{0}", (Model.DeliveryAllowToAutoAccept ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Create Online Pickup Order")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @*@Html.CheckBoxFor(model => model.AllowToCreateOnlinePickupOrder)*@
+                                                            @string.Format("{0}", (Model.AllowToCreateOnlinePickupOrder ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Create Online Delivery Order")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.AllowToCreateOnlineDeliveryOrder)*@
+                                                            @string.Format("{0}", (Model.AllowToCreateOnlineDeliveryOrder ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4 col-xs-12"></label>
+                                                    <div id="div-delivery-fee" class="col-md-offset-4 col-md-6" style="float:none;">
+                                                        <table class="table center-content">
+                                                            <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>Postal</th>
+                                                                </tr>
+                                                                @if (Model.ListPostalCode != null && Model.ListPostalCode.Count > 0)
+                                                                {
+                                                                    int index = 1;
+                                                                    for (int i = 0; i < Model.ListPostalCode.Count; i++)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @index
+                                                                            </td>
+                                                                            <td>@Model.ListPostalCode[i].Value1</td>
+                                                                        </tr>
+                                                                        index++;
+                                                                    }
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply Tax on Delivery Fee")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @*@Html.CheckBoxFor(model => model.ApplyTaxOnDeliveryFee)*@
+                                                            @string.Format("{0}", (Model.ApplyTaxOnDeliveryFee ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Cancel Delivery/Pickup Order from Wallet")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.AllowToCancelDeliveryPickupOrderFromWallet)*@
+                                                            @string.Format("{0}", (Model.AllowToCancelDeliveryPickupOrderFromWallet ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                //Pickup Order
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Pickup Order")) </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("New Pickup")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.PickupNew)*@
+                                                            @string.Format("{0}", (Model.PickupNew ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accepted Pickup")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.PickupAccepted)*@
+                                                            @string.Format("{0}", (Model.PickupAccepted ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ready Pickup")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.PickupReady)*@
+                                                            @string.Format("{0}", (Model.PickupReady ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                //Delivery Order
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Order")) </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("New Delivery")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.DeliveryNew)*@
+                                                            @string.Format("{0}", (Model.DeliveryNew ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accepted Delivery")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.DeliveryAccepted)*@
+                                                            @string.Format("{0}", (Model.DeliveryAccepted ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ready Delivery")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.DeliveryReady)*@
+                                                            @string.Format("{0}", (Model.DeliveryReady ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivering")) </label>
+                                                    <div class="col-sm-3">
+                                                        <label style="padding-right: 10px; ">
+                                                            @*@Html.CheckBoxFor(model => model.DeliveryDelivering)*@
+                                                            @string.Format("{0}", (Model.DeliveryDelivering ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Fee"))</label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4 col-xs-12"></label>
+                                                    <div id="div-delivery-fee" class="col-md-offset-4 col-md-6" style="float:none;">
+                                                        <table class="table center-content">
+                                                            <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>Fee</th>
+                                                                    <th>On Order With Amount</th>
+                                                                </tr>
+                                                                @if (Model.ListDeliveryFee != null && Model.ListDeliveryFee.Count > 0)
+                                                                {
+                                                                    int index = 1;
+                                                                    for (int i = 0; i < Model.ListDeliveryFee.Count; i++)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @index
+                                                                            </td>
+                                                                            <td>@Model.ListDeliveryFee[i].Value1</td>
+                                                                            <td>@Model.ListDeliveryFee[i].Value2</td>
+                                                                        </tr>
+                                                                        index++;
+                                                                    }
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Time for holding change popup after payment*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for holding change popup after payment")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for holding Change popup after payment(second)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Model.TimeHoldingAfterPayment
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Auto Print Guest Check*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Auto Print Guest Check")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.AutoPrintGuestCheck ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @* Single Order Chit *@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Single Order Chit")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.SingleOrderChit ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Total Order Chit*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Total Order Chit")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.TotalOrderChit ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Allow Booking Online*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow Booking Online")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.AllowBookingOnline ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @*Print Consolidated*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Consolidated")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.PrintConsolidated ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Print Add On Items For Total Chit*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Add On Items For Total Chit")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.PrintAddOnItemsForTotalChit ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Show Value In Cash Drawer*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Cash Drawer")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowValueInCashDrawer ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Show Value In Shit*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Shift")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowValueInShift ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Show Value In Store*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Store")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowValueInStore ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Show Deletion Confirmation For 'Sent' Item*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Deletion Confirmation For 'Sent' Item")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowDeletionConfirmationForSentItem ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Show Deletion Confirmation For Whole Order*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Deletion Confirmation For Whole Order")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowDeletionConfirmationForWholeOrder ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Show All Categories*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show All Categories")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowAllCategories ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Updated 08172017*@
+                                @*Make Table Available*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Make Table Available")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.MakeTableAvailable ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*No Sale Setting*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No Sale Setting")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.NoSaleSetting ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Show BarCode*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show BarCode")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowBarcode ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Show Pop Up to Print receipt*@
+                                @*<div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Pop Up to Print receipt")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ShowPopUpToPrintReceipt ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                                @*Print receipt*@
+                                @*<div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print receipt")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.PrintReceipt ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                                @*The Sales from Integration Include in Mall Report*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The Sales from Integration Include in Mall Report")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.IntegrationInclude ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Allow to manually choose promotions having same priority*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to manually choose promotions having same priority")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.ManualPromotion ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                @*Number Of Latest Order*@
+                                @*<div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number Of Latest Order")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @Model.NumberOfLatestOrder
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                                @*Submit Mall Report*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report Setting")) </h4>
+                                        </div>
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Submit Mall Report")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.IsSubmitMallReport ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Notify Submit Mall Report*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Notify Submit Mall Report")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @string.Format("{0}", (Model.IsNotifySubmitMallReport ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True"))
+    : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Mall Report Mail To*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report Mail To")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @Model.MallReportMailTo
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Local folder report*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Local folder report")) </label>
+                                                    <div class="col-sm-5">
+                                                        <label>
+                                                            @Model.FTPFolderReport
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                @*FTP User*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("FTP User")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @Model.FTPUser
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*FTP Password*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("FTP Password")) </label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            ********
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Mall Report File Name Format*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report File Name Format")) </label>
+                                                    <div class="col-sm-4">
+                                                        <div>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IDMachineIDString)) - @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IDDateString)) - @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IDHourString)) - @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IDSeparatorString)) </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*MachineID*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("MachineID"))</label>
+                                                    <div class="col-sm-1">
+                                                        <label>
+                                                            @Model.MachineID
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Order Management Setting*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Management Setting")) </h4>
+                                        </div>
+                                        @*<div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number Of Latest Order"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.NumberOfLatestOrder
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>*@
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Days Allow for Refund"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.NumberofDaysAllowforRefund
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sound Prepare Screen"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.SoundPrepareName
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sound Serve Screen"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.SoundServeName
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Background After Changed to Ready(Frid View)"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.ItemBackgroundReady
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Background After Changed to Served(Frid View)"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @Model.ItemBackgroundServed
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of cell shown in Order Managementt(Grid View)"))</label>
+                                                            <div class="col-sm-1">
+                                                                <label>
+                                                                    @{ if (Model.IsNumOfCellOrderMana)
+                                                                        {
+                                                                            @Html.Raw("3")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @Html.Raw("6")
+                                                                        }
+                                                                    }
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for order stays in PENDING status (min)")) </label>
+                                                <div class="col-sm-6">
+                                                    @Model.PendingTime
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Time Configuration in Reports*@
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Configuration in Reports")) </h4>
+                                        </div>
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BreakFast")) </label>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            Start
+                                                        </label>
+                                                        <label>
+                                                            @Model.BreakfastStart
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            End
+                                                        </label>
+                                                        <label>
+                                                            @Model.BreakfastEnd
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Lunch")) </label>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            Start
+                                                        </label>
+                                                        <label>
+                                                            @Model.LunchStart
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            End
+                                                        </label>
+                                                        <label>
+                                                            @Model.LunchEnd
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="box-header with-border">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dinner")) </label>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            Start
+                                                        </label>
+                                                        <label>
+                                                            @Model.DinnerStart
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <label>
+                                                            End
+                                                        </label>
+                                                        <label>
+                                                            @Model.DinnerEnd
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Invoice*@
+                                @if (Model.ListInvoice != null)
+                                {
+                                    var item = Model.ListInvoice.Where(o => o.IsSelected).FirstOrDefault();
+                                    if (item != null)
+                                    {
+                                        <div class="form-group" style="margin-top:20px">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="box-header with-border">
+                                                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice")) </h4>
+                                                </div>
+                                                <div class="box-header with-border">
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Name
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BusinessID")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.BusinessID
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("SellerID")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.SellerID
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("RepresentID")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.RepresentID
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Logo")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @if (!string.IsNullOrEmpty(item.Setting.Logo))
+                                                                                {
+                                                                                    <img id="background-preview" src="@item.Setting.ImageURL" height="100" width="200" class="col-sm-offset-2" />
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <img id="background-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                                                                                }
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Title 1")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.Title
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Title 2")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.Title2
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Period Prefix")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.PeriodPrefix
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Period Suffix")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.PeriodSuffix
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice To")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.InvoiceTo
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice From")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.InvoiceFrom
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Headban")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.Headban
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Branchban")) </label>
+                                                                        <div class="col-sm-1">
+                                                                            <label>
+                                                                                @item.Setting.Branchban
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" style="margin-top:20px">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="box-header with-border">
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        @if (item.Setting.InvoicePrefix != null)
+                                                                        {
+                                                                            <div class="form-group">
+                                                                                <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Month")) </label>
+                                                                                <div class="col-sm-1">
+                                                                                    <label>
+                                                                                        Value
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                            for (int i = 0; i < item.Setting.InvoicePrefix.Count; i++)
+                                                                            {
+                                                                                <div class="form-group">
+                                                                                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(item.Setting.InvoicePrefix[i].Month.ToString())) </label>
+                                                                                    <div class="col-sm-1">
+                                                                                        <label>
+                                                                                            @item.Setting.InvoicePrefix[i].Value
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Bottle Service ")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Text to Show at Label Format")) </label>
+                                                <div class="col-sm-3">
+                                                    @Html.Raw(Model.FormatText)
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Expiry Date (days) ")) </label>
+                                                <div class="col-sm-3">
+                                                    @Html.Raw(Model.ExpiryDate)
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Notification Reminder (days)")) </label>
+                                                <div class="col-sm-3">
+                                                    @Html.Raw(Model.TimeforNotificationReminder)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set up Payment Options when Making Order on IOne2 ")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add to Tab")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.AddToTab ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Pay to Waiter")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PayToWaiter ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Day Report")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            @*Print and of day report when close drawer*@
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of day report when close Drawer")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintReportWhenCloseDrawer ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of Day Report After Close Shift")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintEndShiftReport ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Drawer Data")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.IncludeDrawerData ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of Day Report After Close Store")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintEndDayReport ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Shift Data")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.IncludeShiftData ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Out Categories")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintDayCategorySale ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Out Menu Item Sales")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintDayMenuItemSale ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top:20px">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Setting")) </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Receipt")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintReceipt ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Pop Up to Print receipt")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.ShowPopUpToPrintReceipt ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Company Name on Receipt/Audit/Refund")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.PrintReceiptCompany ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Extra Price to Dish/Set")) </label>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        @string.Format("{0}", (Model.AddExtraPriceToDishSet ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))))
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

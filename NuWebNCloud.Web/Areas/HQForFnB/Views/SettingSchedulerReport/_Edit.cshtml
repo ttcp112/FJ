@@ -1,0 +1,46 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.SettingSchedulerTaskModels
+@{
+    ViewBag.Title = "Schedule rReport - Edit";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "HQ" }, { "B", "Settings" }, { "C", "Scheduled Reports - Edit" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="#" class="btn btn-success" id="btn-edit-save"><i class="fa fa-save"></i>&nbsp;Save</a></li>
+                                <li><a href="#" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Edit", "SettingSchedulerReport", FormMethod.Post, new { @id = "form-edit", @class = "form-horizontal" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#btn-edit-save").click(function (e) {
+        $("#form-edit").submit();
+        e.preventDefault();
+    });
+</script>
+
+@section Scripts{
+    <script src="@Url.Content("~/Scripts/baseJs.js")"></script>
+}

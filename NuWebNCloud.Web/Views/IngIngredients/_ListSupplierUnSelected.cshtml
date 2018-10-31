@@ -1,0 +1,131 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientModel
+@using NuWebNCloud.Shared.Utilities;
+@{
+    int i = 0;
+}
+
+<div class="table-responsive">
+    <div class="">
+        <div class="x_content">
+            <div class="table-responsive">
+                @*<table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive-supplier" cellspacing="0" style="width:100%;">*@
+                <table class="table center-content">
+                    <thead>
+                        <tr style="background-color:#34495e; color:#fff;">
+                            <th style="text-align:center;"> <input type="checkbox" id="check-all-Supplier-Un" onclick="toggleCheckedAllSupplierUn()" /></th>
+                            <th class="column-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))  </th>
+                            <th class="column-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Address")) </th>
+                            <th class="column-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")) </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ListIngSupplierUnSelected)
+                        {
+                            @*string styleRow = "row-evenItem";
+                                if (i % 2 == 0)
+                                {
+                                    styleRow = "row-oddItem";
+                                }
+                                <tr class="even pointer @styleRow IngSupplier">*@
+                            <tr class="even pointer">
+                                <td class="a-center text-center cls_Supplier_Ingredient_UnSelected">
+                                    @Html.CheckBoxFor(model => Model.ListIngSupplierUnSelected[i].IsActived, new { @class = "chkChildSupplierUn", @onclick = "toggleCheckedSupplierUn()" })
+                                    @Html.HiddenFor(model => Model.ListIngSupplierUnSelected[i].Id)
+                                    @Html.HiddenFor(model => Model.ListIngSupplierUnSelected[i].SupplierName)
+                                    @Html.HiddenFor(model => Model.ListIngSupplierUnSelected[i].SupplierAddress)
+                                    @Html.HiddenFor(model => Model.ListIngSupplierUnSelected[i].SupplierPhone)
+                                    @Html.HiddenFor(model => Model.ListIngSupplierUnSelected[i].CompanyId)
+                                </td>
+                                <td id="search" style="cursor:pointer;">@item.SupplierName</td>
+                                <td>@item.SupplierAddress</td>
+                                <td>@item.SupplierPhone</td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //=========================================
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive-supplier').DataTable({
+            "bSort": false,
+            //"searching": false,
+            "columnDefs": [
+                { "width": "2%", "targets": 0 },
+                { "width": "15%", "targets": [1, 3] },
+            ],
+            "order": [[1, 'asc']],
+        });
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+
+        toggleCheckedSupplierUn();
+    });
+
+    //*****
+    function toggleCheckedAllSupplierUn() {
+        var isCheckAll = $('#check-all-Supplier-Un').prop("checked");
+        var listChk = $('.chkChildSupplierUn');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            if (isCheckAll === true) {
+                $(listChk[i]).prop('checked', true);
+                lstIdSelected.push(item);
+            } else {
+                $(listChk[i]).prop('checked', false);
+            }
+        }
+    }
+
+    function toggleCheckedSupplierUn() {
+        var _count = 0;
+        var listChk = $('.chkChildSupplierUn');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            if ($(listChk[i]).prop('checked') === true) {
+                lstIdSelected.push(item);
+                _count++;
+            }
+            if (listChk.length !== _count) {
+                $('#check-all-Supplier-Un').prop("checked", false);
+            }
+            else {
+                $('#check-all-Supplier-Un').prop("checked", true);
+            }
+        }
+    }
+</script>
+

@@ -1,0 +1,218 @@
+﻿@model NuWebNCloud.Shared.Models.LoginModel
+@{
+    Layout = "";    
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NüWeb F&B - Login</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/bootstrap/dist/css/bootstrap.min.css")'>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/font-awesome/css/font-awesome.min.css")'>
+
+    <!--iCheck-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/iCheck/skins/flat/green.css")'>
+
+    <!-- Animate.css -->
+    @*<link href="https://colorlib.com/polygon/gentelella/css/animate.min.css" rel="stylesheet">*@
+
+    <!-- Custom Theme Style -->
+    <link rel="stylesheet" href='@Url.Content("~/build/css/custom.min.css")'>
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/select2/dist/css/select2.min.css")'>
+
+    <!-- saving the link on iPad homepage with nuweb logo -->
+    <link href="~/Assets/Images/logo.png" rel="apple-touch-icon" />
+    <link href="~/Assets/Images/logo.png" rel="apple-touch-icon" sizes="152x152" />
+    <link href="~/Assets/Images/logo.png" rel="apple-touch-icon" sizes="167x167" />
+    <link href="~/Assets/Images/logo.png" rel="apple-touch-icon" sizes="180x180" />
+    <link href="~/Assets/Images/logo.png" rel="icon" sizes="192x192" />
+    <link href="~/Assets/Images/logo.png" rel="icon" sizes="128x128" />
+</head>
+
+<body class="login">
+    <div>
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+                    @*@using (Html.BeginForm(new { @returnUrl = @Model.ReturnUrl, @id = "login-form" }))*@
+@using (Html.BeginForm("Index", "Login", FormMethod.Post, new { @returnUrl = @Model.ReturnUrl, @id = "login-form" }))
+                    
+                    {
+                        <h1 id="idLoginAbove">Login</h1>
+                        <div class="form-group has-feedback">
+                            @Html.TextBoxFor(model => model.Email,
+                                new
+                                {
+                                    @type = "email",
+                                    @class = "form-control has-feedback-left",
+                                    @placeholder = "Email",
+                                    @style = "margin-left:5px;",
+                                    @required = "required",
+                                    @id = "idEmail",
+                                })
+                            <span aria-hidden="true" class="fa fa-user form-control-feedback left"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            @Html.PasswordFor(model => model.Password,
+                               new
+                               {
+                                   @class = "form-control has-feedback-left",
+                                   @placeholder = "Password",
+                                   @style = "margin-left:5px;",
+                                   @required = "required",
+                                   @id = "idPassword",
+                               })
+                            <span aria-hidden="true" class="fa fa-lock form-control-feedback left"></span>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            @Html.DropDownListFor(model => model.LanguageId,
+                                    new SelectList(Model.ListLanguage, "Value", "Text", Model.LanguageId), null/*"---- Please choose language ----"*/,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        @id = "languageDdlView",
+                                        @style = "width:100%; ",
+                                        @tabindex = "-1",
+                                        @onchange = "changeLanguage(this)",
+                                    })
+                            <span aria-hidden="true" class="fa fa-language form-control-feedback left"></span>
+                        </div>
+
+                        @*<div class="form-group  has-feedback">
+                                @Html.DropDownListFor(model => model.IndustryId,
+                                        new SelectList(@ViewBag.listA, "Value", "Text", Model.IndustryId), null,
+                                        new
+                                        {
+                                            @class = "form-control has-feedback-left",
+                                            @tabindex = "-1",
+                                            @id = "ddlSeleted"
+                                        })
+                                <span aria-hidden="true" class="fa fa-filter form-control-feedback left"></span>
+                            </div>*@
+
+                        <div class="checkbox text-left" style="margin-left:-15px;">
+                            <label>
+                                @Html.HiddenFor(ss => ss.IsFormOtherLink)
+                                @Html.CheckBoxFor(model => model.RememberMe, new { @class = "flat", @check = "true", })
+                                <span id ="idRemenber">Remember me</span> 
+                            </label>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-default submit" id="idLoginBelow">Log in</button>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="separator">
+                            @Html.ValidationSummary()
+                            <div class="clearfix"></div>
+                            <br />
+                            <div>
+                                <h1>
+                                    @*<i class="fa fa-cloud"></i>*@
+                                    <img src="~/Assets/Images/logo.png" height="40" />
+                                    NüWeb F&B
+                                </h1>
+                                <p><strong>&copy; @DateTime.Now.Year.ToString() <a href="http://www.newstead.com.sg/" target="_blank">Newstead Technologies Pte. Ltd.</a></strong></p>
+                                <p><span id="idVersion">Version</span> <strong>@ViewBag.Version</strong></p>
+                            </div>
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="@Url.Content("~/vendors/jquery/dist/jquery.min.js")"></script>
+    <!--Bootstrap-->
+    <script src="@Url.Content("~/vendors/bootstrap/dist/js/bootstrap.min.js")"></script>
+    <!--iCheck-->
+    <script src="@Url.Content("~/vendors/iCheck/icheck.min.js")"></script>
+
+    <!-- Select2  trongntn-->
+    <script src="@Url.Content("~/vendors/select2/dist/js/select2.full.js")"></script>
+
+    <script src="@Url.Content("~/build/js/custom.min.js")"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#languageDdlView").select2({
+                placeholder: "---- Please choose language ----",
+            });
+            var languageID = $('#languageDdlView').val();
+            if (languageID != null) {
+                getDatafromLanguageID(languageID);
+            }  
+
+            //for login extend
+            var email = '@ViewBag.Email';
+            var pwd = '@ViewBag.Pwd';
+            if (email != null && email != '' && pwd != null && pwd != '') {
+                //call submit
+                var langId = '@ViewBag.LangId';
+                if (langId != null && langId != '') {
+                    $('#languageDdlView').val(langId);
+                }
+               
+                $('#idPassword').val(pwd);
+                $("#login-form").submit();
+            }
+        });
+
+        function changeLanguage(e) {
+            var languageID = $('#languageDdlView').val();
+            if (languageID != null)
+            {
+                getDatafromLanguageID(languageID);
+            }
+        }
+
+        function getDatafromLanguageID(id) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetDataforLanguageID", "Login")',
+                traditional: true,
+                data: { LanguageID: id},
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data.LoginAbove != null && data.LoginAbove != '') {
+                        $('#idLoginAbove').html(data.LoginAbove);
+                    }
+                    if (data.Email != null && data.Email != '') {
+                        $('#idEmail').attr('placeholder', data.Email);
+                    }
+                    if (data.Password != null && data.Password != '') {
+                        $('#idPassword').attr('placeholder', data.Password);
+                    }
+                    if (data.Remember != null && data.Remember != '') {
+                        $('#idRemenber').text(data.Remember);
+                    }
+                    if (data.LoginBelow != null && data.LoginBelow != '') {
+                        $('#idLoginBelow').html(data.LoginBelow);
+                    }
+                    if (data.Version != null && data.Version != '') {
+                        $('#idVersion').html(data.Version);
+                    }  
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                },
+                beforeSend: function () {
+                },
+                complete: function () {
+                },
+            });
+        }
+    </script>
+</body>
+</html>

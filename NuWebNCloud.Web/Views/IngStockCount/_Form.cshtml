@@ -1,0 +1,158 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockCountModels
+@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared.Models;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreId", Model.StoreId)
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    @* Choose Store *@
+    <div class="form-group">
+        <label class="col-md-2 col-sm-2 col-xs-12 text-left lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreId,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), "Please choose store",
+            //new
+            //{
+            //    @class = "form-control select2_multiple",
+            //    @id = "ddlStore",
+            //    @style = "width:100%;"
+            //})
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "ddlStore",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "ddlStore",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreId,
+              (SelectList)ViewBag.StoreID,
+              !string.IsNullOrEmpty(_ID) ? (object)new
+              {
+                  @class = "form-control select2_multiple",
+                  @disabled = "disabled",
+                  @id = "ddlStore",
+                  @style = "width:100%;"
+              } : new
+              {
+                  @class = "form-control select2_multiple",
+                  @id = "ddlStore",
+                  @style = "width:100%;"
+              })
+
+            @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger", @id = "StoreIdMsg" })
+        </div>
+
+        @* Apply Date *@
+        <label class="col-md-1 col-sm-1 col-xs-12 text-left lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply Date"))</label>
+        <div class="col-md-3 col-sm-3 col-xs-12 text-left lineHeight">
+            @if (!string.IsNullOrEmpty(_ID))
+            {
+
+                @Html.DisplayFor(m => m.StockCountDate, "{0:MM/dd/yyyy}")
+                @Html.Hidden("BusinessId", Model.BusinessId)
+                @*@Html.DisplayFor(ss => ss.EntryDate.ToString("MM/dd/yyyy"))*@
+            }
+            else
+            {
+                @Html.DropDownListFor(model => model.BusinessId, new SelectList(Model.ListBusinessDate, "Value", "Text", Model.BusinessId), "Please choose apply date",
+                   new { @class = "form-control ddl-business-date", @style = "width:100%;", @id = "ddlApplyDate" })
+            }
+            @Html.ValidationMessageFor(model => model.StockCountDate, null, new { @class = "label label-danger", @id = "ApplyDateMsg" })
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            <button type="button" class="btn btn-primary" onclick="LoadIngredient();"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+        </div>
+    </div>
+
+    <div class="box-body form-group" style="text-align:center;">
+        <table class="tbCustom">
+            <thead>
+                <tr>
+                    <td style="width:45%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Code"))</td>
+                    <td style="width:45%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</td>
+                    <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close Bal")).</td>
+                </tr>
+            </thead>
+            <tbody id="divListItemNew">
+                @if (Model.ListItem != null)
+                {
+                    @Html.Partial("_ListItemNew", Model)
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //=== Select Store
+        $("#ddlStore").select2().val('@Model.StoreId').trigger('change.select2');
+    });
+    function LoadIngredient() {
+
+        $('#StoreIdMsg').text('');
+        $('#ApplyDateMsg').text('');
+        $("#divListItemNew").html('');
+
+        var StoreId = '';
+        var busId = '';
+        if ("@_ID" != null && "@_ID" != "") {
+            StoreId = $('#StoreId').val();
+            busId = $('#BusinessId').val();
+        } else {
+            StoreId = $('#ddlStore').val();
+            busId = $('#ddlApplyDate').val();
+        }
+
+        if (StoreId == '' || StoreId == null) {
+            $('#StoreIdMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        }
+        else {
+            if (busId == '' || busId == null) {
+                $('#ApplyDateMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose apply date"))');
+                return false;
+            }
+        }
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LoadIngredient", "IngStockCount")',
+            traditional: true,
+            data: { StoreId: StoreId, businessId: busId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $("#divListItemNew").html(data);
+                //==========
+                //listItemNew = [];
+                //$.each($('.ng-IngredientNew'), function () {
+                //    var div = $(this);
+                //    var IngredientId = $(div).find('#hidIngredientId').val();
+                //    listItemNew.push(IngredientId);
+                //});
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+</script>

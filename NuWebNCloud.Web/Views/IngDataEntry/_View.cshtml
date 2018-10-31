@@ -1,0 +1,97 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.DataEntryModels
+@using NuWebNCloud.Shared.Utilities;
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Usage Management" }, { "C", "Data Entry - View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Data Code")):</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.EntryCode
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Date Entry")):</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.EntryDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")):</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                @*<div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">Apply Date:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.BusinessValue
+                                    </div>
+                                </div>*@
+
+
+                            </div>
+                        </div>
+                        <!--List Detail-->
+                        @if (Model.ListItem != null && Model.ListItem.Count > 0)
+                        {
+
+                            <table class="table table-hover">
+                                <thead style="background-color:#34495e; color:#fff;">
+                                    <tr>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code"))</th>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Damage"))</th>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Wastage"))</th>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Others"))</th>
+                                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reasons"))</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="cate-items">
+                                    @for (int i = 0; i < Model.ListItem.Count; i++)
+                                    {
+                                        string styleRow = "row-evenItem";
+                                        if (i % 2 == 0)
+                                        {
+                                            styleRow = "row-oddItem";
+                                        }
+                                        var item = Model.ListItem[i];
+                                        <tr style="cursor:pointer;color:#34495e; font-weight:bold; text-align:center;" class="@styleRow">
+
+                                            <td> @item.IngredientCode</td>
+                                            <td> @item.IngredientName</td>
+                                            <td> @item.Damage </td>
+                                            <td> @item.Wast </td>
+                                            <td> @item.OrderQty </td>
+                                            <td> @item.Reasons </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+                    </div><!--End x-content-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

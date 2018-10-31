@@ -1,0 +1,294 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifiers  - Extend All"));
+}
+<style type="text/css">
+    #validateStoreFrom,
+    #validateStoreTo,
+    #validateItem {
+        background-color: #d9534f !important;
+        color: #fff;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #73879C !important;
+    }
+</style>
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="se-pre-con" style="display: none;"></div>
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Inventory" }, { "C", "Modifiers - Extend All" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "extend")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("ExtendAll", "SBInventoryModifierInte", FormMethod.Post, new { @class = "form-horizontal extend-form", @enctype = "multipart/form-data" }))
+                            {
+                                @*Choose Store*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Extend From</label>
+                                    <div class="col-md-3 col-sm-8 col-xs-12">
+                                        @*@Html.DropDownListFor(model => model.StoreID,
+                                            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), ""+ @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")) + "",
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "storeDdl",
+                                                @style = "width:100%;",
+                                                @onChange ="LoadProductByStore(this)"
+                                                //@multiple = "multiple"
+                                            })*@
+                                        @*<span class="field-validation-valid label" data-valmsg-for="StoreID" data-valmsg-replace="true" id="validateStoreFrom"></span>*@
+
+                                        @*Group by company, updated 041420180*@
+                                        @Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "storeDdl",
+	                                        @style = "width:100%;",
+                                            //@onChange ="LoadProductByStore(this)"
+                                        })
+                                        @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+                                    </div>
+
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">Extend To</label>
+                                    <div class="col-md-3 col-sm-8 col-xs-12 list-store-extend-to">
+
+                                        @*@Html.DropDownListFor(model => model.ListStoreID,
+                                            new SelectList(@ViewBag.ListStoreTo, "Value", "Text", Model.ListStoreID), null,
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "storeToDdl",
+                                                @style = "width:100%;",
+                                                @multiple = "multiple",
+                                                @name = "states[]"
+                                            })
+                                        @Html.ValidationMessageFor(model => model.ListStoreID, null, new { @class = "label" })*@
+
+                                        @*Group by company, updated 041420180*@
+                                        @Html.Partial("_LoadListStoreExtendTo", Model)
+                                    </div>
+
+                                    <div class="col-md-1 col-sm-1 col-xs-12">
+                                        <a href="#" class="btn btn-primary" id="btn-actives" @*onclick="SaveExtend(); return false;"*@ onclick="SubmitForm('.extend-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extend"))</a>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.ValidationMessageFor(model => model.ListItem, null, new { @class = "label" })
+                                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                                        <thead style="background-color:#34495e; color:#fff;">
+                                            <tr>
+                                                <th style="text-align:center;"><input type="checkbox" id="chkAllItemStore" onclick="chkAllItemClick(this); " checked="@Model.IsCheckAll" /></th>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))</th>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Product Name"))</th>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Product Code"))</th>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category"))</th>
+                                               
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           @if(Model.ListItem != null && Model.ListItem.Any())
+                                           {
+                                               @Html.Partial("_ItemProductExtend",Model)
+                                           }
+                                        </tbody>
+                                    </table>
+                                    
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tableStoreInfo = null;
+    var settingsStoreInfo = {
+        "columnDefs": [
+            { "orderable": false, "targets": [0,1] },
+            { "width": "3%", "targets": [0] },
+            { "width": "2%", "targets": [1] },
+            { "width": "10%", "targets": [2] },
+            { "width": "8%", "targets": [3] },
+            { "width": "5%", "targets": [4] },
+
+        ],
+        "order": [
+            [2, 'asc'],
+        ],
+        "displayLength": 25,
+        "paging": false,
+        "ordering": true,
+        "info": false,
+        "searching": true,
+        "bLengthChange": true,
+        "autoWidth": false
+    };
+    $(document).ready(function () {
+        $("#storeDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+              //  allowClear: true
+        }).val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        @*$("#storeToDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+            // allowClear: true
+        });*@
+
+        var handleDataTableButtons = function () {
+                if ($("#datatable-buttons").length) {
+                    $("#datatable-buttons").DataTable({
+
+                        dom: "Bfrtip",
+                        responsive: true
+                    });
+                }
+            };
+
+            TableManageButtons = function () {
+                "use strict";
+                return {
+                    init: function () {
+                        handleDataTableButtons();
+                    }
+                };
+            }();
+
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable({
+                keys: true
+            });
+            tableStoreInfo = $('#datatable-responsive').DataTable($.extend(true, {}, settingsStoreInfo));
+            var table = $('#datatable-fixed-header').DataTable({
+                fixedHeader: true
+            });
+
+            TableManageButtons.init();
+         @*var selectedValues = [];
+        @if(Model.ListStoreID != null && Model.ListStoreID.Count > 0)
+        {
+            for(int i = 0; i < Model.ListStoreID.Count;i++)
+            {
+                <text>
+                    selectedValues.push('@Model.ListStoreID[i]');
+                </text>
+            }
+        }
+                    // $("#storeToDdl").select2('val', selectedValues);
+                    $("#storeToDdl").val(selectedValues).trigger("change");*@
+    });
+
+    $("#storeDdl").change(function () {
+        LoadProductByStore(this);
+    });
+
+    function LoadProductByStore(that) {
+        var _storeId = $(that).val();
+        if (_storeId != "" && _storeId != null){
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("LoadProductByStore", "SBInventoryModifierInte")',
+                traditional: true,
+                data: JSON.stringify({ "StoreId": _storeId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+               // async: false,
+                success: function (data) {
+                    tableStoreInfo.destroy();
+                    $("#datatable-responsive tbody").html(data);
+                    tableStoreInfo = $('#datatable-responsive').DataTable($.extend(true, {}, settingsStoreInfo));
+
+                    // Reload list store extend to
+                    LoadListStoreExtendTo(_storeId, ".list-store-extend-to");
+                },
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                },
+                error: function (jqXHR) {
+                    //do something
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+
+         //$("#storeToDdl").val([]).trigger('change');
+         //$("#storeToDdl").empty();
+         //$("#storeDdl option").each(function () {
+         //    var itemVal = $(this).val();
+         //    var itemText = $(this).text();
+         //    if (itemVal != _storeId) {
+         //        $("#storeToDdl").prepend('<option value="' + itemVal + '">' + itemText + '</option>');
+         //    }
+         //});
+    }
+
+    function chkAllItemClick(e) {
+        var checked = $(e).prop('checked');
+        $('.child_chkStore').each(function (index, value) {
+            var disabled = $(this).is(':disabled');
+            if (!disabled) {
+                $(this).prop('checked', checked);
+            }
+        });
+    }
+
+
+    function chkItemClick(e) {
+        var checked = $(e).prop('checked');
+
+        var totalRow = $('.child_chkStore').length;
+        var totalChecked = $(".child_chkStore:checked").length;
+        $('#chkAllItemStore').prop('checked', (totalRow == totalChecked));
+    }
+
+    //function SaveExtend() {
+    //    var StoreFrom = $("[id=storeDdl]").val();
+    //    var StoreTo = $("[id=storeToDdl]").val();
+
+    //    var ItemCheck = $('#datatable-responsive :input[type="checkbox"]:checked').length;
+    //    var flag = true;
+    //    if (StoreFrom === "" || StoreFrom == null)
+    //    {
+    //        $('[id=validateStoreFrom]').html("Please choose store");
+    //        flag = false;
+    //    } else {
+    //        $('[id=validateStoreFrom]').html("")
+    //    }
+
+    //    if (StoreTo === "" || StoreTo == null)
+    //    {
+    //        $("[id=validateStoreTo]").html("Please choose store");
+    //        flag = false;
+    //    } else {
+    //        $("[id=validateStoreTo]").html("");
+    //    }
+
+    //    if (ItemCheck === 0 || ItemCheck == undefined)
+    //    {
+    //        $("[id=validateItem]").html("Please choose item");
+    //        flag = false;
+    //    } else {
+    //        $("[id=validateItem]").html("");
+    //    }
+    //}
+</script>

@@ -1,0 +1,609 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.TaxModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID, new { @id = "hidTaxId" })
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+            (SelectList)ViewBag.StoreID,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;",
+                @onchange = "GetTaxXeroByStore(this)"
+            })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Tax Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Name"), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Tax Code*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Code, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Code"), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Code, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Percent*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Percent"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Percent, new { @class = "form-control", placeholder = "0", type = "number", min = "0" })
+            @Html.ValidationMessageFor(model => model.Percent, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>
+
+    @* Type *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div>
+                @Html.DropDownListFor(model => model.TaxType,
+                new SelectList(Model.ListTaxType, "Value", "Text", Model.TaxType), "---- Please choose tax type ----",
+                new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "ddlTaxType",
+                    @style = "width:100%;"
+                })
+            </div>
+            @Html.ValidationMessageFor(model => model.TaxType, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Applicable Items*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Applicable Items"))</label>
+        <div id="div-earning" class="col-md-offset-2 col-md-2" style="float:none;">
+            <table class="table center-content">
+                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                    <tr data-id="@Model.ID" class="earningRow">
+                        <td>
+                            @Html.TextBoxFor(model => model.ItemDetail, new
+                            {
+                                @class = "form-control",
+                                @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"),
+                                @readonly = "readonly",
+                                @id = "txtItem",
+                                @onfocus = "ShowModalAddItem(this,'storeItem')",
+                            })
+                            @Html.ValidationMessageFor(model => model.ItemDetail, null, new { @class = "label label-danger" })
+                            <span style="color:red; display:none" id="storeItem">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please apply to store first"))</span>
+                            <!-- Modal Add Item-->
+                            <div class="modal fade" id="modalItem" tabindex="-1" role="dialog" aria-labelledby="modalItemLabel" data-backdrop="static" data-keyboard="false">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Specific Items"))</h4>
+                                        </div>
+                                        <div class="modal-body scroll" id="popupItem">
+                                            <div class="form-group-sm">
+                                                <table class="table center-content">
+                                                    <thead>
+                                                        <tr style="background-color:#34495e; color:#fff;">
+                                                            <th width="15%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</th>
+                                                            <th width="84%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</th>
+                                                            <th width="1%">
+                                                                <a href="#" onclick="DeleteAllItems(); return false;">
+                                                                    <i class="glyphicon glyphicon-minus-sign" style="font-size: 25px; color: #fff; padding: 5px 0px; "></i>
+                                                                </a>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="body-dishes">
+                                                        @if (Model.ListProductOfTaxSel != null && Model.ListProductOfTaxSel.Any())
+                                                        {
+                                                            @Html.Partial("_ItemModal", Model)
+                                                        }
+                                                        <tr>
+                                                            <td colspan="4" style="padding-top:12px; text-align:left">
+                                                                <a href="#" data-toggle="modal"
+                                                                   data-target="#modal-choose-items" class="a-fnb"
+                                                                   style="font-size:14px; color:#34495e;">
+                                                                    <i class="fa fa-plus"></i>
+                                                                    <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <span></span>
+                                            <button class="btn btn-default" onclick="PasteHtml($(this).parents('.modal-content:first').find('table > tbody'));" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                                            <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb"
+                                                    @*data-dismiss="modal"*@
+                                                    onclick="SetProductName(this)">
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save Changes"))
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr id="tr-add-more-tab-earning">
+                        <td style="padding-top:12px; text-align:left" colspan="7"></td>
+                    </tr>
+                </tbody>
+            </table>
+            @Html.ValidationMessage("Item", new { @class = "col-md-offset-2 col-md-10 label" })<br />
+        </div>
+    </div>
+
+    @*@if(Commons.isIntegrateXero(Model.StoreID))
+    {*@
+    @* Tax Xero *@
+    @if (ViewBag.IsEdit == null ||(ViewBag.IsEdit == "true" && ViewBag.ListTaxXero != null)) {
+        <div class="form-group" id="taxXero">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax rate in Xero"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div>
+                    @Html.DropDownListFor(model => model.Rate,
+         new SelectList(ViewBag.ListTaxXero, "Value", "Text", Model.Rate), "---- Please choose tax rate in Xero ----",
+         new
+         {
+             @class = "form-control select2_multiple",
+             @id = "ddlTax",
+             @style = "width:100%;"
+         })
+                </div>
+                @Html.ValidationMessageFor(model => model.Rate, null, new { @class = "label" })
+            </div>
+        </div>
+        @*//}*@
+    }
+
+    @*choose Item*@
+    <div class="modal fade second" id="modal-choose-items" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Specific Items"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn bg-fnb" id="btnItemType">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Toggle Dropdown"))</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.Dish.ToString("d"))">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</a></li>
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.SetMenu.ToString("d"))">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set"))</a></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control col-md-10" placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Search Name"))" onkeypress="HandleKeyPress(event)" id="txtSearchEarning" />
+                                <div class="input-group-btn">
+                                    <button type="button" onclick="SearchItem(this); return false;" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tbl-choose-items" class="form-group-sm" style="overflow: auto; height: 500px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button onclick="AddItems(this)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var btnGlobal;
+    var listItem;
+    $(document).ready(function () {
+
+        $("taxXero").attr("visibility", "hidden");
+        $("#ddlTax").select2({
+            placeholder: "Please choose tax rate in Xero",
+        })
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        /*===============*/
+        $("#modal-choose-items").on('show.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            //=========
+            var OffSet = btnGlobal.data('whatever');
+            listItem = [];
+            $('.productName:visible').each(function (index, value) {
+                listItem.push($(this).attr('data-id'));
+            });
+            //==========
+            $('#txtSearchEarning').val('');
+            $("#tbl-choose-items").html('');
+        });
+
+        $("#modal-choose-items").on('shown.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            FilterProduct(1);
+        });
+
+        $("#modalItem").on('shown.bs.modal', function (event) {
+            $('.productName:visible').each(function (index, value) {
+                var dataProductId = $(this).attr('data-id');
+                $(this).removeClass('bg-warning');
+            });
+        });
+    });
+
+    function LoadItemsChoose(container) {
+        $('.se-pre-con').show();
+        $.ajax({
+            url: '@Url.Action("LoadItems", "STax")',
+            type: 'get',
+            data: {
+                StoreID: StoreID,
+                ItemType: ItemType
+            },
+            dataType: 'html',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+                $('.SpecificItems').each(function (index, value) {
+                    var dataId = $(this).attr('data-id');
+                    if (listItem.indexOf(dataId) != -1) {
+                        $(this).addClass('hide');//.hide();
+                    }
+                });
+                //===========
+                var countItem = $('.SpecificItems:visible').length;
+                if (countItem > 0) {
+                    $('#chkAllItem_0').prop('checked', true);
+                    $('#list-data').find("tr:visible").find("input[type='checkbox']").prop("checked", true);
+                }
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function FilterProduct(val) {
+        if (val === 1) {
+            ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString("d")';
+            $("#btnItemType").text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))');
+        } else {
+            ItemType = '@NuWebNCloud.Shared.Commons.EProductType.SetMenu.ToString("d")';
+            $("#btnItemType").text("Set");
+        }
+        LoadItemsChoose("#tbl-choose-items");
+    }
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function SearchItem(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        //var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                if (!$(trs[i]).hasClass('hide')) {
+                    var name = $.trim($(trs[i]).find('td:last').text().toLowerCase());
+                    //for (var j = 0; j < arrKeySearch.length; j++) {
+                    //if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                    //if (keySearch === name) {
+                    if (name.indexOf(keySearch) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        //break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                    //}
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if (!$(this).hasClass('hide')) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                }
+            });
+        }
+    }
+
+    function ShowModalAddItem(btn, store) {
+        if (StoreID == '' || StoreID == null) {
+            $('#' + store).css('display', 'block');
+            return false;
+        }
+        $('#' + store).css('display', 'none');
+        var tr = $(btn).parents('tr:first');
+        var modal = $(tr).find(".modal");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        $(modal).modal({
+            keyboard: false,
+            show: true,
+        });
+        CopyHtml($(btn).parents('tr:first').find('table > tbody > tr'));
+
+        //========
+        $('#popupItem').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" });
+    }
+
+    var HtmlCloned = '';
+    function CopyHtml(container) {
+        HtmlCloned = $(container).clone();
+    }
+
+    function PasteHtml(container) {
+        $(container).html(HtmlCloned);
+    }
+
+    function SetProductName(btn) {
+        //var productName = "";
+        //$('.productName:visible').each(function (index, value) {
+        //    productName += $(this).attr('data-value') + ","
+        //});
+        //$("#txtItem").val(productName);
+        var StoreIDTax = $(btn).parents('.modal').find('.modal-body table tbody tr').find('input[id*="hidStoreIDTax"]').val();
+        var trs = $(btn).parents('.modal').find('.modal-body table tbody tr.productName:visible');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            if (!$(trs[i]).hasClass('hide')) {
+                var tr = trs[i];
+                var ID = $(tr).attr('data-id');
+                var Code = $(tr).find('td #hidCodeSpecificItems').val();
+                var ProductName = $(tr).find('td #hidNameSpecificItems').val();
+                var ItemType = parseInt($(tr).find('td #hidItemTypeSpecificItems').val());
+                var OffSet = parseInt($(tr).find('td #hidOffSetSpecificItems').val());
+                var ItemDTO = {
+                    ProductID: ID,
+                    ProductCode: Code,
+                    ProductName: ProductName,
+                    ProductTypeCode: ItemType,
+                    OffSet: OffSet
+                }
+                data.push(ItemDTO);
+            }
+        }
+        var TaxDTO = {
+            ListProductOfTax: data,
+            StoreID: StoreIDTax,
+            ID: $('#hidTaxId').val()
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckProductOnTax", "STax")',
+                traditional: true,
+                data: JSON.stringify(TaxDTO),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                },
+                success: function (data) {
+                    var jsonObj = $.parseJSON(data);
+                    var listProductId = new Array();
+                    $.each(jsonObj, function (i, obj) {
+                        listProductId.push(obj.ProductID)
+                    });
+                    //=====
+                    var TaxName = "";
+                    var listTaxName = new Array();
+                    $.each(jsonObj, function (i, obj) {
+                        if (listTaxName.indexOf(obj.TaxName) == -1) {
+                            listTaxName.push(obj.TaxName)
+                        }
+                    });
+                    TaxName = listTaxName.join(", ");
+                    $("#txtStoreStoreName").val(data.Name);
+                    if (listProductId.length > 0) {
+                        //Exists
+                        var result = confirm("Some items have already been applied with [" + TaxName + "]. Are you sure you want to save anyway?");
+                        if (result) {//Yes
+                            $("#txtItem").val($('.productName:visible').length);
+                            $(btn).parents('.modal:first').modal('hide');
+                        }
+                        else { //Cancel
+                            $.each(listProductId, function (i, value) {
+                                var productid = value;
+                                $('.productName:visible').each(function (index, value) {
+                                    var dataProductId = $(this).attr('data-id');
+                                    if (productid == dataProductId) {
+                                        $(this).addClass('bg-warning');
+                                    }
+                                });
+                            });
+                        }
+                    } else {
+                        //New
+                        $("#txtItem").val($('.productName:visible').length);
+                        $(btn).parents('.modal:first').modal('hide');
+                    }
+                }
+            });
+        } else {
+            DeleteAllItems();
+            $('#txtItem').val(0);
+            $(btn).parents('.modal:first').modal('hide');
+        }
+    }
+
+    function DeleteAllItems() {
+        $('.productName:visible').find("input.DishStatus").val(9);
+        $('.productName:visible').css('display', 'none');
+    }
+
+    function DeleteItems(btn) {
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.DishStatus').val(9);
+        $(tr).css('display', 'none');
+    }
+
+    function AddItems(btn) {
+        //var groupOffSet = $(btnGlobal).parents('tr:last').find('input[name*="OffSet"]').val();
+        var StoreIDTax = $(btn).parents('.modal').find('.modal-body table thead tr').find('input[id*="hidStoreIDTax"]').val();
+        var currentItemOffset = $(btnGlobal).parents('table:first > tbody').find('tr').length - 1;
+        var trs = $(btn).parents('.modal').find('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            if (!$(trs[i]).hasClass('hide')) {
+                var tr = trs[i];
+                if ($(tr).find('td input[type="checkbox"]').prop('checked')) {
+                    var ID = $(tr).attr('data-id');
+                    var Code = $(tr).find('td #hidCode').val();
+                    var ProductName = $(tr).find('td #hidName').val();
+                    var ItemType = parseInt($(tr).find('td #hidItemType').val());
+                    var ItemDTO = {
+                        ProductID: ID,
+                        ProductCode: Code,
+                        ProductName: ProductName,
+                        ProductTypeCode: ItemType,
+                    }
+                    data.push(ItemDTO);
+                }
+            }
+        }
+        var TaxDTO = {
+            ListProductOfTax: data,
+            //currentgroupOffSet: groupOffSet,
+            currentItemOffset: currentItemOffset,
+            StoreID: StoreIDTax
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddItems", "STax")',
+                traditional: true,
+                data: JSON.stringify(TaxDTO),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                },
+                success: function (data) {
+                    $(btnGlobal).parents('tr:first').before(data);
+                    $(btn).parents('.modal:first').modal('hide');
+                    //========
+                    $('#popupItem').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" });
+                }
+            });
+        }
+    }
+
+    function GetTaxXeroByStore(that)
+    {
+        var StoreId = $(that).val();
+        if (StoreId != null && StoreId != undefined)
+        {
+            
+            $.ajax({
+            url: '@Url.Action("GetTaxXeroByStore", "STax")',
+            type: 'get',
+            data: {
+                StoreId: StoreId,
+            },
+            dataType: 'json',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    $("taxXero").attr("visibility", "visible");
+                    $("#ddlTax").select2({
+                        data: data,
+                        placeholder: 'Please choose tax rate in Xero'
+                    });
+                }
+                else {
+                    $("taxXero").attr("visibility", "hidden");
+                }
+               
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+        }
+    }
+</script>

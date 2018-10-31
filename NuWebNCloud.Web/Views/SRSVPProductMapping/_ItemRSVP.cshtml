@@ -1,0 +1,50 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.ProductItemModels
+@using NuWebNCloud.Shared.Utilities;
+
+<tr data-id="@Model.ID" style='@string.Format("display:{0}", Model.Status== 9 ? "none" : "table-row")' class="trTabOffSet text-center">
+    <td>
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].StoreID", Model.StoreOffSet, Model.OffSet), Model.StoreID)
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ID", Model.StoreOffSet, Model.OffSet), Model.ID)
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ProductType", Model.StoreOffSet, Model.OffSet), Model.ProductType)
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].OffSet", Model.StoreOffSet, Model.OffSet), Model.OffSet, new { @id = "hidOffSet" })
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].Status", Model.StoreOffSet, Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ProductID", Model.StoreOffSet, Model.OffSet),
+       Model.ProductID, new
+       {
+           @id = "hidProductID_" + Model.StoreOffSet + "_" + Model.OffSet + ""
+       })
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ProductName", Model.StoreOffSet, Model.OffSet), Model.ProductName, new { @id = "hidProductName_" + Model.StoreOffSet + "_" + Model.OffSet + "" })
+        @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ProductCode", Model.StoreOffSet, Model.OffSet),
+       Model.ProductCode, new
+       {
+           @id = "hidProductCode_" + Model.StoreOffSet + "_" + Model.OffSet + ""
+       })
+
+        <button class="btn @string.Format("{0}",string.IsNullOrEmpty(Model.ProductName) ? "fontColorRSVP" : "") font-bold" type="button"
+                style="width:100%; font-weight:bold;"
+                id="btnChooseItem-@Model.StoreOffSet-@Model.OffSet"
+                data-toggle="modal"
+                data-target="#modal-choose-items_@Model.StoreID"
+                data-storeoffset="@Model.StoreOffSet"
+                data-offset="@Model.OffSet">
+            @string.Format("{0}", string.IsNullOrEmpty(Model.ProductName) ? _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select") : Model.ProductName)
+        </button>
+        <span id="ltrError" class="label label-danger"></span>
+    </td>
+    <td></td>
+    <td class="text-center">
+        @Html.TextBox(string.Format("ListRSVPStoreProductMapping[{0}].ListRSVPProductMapping[{1}].ItemCode", Model.StoreOffSet, Model.OffSet),
+    Model.ItemCode, new
+    {
+        @class = "form-control input-number text-center",
+        @placeholder = "RSVP code",
+        @id = "txtRSVPCode",
+        @autocomplete = "off"
+    })
+    </td>
+    <td width="50px">
+        <a href="#" onclick="DeleteItemRSVP(this); return false;" style="font-size:28px; color:#970303;">
+            <i class="fa fa-remove"></i>
+        </a>
+    </td>
+</tr>

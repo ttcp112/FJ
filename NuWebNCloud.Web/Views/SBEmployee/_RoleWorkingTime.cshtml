@@ -1,0 +1,101 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.RoleWorkingTime
+
+<div class="role-workingtime cls_@Model.StoreID" style='@string.Format("display:{0}", Model.Status==9?"none":"block")' data-id="@Model.StoreID"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID">
+
+    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].OffSet", Model.OffSet), Model.OffSet)
+    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].StoreID", Model.OffSet), Model.StoreID)
+    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].StoreName", Model.OffSet), Model.StoreName)
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            <a href="javascript:void(0)" onclick="DeleteTabPanelSpending('@Model.StoreID'); return false;" style="color:red;">
+                <i class="fa fa-remove"></i>
+            </a>
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): @Model.StoreName</label>
+    </div>
+   
+    @*Role*@
+    <div class="form-group">
+        <label for="Role" class="col-sm-2 control-label lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Role"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownList(string.Format("ListRoleWorkingTime[{0}].RoleID", Model.OffSet),
+                new SelectList(Model.ListRole, "Value", "Text", Model.RoleID),
+               Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role")).ToString(), new
+               {
+                   @class = "form-control select2_multiple ddlRoleAuto",
+                   @style = "width:100%;",
+                   @id = "ddlRole_" + Model.StoreID
+               })
+        </div>
+    </div>
+
+    @*Working Time*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Working Time"))
+        </label>
+    </div>
+
+    <div class="form-group">
+        @if (Model.ListWorkingTime != null)
+        {
+            for (int i = 0; i < Model.ListWorkingTime.Count; i++)
+            {
+                <div class="form-group margin_left_50px">
+                    <label class="col-xs-offset-2 control-label col-md-1 col-sm-1 col-xs-2 text-right">
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Model.ListWorkingTime[i].StrDate)).ToString()
+                    </label>
+
+                    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].ListWorkingTime[{1}].Day", Model.OffSet, i), Model.ListWorkingTime[i].Day)
+                    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].ListWorkingTime[{1}].StoreID", Model.OffSet, i), Model.ListWorkingTime[i].StoreID)
+                    @Html.Hidden(string.Format("ListRoleWorkingTime[{0}].ListWorkingTime[{1}].WorkingTimeID", Model.OffSet, i), Model.ListWorkingTime[i].WorkingTimeID)
+
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                @Html.TextBox(string.Format("ListRoleWorkingTime[{0}].ListWorkingTime[{1}].From",
+                                            Model.OffSet, i), Model.ListWorkingTime[i].From,
+                                            new { @class = "form-control timepicker", @style = "text-align:center;" })
+                            </div>
+                            <div class="col-sm-2" style="text-align:center">
+                                <label class="control-label">--</label>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.TextBox(string.Format("ListRoleWorkingTime[{0}].ListWorkingTime[{1}].To",
+                                            Model.OffSet, i), Model.ListWorkingTime[i].To,
+                                            new { @class = "form-control timepicker", @style = "text-align:center;" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.ValidationMessage("RoleWorkingTimeAlert_" + Model.StoreID, new { @class = "label label-danger", @id = "ltrError_" + Model.StoreID })
+        </div>
+    </div>
+</div>
+@*TimePicker*@
+<script src="@Url.Content("~/vendors/periodpicker/jquery.periodpicker.full.min.js")"></script>
+<script>
+    $('.timepicker').TimePickerAlone({
+        inputFormat: 'HH:mm',
+        twelveHoursFormat: true
+    });
+
+    $(document).ready(function () {
+       
+	    $(".ddlRoleAuto").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role"))',
+            allowClear: true
+        });
+    });
+</script>

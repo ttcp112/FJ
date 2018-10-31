@@ -1,0 +1,67 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.ChatTemplateModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID, new { @id = "hidId" })
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    
+
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose type*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Type"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.ChatTemplateType,
+                                          new SelectList(Model.ListType, "Value", "Text", Model.ChatTemplateType), "---- Please choose Type ----",
+                                          !string.IsNullOrEmpty(_ID) ? (object)new
+                                          {
+                                              @class = "form-control select2_multiple",
+                                              @disabled = "disabled",
+                                              @id = "typeDdl",
+                                              @style = "width:100%;"
+                                          } : new
+                                          {
+                                              @class = "form-control select2_multiple",
+                                              @id = "typeDdl",
+                                              @style = "width:100%;"
+                                          })
+            @Html.ValidationMessageFor(model => model.ChatTemplateType, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>
+
+
+    @*Description*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Description, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Description, null, new { @class = "label" })
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {     
+    });
+</script>

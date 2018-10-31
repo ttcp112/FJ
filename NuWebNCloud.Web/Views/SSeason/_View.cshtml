@@ -1,0 +1,145 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.Season.SeasonModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                     new Dictionary<string, string> { { "A", "Settings" }, { "B", "Time Slot" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Repeat Type")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfWeek))
+                                        }
+                                        else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfMonth))
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Day Range")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                                        {
+                                            Model.ListWeekDayV2 = Model.ListWeekDayV2.Where(x => x.IsActive == true).ToList();
+                                            if (Model.ListWeekDayV2.Count == 7)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of week"))
+                                            }
+                                            else if (Model.ListWeekDayV2.Count == 0)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                                            }
+                                            else
+                                            {
+                                                string dayRange = string.Join(" - ", Model.ListWeekDayV2.Select(ss => ss.Name).ToList());
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(dayRange)).ToString()
+                                                @*foreach (var item in Model.ListWeekDayV2)
+                                                {
+                                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@item.Name)).ToString() @:-
+                                                }*@
+                                            }
+                                        }
+                                        else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                        {
+                                            Model.ListMonthDayV2 = Model.ListMonthDayV2.Where(x => x.IsActive == true).ToList();
+                                            if (Model.ListMonthDayV2.Count == 31)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of month"))
+                                            }
+                                            else if (Model.ListMonthDayV2.Count == 0)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                                            }
+                                            else
+                                            {
+                                                for (int d = 1; d <= Model.ListMonthDayV2.Count; d++)
+                                                {
+                                                    int day = Model.ListMonthDayV2[d - 1].Index;
+                                                    @:@day
+                                                    if (d % 15 == 0)
+                                                    {
+                                                        @Html.Raw("<br/>")
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!(d == Model.ListMonthDayV2.Count))
+                                                        {
+                                                            @:-
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Time")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (@Model.Unlimited)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+                                        }
+                                        else
+                                        { @Model.TStartTime}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Time")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (@Model.Unlimited)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+                                        }
+                                        else
+                                        { @Model.TEndTime}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Date"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StartDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Date"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.EndDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

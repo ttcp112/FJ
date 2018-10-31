@@ -1,0 +1,201 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.SettingSchedulerTaskModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@*@if (!_ID.Equals("0"))
+    {
+        @Html.Hidden("ReportId", Model.ReportId)
+    }
+    else
+    {
+        @Html.Hidden("Id", Model.Id)
+    }
+*@
+@if (_ID != null)
+{
+    @Html.Hidden("ID", Model.ID)
+    @Html.Hidden("ReportId", Model.ReportId)
+}
+
+<div class="form-group">
+    <label class="col-md-2 control-label"></label>
+    <div class="col-md-6" style="padding: 0px;">
+        @Html.ValidationSummary(true, "", new { @style = "color:red;" })
+    </div>
+</div>
+
+@*Store*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Choose Store: </label>
+    <div class="col-md-6">
+        @Html.DropDownListFor(model => model.StoreId,
+                                    new SelectList(Model.ListStore, "Value", "Text", Model.StoreId), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "storeDdl",
+                                        @style = "width:100%;"
+                                    })
+        @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "validateLevel label label-danger" })
+    </div>
+</div>
+
+@if (!_ID.Equals("0")) // Edit
+{
+    <div class="form-group">
+        <label class="control-label col-md-2">Report name: </label>
+        <div class="col-md-6">
+                @Html.DropDownListFor(model => model.ReportId,
+           new SelectList(Model.ListNameReport, "Value", "Text", Model.ReportId), null,
+           !_ID.Equals("0") ? (object)new
+           {
+               @class = "form-control select2_multiple",
+               @disabled = "disabled",
+               @id = "ReportNameDdl",
+               @style = "width:100%;"
+           } : new
+           {               
+               @style = "width:100%;"
+           })
+        </div>
+    </div>
+}
+else // Add New
+{
+    <div class="form-group">
+        <label class="control-label col-md-2">Report name: </label>
+        <div class="col-md-6">
+            @Html.DropDownListFor(model => model.ReportId,
+                                    new SelectList(Model.ListNameReport, "Value", "Text", Model.ReportId), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "ReportNameDdl",
+                                        @multiple = "multiple"
+                                    })
+            @Html.ValidationMessageFor(model => model.ReportId, null, new { @class = "validateLevel label label-danger" })
+        </div>
+    </div>
+}
+@*Day Of Week*@
+@*<div class="form-group">
+    <label class="col-md-2 control-label">Day of weeks: </label>
+    <div class="col-md-6">
+        @Html.DropDownListFor(model => model.DayOfWeeks,
+                                    new SelectList(Model.ListDayOfWeeks, "Value", "Text"), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "DayOfWeekDdl",
+                                        @multiple = "multiple",
+                                        @style = "width:100%;"
+                                    })
+        @Html.ValidationMessageFor(model => model.DayOfWeeks, null, new { @class = "validateLevel label label-danger" })
+    </div>
+</div>*@
+
+@*Email Subject*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Subject: </label>
+    <div class="col-md-6">
+        @*<div class="input-group">
+            <span id="basic-addon1" class="input-group-addon">@@</span>
+            @Html.TextBox("EmailSubject", Model.EmailSubject, new { @class = "form-control" })
+        </div>*@
+        @Html.TextBox("EmailSubject", Model.EmailSubject, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.EmailSubject, null, new { @class = "label" })
+    </div>
+</div>
+@*Email*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Email: </label>
+    <div class="col-md-6">
+        <div class="input-group">
+            <span id="basic-addon1" class="input-group-addon">@@</span>
+            @Html.TextBox("Email", Model.Email, new { @class = "form-control" })
+        </div>
+        @Html.ValidationMessageFor(model => model.Email, null, new { @class = "label" })
+    </div>
+</div>
+@*Email CC*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Cc: </label>
+    <div class="col-md-6">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button aria-label="Help" class="btn btn-default" type="button" data-toggle="tooltip" data-placement="right"
+                        title="Send multiple email by char [;]">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+            </div>
+            @Html.TextBox("Cc", Model.Cc, new { @class = "form-control" })
+        </div>
+    </div>
+</div>
+@*BCC*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Bcc: </label>
+    <div class="col-md-6">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button aria-label="Help" class="btn btn-default" type="button" data-toggle="tooltip" data-placement="right"
+                        title="Send multiple email by char [;]">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+            </div>
+            @Html.TextBox("Bcc", Model.Bcc, new { @class = "form-control" })
+        </div>
+    </div>
+</div>
+@*Hour*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Hour: </label>
+    <div class="col-md-6">
+        @Html.TextBox("Hour", Model.Hour, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Hour, null, new { @class = "label" })
+    </div>
+</div>
+@*Minute*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Minute: </label>
+    <div class="col-md-6">
+        @Html.TextBox("Minute", Model.Minute, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Minute, null, new { @class = "label" })
+    </div>
+</div>
+@*Active*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Active: </label>
+    <div class="col-md-6">
+        @Html.CheckBoxFor(model => model.Enabled)
+    </div>
+</div>
+@*Daily*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Daily: </label>
+    <div class="col-md-6">
+        @Html.CheckBoxFor(model => model.IsDaily)
+    </div>
+</div>
+@*Monthly*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Monthly: </label>
+    <div class="col-md-6">
+        @Html.CheckBoxFor(model => model.IsMonth)
+    </div>
+</div>
+@*Monthly*@
+<div class="form-group">
+    <label class="col-md-2 control-label">Description: </label>
+    <div class="col-md-6">
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = "Description" })
+    </div>
+</div>
+<script>
+    if ('@Model.ListReportID.Count' > 0) {
+        var model = '@Html.Raw(Json.Encode(Model.ListReportID))';
+        var data = JSON.parse(model);
+        $("#ReportNameDdl").val(data);
+    }
+</script>

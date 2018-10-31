@@ -1,0 +1,80 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientUOMModels
+@using NuWebNCloud.Shared.Utilities;
+<div class="form-group IngUsageUOM" style='@string.Format("display:{0}", Model.Status==9?"none":"block")'>
+
+    @Html.Hidden(string.Format("ListIngUOM[{0}].OffSet", Model.OffSet), Model.OffSet, new { @id = "hidOffSet" })
+    @Html.Hidden(string.Format("ListIngUOM[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+    @Html.Hidden(string.Format("ListIngUOM[{0}].IngredientId", Model.OffSet), Model.IngredientId)
+    @Html.Hidden(string.Format("ListIngUOM[{0}].Id", Model.OffSet), Model.Id)
+
+    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:35px;">
+        <a href="#" onclick="DeleteItemUOM(this); return false;"><i class="fa fa-remove" style="color:red;"></i></a>
+        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage UOM"))  <span id="ltrIndex">@(Model.OffSet + 1)</span>
+    </label>
+    <div class="col-md-2 col-sm-2 col-xs-12">
+        @Html.DropDownList(string.Format("ListIngUOM[{0}].UOMId", Model.OffSet),
+            new SelectList(Model.ListUOM, "Value", "Text", Model.UOMId),
+            Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM")).ToString(),
+            new
+            {
+                @class = "form-control select2_multiple ddlIngUOM",
+                @id = "ddlIngUOM",
+                @style = "width:100%;"
+            })
+        @Html.ValidationMessage(string.Format("ListIngUOM[{0}].UOMId", Model.OffSet), new
+           {
+               @id = "ltrValidate_" + Model.OffSet,
+               @class = "label label-danger"
+           })
+    </div>
+    <div class="col-md-1 col-sm-1 col-xs-12 text-center" style="line-height:30px;">
+        =
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-12">
+        <div class="input-group">
+            @Html.TextBox(string.Format("ListIngUOM[{0}].ReceivingQty", Model.OffSet), Model.ReceivingQty, new
+       {
+           @class = "form-control text-center number",
+           @id = "txtReceivingQty",
+           @min = "0",
+       })
+            <span class="input-group-addon" id="basic-addon2"> <span id="ltrUsageUOM"></span> (@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Base UOM")) )</span>
+        </div>
+        @Html.ValidationMessage(string.Format("ListIngUOM[{0}].ReceivingQty", Model.OffSet), new { @class = "label label-danger" })
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ddlIngUOM").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM"))",
+            allowClear: true
+        });
+    });
+
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+    });
+
+</script>

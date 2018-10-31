@@ -1,0 +1,1093 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+@using NuWebNCloud.Shared.Utilities;
+
+<div class="product-item-on-store cls_@Model.StoreID" style='@string.Format("display:{0}", Model.Status==9?"none":"block")' data-id="@Model.StoreID"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID-@Model.OffSet" data-offset="@Model.OffSet">
+
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].OffSet", Model.OffSet), Model.OffSet)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus", @value = Model.Status })
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].StoreID", Model.OffSet), Model.StoreID)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].StoreName", Model.OffSet), Model.StoreName)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].IsDeleteTemplate", Model.OffSet), Model.IsDeleteTemplate)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].IsTaxRequired", Model.OffSet), Model.IsTaxRequired, new { @Value = Model.IsTaxRequired })
+
+    @*Store Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            @if (!Model.IsDeleteTemplate)
+            {
+                <a href="javascript:void(0)" onclick="DeleteTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:red;">
+                    <i class="fa fa-remove"></i>
+                </a>
+            }
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">
+            Store: @Model.StoreName
+            <a href="javascript:void(0)" onclick="CloneDataTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:#337ab7;">&nbsp; &nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Clone Data To")) </a>
+        </label>
+    </div>
+
+    @*Sequence*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Sequence", Model.OffSet), Model.Sequence,
+                      new
+                      {
+                          @class = "form-control",
+                          @type = "number",
+                          @min = 0,
+                          @id = "Sequence_" + Model.OffSet,
+                          @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order"))
+                      })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Sequence", Model.OffSet), new { @class = "label" })
+        </div>
+    </div>
+
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsActive", Model.OffSet), Model.IsActive, new
+                {
+                    @id = "IsActive_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+
+    @*Kitchen Display Name*@
+    <div class="form-group">
+        <label for="" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Kitchen Display Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].KitchenDisplayName", Model.OffSet), Model.KitchenDisplayName, new
+            {
+                @class = "form-control",
+                @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be shown")),
+                @id = "KitchenDisplayName_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].KitchenDisplayName", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Print out Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print out Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].PrintOutName", Model.OffSet), Model.PrintOutName, new
+            {
+                @class = "form-control",
+                @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be printed")),
+                @id = "PrintOutName_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].PrintOutName", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Prices*@
+    <div class="prices-div">
+        @Html.Partial("~/Views/SBInventoryBase/_ProPrice.cshtml", Model)
+    </div>
+
+    @*Cost*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cost")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Cost", Model.OffSet), Model.Cost, new
+            {
+                @class = "form-control",
+                placeholder = "0",
+                type = "number",
+                min = 0,
+                @id = "Cost_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Cost", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Quantity*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Quantity", Model.OffSet), Model.Quantity, new
+            {
+                @class = "form-control",
+                placeholder = "0",
+                type = "number",
+                min = 0,
+                @id = "Quantity_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Quantity", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Check Stock*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Stock")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsCheckStock", Model.OffSet), Model.IsCheckStock, new
+                {
+                    @id = "IsCheckStock_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+
+    @*Limit*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Limit")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Limit", Model.OffSet), Model.Limit, new
+            {
+                @class = "form-control",
+                placeholder = "0",
+                type = "number",
+                min = 0,
+                @id = "Limit_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Limit", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Category*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownList(string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet),
+                new SelectList(Model.ListCategories, "Value", "Text", Model.CategoryID),
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Category")).ToString(), new
+                            {
+                                @class = "form-control select2_multiple ddlCategoryAuto",
+                                //@onchange = "ChangeCategory(this)",
+                                //@id = "ddlCategory",
+                                @id = "Category_" + Model.OffSet,
+                                @style = "width:100%;"
+                            })*@
+
+            @*Updated 08282017*@
+            <select class="form-control select2_multiple ddlCategoryAuto" style="width: 100%" id="Category_@Model.OffSet" name="@string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet)">
+                <option></option>
+                @foreach (var cate in Model.lstCateGroup)
+                {
+                    <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected") }>@cate.Name</option>
+                }
+            </select>
+
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Open Price*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Open Price")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsAllowOpenPrice", Model.OffSet), Model.IsAllowOpenPrice, new { @id = "IsAllowOpenPriceP_" + Model.OffSet + "" })</label>
+        </div>
+    </div>
+
+    @*Expired Date*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Expired Date")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].ExpiredDate", Model.OffSet), Model.ExpiredDate, "{0:MM/dd/yyyy}", new
+            {
+                @class = "form-control datepicker",
+                placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Never")),
+                @id = "ExpiredDate_" + Model.OffSet
+            })
+        </div>
+    </div>
+
+    @*Measure*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unit of Measurement")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Measure", Model.OffSet), Model.Measure, new
+            {
+                @class = "form-control",
+                placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unit of Measurement"),
+                @id = "Measure_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Measure", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Print on check*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print On Check")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsPrintOnCheck", Model.OffSet), Model.IsPrintOnCheck, new
+                {
+                    @id = "IsPrintOnCheck_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+
+    @*Allow to Apply Discount/Promotion*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Apply Discount/Promotion")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsAllowDiscount", Model.OffSet), Model.IsAllowDiscount, new
+                {
+                    @id = "IsAllowDiscount_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+
+    @*Service Charge*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Service Charge")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    @Html.CheckBox(string.Format("ListProductOnStore[{0}].HasServiceCharge", Model.OffSet), Model.HasServiceCharge,
+                                 (Model.ServiceChargeDisabled) ? (object)new
+                                 {
+                                     @disabled = "disabled",
+                                     @class = "chb-ServiceCharge_" + Model.StoreID,
+                                     onchange = "ToggleComponent(this, '.txt-ServiceCharge_" + Model.StoreID + "')",
+                                     id = "chbServiceCharge_" + Model.OffSet + ""
+                                 } :
+                                 new
+                                 {
+                                     @class = "chb-ServiceCharge_" + Model.StoreID,
+                                     onchange = "ToggleComponent(this, '.txt-ServiceCharge_" + Model.StoreID + "')",
+                                     id = "chbServiceCharge_" + Model.OffSet + ""
+                                 })
+                </span>
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].sServiceCharge", Model.OffSet), Model.sServiceCharge,
+                             new
+                             {
+                                 @class = "form-control txt-ServiceCharge_" + Model.StoreID + "",
+                                 type = "number",
+                                 id = "txtServiceCharge_" + Model.OffSet + ""
+                             })
+                <div class="input-group-addon">%</div>
+            </div>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].sServiceCharge", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Tax*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="Season">
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].TaxName", Model.OffSet), Model.TaxName,
+                             new
+                             {
+                                 @class = "form-control",
+                                 @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax")),
+                                 @readonly = "readonly",
+                                 @id = "txtTaxName_" + Model.OffSet + "",
+                                 @onfocus = "ShowModalTax('" + Model.StoreID + "')"
+                             })
+            </div>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].TaxName", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+    <!-- Modal Add Item Tax-->
+    <div class="modal fade" id="modalTax_@Model.StoreID" tabindex="-1" role="dialog" aria-labelledby="modalItemLabel"
+         data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Tax")) </h4>
+                </div>
+                <div class="modal-body scroll" id="popupTax_@Model.StoreID">
+                    <div class="form-group-sm">
+                        <table class="table center-content">
+                            <thead>
+                                <tr style="background-color:#34495e; color:#fff;">
+                                    <th width="49%" style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Name")) </th>
+                                    <th width="49%" style="text-align:center;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax Percent")) </th>
+                                    <th width="2%" style="text-align:center;">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="body-season" class="timeslot">
+                                @if (Model.ListTax != null)
+                                {
+                                    @Html.Partial("~/Views/SBInventoryBase/_ProTax.cshtml", Model)
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span></span>
+                    <button class="btn btn-default" data-dismiss="modal" onclick="SetProductTaxName('@Model.StoreID','@Model.OffSet');">
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Kiosk Availability*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Kiosk Availability")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="Season">
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].ProductSeasonKiosk", Model.OffSet), Model.ProductSeasonKiosk,
+                             new
+                             {
+                                 @class = "form-control",
+                                 @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("All")),
+                                 @readonly = "readonly",
+                                 @id = "txtKiosk_" + Model.OffSet + "",
+                                 @onfocus = "ShowModalSeason('" + Model.StoreID + "')"
+                             })
+            </div>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].ProductSeasonKiosk", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+    <!-- Modal Add Item-->
+    <div class="modal fade" id="modalSeason_@Model.StoreID" tabindex="-1" role="dialog" aria-labelledby="modalItemLabel" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Season")) </h4>
+                </div>
+                <div class="modal-body scroll" id="popupSeason_@Model.StoreID">
+                    <div class="form-group-sm">
+                        <table class="table center-content">
+                            <thead>
+                                <tr style="background-color:#34495e; color:#fff;">
+                                    <th width="20%" style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")) </th>
+                                    <th width="40%" style="text-align:center;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Day Range")) </th>
+                                    <th width="10%" style="text-align:center;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Date")) </th>
+                                    <th width="10%" style="text-align:center;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Date")) </th>
+                                    <th width="18%" style="text-align:center;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time")) </th>
+
+
+                                    <th width="2%" style="text-align:center;">
+                                        @Html.CheckBox(" ",
+                                                        new
+                                                        {
+                                                            @id = "chballKiosk",
+                                                            @class = "chbcheckall_" + Model.StoreID,
+                                                            onchange = "ToggleChooseSeasonTime('" + Model.StoreID + "')",
+                                                        })
+                                    </th>
+
+
+                                </tr>
+
+
+                            </thead>
+
+
+                            <tbody id="body-season" class="timeslot">
+                                @*@if (Model.ListProductSeason != null && Model.ListProductSeason.Count > 0)*@
+                                @if (Model.ListSeasonKiosk != null && Model.ListSeasonKiosk.Count > 0)
+                                {
+                                    @Html.Partial("~/Views/SBInventoryBase/_ProSeasonKiosk.cshtml", Model)
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span></span>
+                    <button class="btn btn-default" data-dismiss="modal" onclick="SetProductNameSeason('@Model.StoreID','@Model.OffSet');">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Coming Soon*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Coming Soon")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsComingSoon", Model.OffSet), Model.IsComingSoon, new
+                {
+                    @id = "IsComingSoon_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+
+    @*Set Information*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Information")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Info", Model.OffSet), Model.Info,
+                     new
+                     {
+                         @class = "form-control",
+                         placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Information")),
+                         @id = "Info_" + Model.OffSet
+                     })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Info", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @* kiosk Message*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Kiosk Message")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsShowMessage", Model.OffSet), Model.IsShowMessage, new
+                    {
+                        @id = "IsShowMessageP_" + Model.OffSet
+                    })
+                </span>
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].Message", Model.OffSet), Model.Message, new
+                {
+                    @class = "form-control",
+                    placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Kiosk Message")),
+                    @id = "Message_" + Model.OffSet
+                })
+                @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Message", Model.OffSet), null, new { @class = "label" })
+            </div>
+        </div>
+    </div>
+
+    @*Show in Reservation & Queue Management module*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show in Reservation & Queue Management module")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsShowInReservation", Model.OffSet), Model.IsShowInReservation, new
+                {
+                    @id = "IsShowInReservation_" + Model.OffSet
+                })
+            </label>
+        </div>
+    </div>
+    @*Is Promotion*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Is Promotion")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBox(string.Format("ListProductOnStore[{0}].IsPromo", Model.OffSet), Model.IsPromo, new
+           {
+               @id = "IsPromotion_" + Model.OffSet
+           })
+            </label>
+        </div>
+    </div>
+    <!-- Table Mediate Dish -->
+    <div class="form-group" id="divDish_@Model.StoreID">
+        <label class="control-label col-md-2 col-xs-12"></label>
+        <div id="div-mediate_@Model.StoreID" class="col-md-offset-2 col-md-10" style="float:none;">
+            <table class="table center-content">
+                <thead>
+                    <tr style="background-color:#34495e; color:#fff;">
+                        <th> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence")) </th>
+                        <th width="30%"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tab Name")) </th>
+                        <th> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Display Message")) </th>
+                        <th> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity")) </th>
+                        <th> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish")) </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                    @if (Model.ListProductGroup != null && Model.ListProductGroup.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListProductGroup.Count; i++)
+                        {
+                            @Html.Partial("_TabContent", Model.ListProductGroup[i])
+                        }
+                    }
+                    <tr id="tr-add-more-tab_@Model.StoreID">
+                        <td style="padding-top:12px; text-align:left" colspan="7">
+                            <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreTab(this,'@Model.StoreID', @Model.OffSet); return false;"
+                               style="font-size:16px; color:#34495e;">
+                                <i class="fa fa-plus"></i>
+                                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more")) </span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @Html.ValidationMessage("MsgDish_" + Model.StoreID, new { @class = "col-md-offset-2 col-md-10 label" })
+    </div>
+
+    <!-- Modal Choose Dish -->
+    <div class="modal fade second" id="modal-choose-dishes_@Model.StoreID" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Dish's"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control col-md-10" placeholder=@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter Dish Name to search"))
+                                       onkeypress="HandleKeyPress(event)" id="txtSearchDish_@Model.StoreID" />
+                                <div class="input-group-btn">
+                                    <button type="button" onclick="SearchDish(this); return false;" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-sm">
+                        <table class="table table-striped table-hover marginbottomTable">
+                            <thead>
+                                <tr style="background-color:#34495e; color:#fff;">
+                                    @*<th style="width:1%;"></th>*@
+                                    <th style="width:1%;"><input type="checkbox" id="chkAll_@Model.OffSet" onchange="ToogleCheckAllItem(this, '#list-dishes-@Model.OffSet')" /></th>
+                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish Name"))</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="tbl-choose-dishes_@Model.StoreID" class="form-group-sm">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel")) </button>
+                    <button onclick="AddDishes(this,'@Model.StoreID', @Model.OffSet)" type="button" class="btn btn-beauty bg-fnb">
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Choose Dish -->
+    <div class="modal fade second" id="modal-choose-dish_@Model.StoreID" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Change Dishes")) </h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control col-md-10"
+                                       placeholder=@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter Dish Name to search")) />
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-sm">
+                        <table class="table table-striped table-hover marginbottomTable">
+                            <thead>
+                                <tr style="background-color:#34495e; color:#fff;">
+                                    <th> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish Name"))</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="tbl-choose-dish_@Model.StoreID" class="form-group-sm">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span></span>
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button onclick="AddDishes(this, '@Model.StoreID', @Model.OffSet)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add")) </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Msg Error*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.ValidationMessage(@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ProductItemOnStoreAlert")) + "_" + Model.StoreID,
+                     new { @class = "label label-danger", @id = "ltrError_" + Model.StoreID })
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var btnGlobal;
+    var listItem;
+    function ToogleCheckAllItem(e, containElementSelector) {
+        checkAll = $(e).prop("checked");
+        $(containElementSelector).find("tr:visible").find("input[type='checkbox']").prop("checked", checkAll);
+        if ($(e).prop('id') != 'select-all') {
+            ToggleBtnDelete();
+        }
+    }
+    $(document).ready(function (e) {
+
+        if ($(".chb-ServiceCharge_@Model.StoreID").prop('checked')) {
+            $(".txt-ServiceCharge_@Model.StoreID").attr('readonly', false);
+        } else {
+            $(".txt-ServiceCharge_@Model.StoreID").attr('readonly', true);
+        }
+
+        $(".ddlCategoryAuto").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose category"))',
+            allowClear: true,
+            // Updated 08282017
+            templateResult: function (data) {
+                if (!data.element) {
+                    return data.text;
+                }
+                var $element = $(data.element);
+                var $wrapper = $('<span></span>');
+                $wrapper.addClass($element[0].className);
+                $wrapper.text(data.text);
+                // Set format
+                var className = $element[0].className;
+                var level = className.substr(5) * 1.8;
+                $wrapper.css("padding-left", level + "em");
+                return $wrapper;
+            }
+        });
+
+        $('.datepicker').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_2",
+            //maxDate: new Date()
+        }, function (start, end, label) {
+        });
+        $(".ddlDefaultStatusAuto").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose default status"))',
+        });
+
+        //Dish
+        $("#modalAddDishes").on('shown.bs.modal', function (e) {
+            var body = $("#modalAddDishes").find('.modal-body');
+            $.ajax({
+                url: '@Url.Action("LoadMediateSetMenu", "SBInventorySetMenuInte")',
+                type: 'post',
+                traditional: true,
+                data: { level: Level, selectedIndex: SelectedIndex },
+                dataType: 'html',
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                success: function (data) {
+                    $("#div-dish").html(data);
+                },
+                error: function () {
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        })
+
+        $("#btn-search-dish").click(function () {
+            var trs = [];
+            $("#div-dish").find('tbody tr:not(.active)').each(function () {
+                trs.push(this);
+                $(this).css('display', 'table-row');
+            });
+            var keySearch = $.trim($("#KeySearchDish").val()).replace('  ', ' ');
+            var arrKeySearch = keySearch.split(' ');
+            if (keySearch != '') {
+                for (var i = 0; i < trs.length; i++) {
+                    var name = $.trim($(trs[i]).find('td:first').text());
+                    for (var j = 0; j < arrKeySearch.length; j++) {
+                        if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                            $(trs[i]).css('display', 'table-row');
+                            break;
+                        }
+                        else
+                            $(trs[i]).css('display', 'none');
+                    }
+                }
+            }
+        });
+
+        $("#modal-search-dish").on('show.bs.modal', function (event) {
+            btn = $(event.relatedTarget) // Button that triggered the modal
+        })
+
+        $("#modal-choose-dishes_@Model.StoreID").on('show.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            //=========
+            var OffSet = btnGlobal.data('whatever');
+            listItem = [];
+            $('.dish_' + OffSet + ':visible').each(function (index, value) {
+                listItem.push($(this).attr('data-id'));
+            });
+            $('#txtSearchDish_@Model.StoreID').val('');
+            //==========
+            $("#tbl-choose-dishes_@Model.StoreID").html('');
+        });
+
+        $("#modal-choose-dishes_@Model.StoreID").on('shown.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            LoadDishes("#tbl-choose-dishes_@Model.StoreID", true, '@Model.StoreID');
+        });
+
+        $("#modal-choose-dish_@Model.StoreID").on('shown.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal;
+            var OffSet = btnGlobal.data('whatever');
+            listItem = [];
+            $('.dish_' + OffSet + ':visible').each(function (index, value) {
+                listItem.push($(this).attr('data-id'));
+            });
+            LoadDishes("#tbl-choose-dish_@Model.StoreID", false, '@Model.StoreID');
+        })
+    });
+
+    /*Modal Tax*/
+     function ShowModalTax(StoreID) {
+        var modal = $('#modalTax_' + StoreID + '').modal({
+            show: 'true',
+            backdrop: 'static',
+            keyboard: false
+        });
+        var countSea = $(".NameTax_" + StoreID + "").length;
+        if (countSea > 18) {
+            ResizeModal("#popupTax_" + StoreID + "", 150);
+        }
+    }
+
+     function SetProductTaxName(StoreID, OffSet) {
+        var taxName = "";
+        var countSeason = $(".NameTax_" + StoreID + "").length;
+        $('.NameTax_' + StoreID + '').each(function (index, value) {
+            var check = $(this).find('i');
+            if (check.hasClass("fa-check")) {
+                taxName = $(this).attr('data-value');
+            }
+        });
+        $("#txtTaxName_" + OffSet + "").val(taxName);
+    }
+
+     function ToggleTax(tr, StoreID) {
+         $(".NameTax_" + StoreID + "").find('i').removeClass('fa-check');
+         $(".NameTax_" + StoreID + "").find('input.TaxStatus').val(9);
+        //==========
+        var x = $(".NameTax_" + StoreID + "").find('i.fa-check').length;
+        var tr = $(tr);
+        var check = $(tr).find('i');
+        if (check.hasClass("fa-check")) {
+            $(tr).find('input.TaxStatus').val(9);
+            check.removeClass('fa-check');
+        }
+        else
+        {
+            $(tr).find('input.TaxStatus').val(1);
+            if ($(".NameTax_" + StoreID + "").find('i.fa-check').length > 0) {
+            }
+            else {
+                check.addClass('fa-check');
+            }
+        }
+    }
+    /*End Modal Tax*/
+
+    /*Modal Season Kiosk*/
+    function ShowModalSeason(StoreID) {
+        var modal = $('#modalSeason_' + StoreID + '').modal({
+            show: 'true',
+            backdrop: 'static',
+            keyboard: false
+        });
+        var countSea = $(".NameSeason_" + StoreID + "").length;
+        if (countSea > 18) {
+            ResizeModal("#popupSeason_" + StoreID + "", 150);
+        }
+    }
+
+    function SetProductNameSeason(StoreID, OffSet) {
+        var productName = "";
+        var countSeason = $(".NameSeason_" + StoreID + "").length;
+        var countChooseSeason = 0;
+        $('.NameSeason_' + StoreID + '').each(function (index, value) {
+            var check = $(this).find('i');
+            if (check.hasClass("fa-check")) {
+                productName += $(this).attr('data-value') + ","
+                countChooseSeason++;
+            }
+        });
+        if (countSeason == countChooseSeason) {
+            productName = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("All"))';
+        }
+        $("#txtKiosk_" + OffSet + "").val(productName);
+    }
+
+    function ToggleChooseSeasonTime(StoreID) {
+        if ($(".chbcheckall_" + StoreID + "").prop('checked')) {
+            $("#popupSeason_" + StoreID + "").find("tr").val(1);
+            $("#popupSeason_" + StoreID + "").find("tr").find('i').addClass("fa-check");
+        }
+        else {
+            $("#popupSeason_" + StoreID + "").find("tr").val(9);
+            $("#popupSeason_" + StoreID + "").find("tr").find('i').removeClass("fa-check");
+        }
+    }
+
+    function ToggleSeason(tr, StoreID) {
+        var x = $(".NameSeason_" + StoreID + "").find('i.fa-check').length;
+        var tr = $(tr);
+        var check = $(tr).find('i');
+        if (check.hasClass("fa-check")) {
+            $(tr).find('input.SeasonStatus').val(9);
+            check.removeClass('fa-check');
+            $(".chbcheckall_" + StoreID + "").attr("checked", false);
+        }
+        else {
+            $(tr).find('input.SeasonStatus').val(1);
+            check.addClass('fa-check');
+            if ($(".NameSeason_" + StoreID + "").find('i.fa-check').length === $(".NameSeason_" + StoreID + "").length) {
+                $(".chbcheckall_" + StoreID + "").prop('checked', true);
+            }
+            else {
+                $(".chbcheckall_" + StoreID + "").removeAttr("checked");
+            }
+        }
+    }
+
+    /*Dish*/
+    function AddMoreTab(e, _StoreID, _StoreOffSet) {
+        AddTab(e, _StoreID, _StoreOffSet);
+    }
+
+    function AddTab(btn, _StoreID, _StoreOffSet) {
+        var currentOffset = $("#div-mediate_" + _StoreID + " > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddTab","SBInventorySetMenuInte")',
+            type: 'get',
+            data: { currentOffset: currentOffset, StoreID: _StoreID, StoreOffSet: _StoreOffSet },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab_" + _StoreID + "").before(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function ChooseDish(tr) {
+        var name = $(tr).find('td:first').text();
+        var id = $(tr).attr('data-id');
+        $(btnGlobal).parents("div:first").find('input[type="text"]').val(name);
+        $(btnGlobal).parents("div:first").find('input[name*=ProductID]').val(id);
+        $(btnGlobal).parents("tr:first").attr('data-id', id);
+        var modal = $(tr).parents('.modal:first');
+        $(modal).modal('hide');
+    }
+
+    function AddDishes(btn, _StoreID, _StoreOffSet) {
+        var groupOffSet = $(btnGlobal).parents('tr:last').find('input[name*="OffSet"]').val();
+        var currentOffset = $(btnGlobal).parents('table:first > tbody').find('tr').length - 1;
+        var trs = $(btn).parents('.modal').find('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            if ($(tr).find('td input[type="checkbox"]').prop('checked')) {
+                var ProductID = $(tr).attr('data-id');
+                var Name = $(tr).find('td #hidName').val();
+                var Seq = parseInt($(tr).find('td #hidSeq').val());
+                var ExtraPrice = parseFloat($(tr).find('td #hidExtraPrice').val());
+                var ProductOnGroupModels = {
+                    ProductID: ProductID,
+                    ProductName: Name,
+                    Seq: Seq,
+                    ExtraPrice: ExtraPrice,
+                }
+                data.push(ProductOnGroupModels);
+            }
+        }
+
+        var GroupProductModels = {
+            ListProductOnGroup: data,
+            currentgroupOffSet: groupOffSet,
+            currentOffset: currentOffset,
+            StoreID: _StoreID,
+            StoreOffSet: _StoreOffSet
+        }
+
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddDishes", "SBInventorySetMenuInte")',
+                traditional: true,
+                //data: { dishIDs: ids, currentgroupOffSet: groupOffSet, currentDishOffset: currentDishOffSet },
+                //dataType: 'html',
+                data: JSON.stringify(GroupProductModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (data) {
+                    $(btnGlobal).parents('tr:first').before(data);
+                    $(btn).parents('.modal:first').modal('hide');
+                    //========
+                    $('#popupTabConent-' + _StoreID + '').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" })
+                },
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function ShowModalAddDish(btn, _StoreID) {
+        var tr = $(btn).parents('tr:first');
+        var modal = $(tr).find(".modal");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        $(modal).modal({
+            keyboard: false,
+            show: true,
+            //backdrop: false
+        });
+        CopyHtml($(btn).parents('tr:first').find('table > tbody > tr'));
+        $('.popupTabConent-' + _StoreID + '').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" });
+    }
+
+    function AddMoreDish(btn) {
+        var tr = $(btn).parents('tr:first')
+        $.ajax({
+            url: '@Url.Action("AddDish", "SBInventorySetMenuInte")',
+            type: 'get',
+            data: { offset: 1 },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $(tr).before(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+        return false;
+    }
+
+    function DeleteTabPanel(btn) {
+        var result = confirm('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Are you sure?"))');
+        var tr = $(btn).parents('tr:first');
+        if (result) {
+            $(tr).find('input[name*=Name]:first').val("Deleted");
+            $(tr).find('input[name*=DisplayMessage]:first').val("Deleted");
+            $(tr).find('input[name*=Quantity]:first').val(1);
+
+            $(tr).find('input.GroupStatus').val(9);
+            $(tr).css('display', 'none');
+        }
+    }
+
+    function DeleteDish(btn) {
+        var result = confirm('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Are you sure ?"))');
+        var tr = $(btn).parents('tr:first');
+
+        if (result) {
+            $(tr).find('input.DishStatus').val(9);
+            $(tr).css('display', 'none');
+        }
+    }
+
+    function LoadDishes(container, isMultiChoice, _StoreID) {
+        $.ajax({
+            url: '@Url.Action("LoadDishes", "SBInventorySetMenuInte")',
+            type: 'get',
+            data: { isMultiChoice: isMultiChoice, StoreID: _StoreID },
+            dataType: 'html',
+            traditional: true,
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+                ResizeModal(container, 300);
+                $('.SpecificItems').each(function (index, value) {
+                    var dataId = $(this).attr('data-id');
+                    if (listItem.indexOf(dataId) != -1) {
+                        $(this).addClass('hide');//.hide();
+                    }
+                });
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    var HtmlCloned = '';
+    function CopyHtml(container) {
+        HtmlCloned = $(container).clone();
+    }
+
+    function PasteHtml(container) {
+        $(container).html(HtmlCloned);
+    }
+
+    function CheckModifier(btn) {
+        var form = $(btn).parents('form:first');
+        $.ajax({
+            url: '@Url.Action("CheckDish", "SBInventorySetMenuInte")',
+            data: $(form).serialize(),
+            dataType: 'html',
+            type: 'post',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#div-mediate").find('table:first > tbody:first').html(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function SearchDish(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td:last').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+</script>

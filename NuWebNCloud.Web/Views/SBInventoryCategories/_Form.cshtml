@@ -1,0 +1,278 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.CategoriesModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+    @Html.Hidden("Type", Model.Type)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg" })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+            (SelectList)ViewBag.StoreID,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Type*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.Type,
+            new SelectList(Model.ListProductType, "Value", "Text", Model.Type), null,
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "ProductTypeDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.Type, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @* Parent Cate *@
+    <div class="form-group" id="divParentCate">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Parent Category")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="ParentCate">
+                @*@Html.DropDownListFor(model => model.ParentID, 
+               new SelectList(Model.ListCategories, "Value", "Text", Model.ParentID),
+               "Please choose parent category", new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "ddlParentCate",
+                   @style = "width:100%;",
+                   //@multiple = "multiple",
+               })*@
+
+                @*Updated 09082017*@
+                <select class="form-control select2_multiple" style="width: 100%" id="ddlParentCate" name="ParentID">
+                    <option></option>
+                    @foreach (var cate in Model.lstCateGroup)
+                    {
+                        <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected")  }>@cate.Name</option>
+                    }
+                </select>
+            </div>
+            <img src="@Url.Content("~/Assets/Images/loading.gif")" id="imgLoading" />
+            @Html.ValidationMessageFor(model => model.ParentID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Category Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = "" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name") + "", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @**@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Sequence, new { @class = "form-control", @type = "number", @min = 0, placeholder = ""+ _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence") + "" })
+            @Html.ValidationMessageFor(model => model.Sequence, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Show in Reservation & Queue*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show in Reservation & Queue")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsShowInReservation, new { @class = " text-left" })
+        </div>
+    </div>
+
+    @*Show in Kiosk*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show in Kiosk")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsShowInKiosk, new { @class = " text-left" })
+        </div>
+    </div>
+
+    @*GLAccount Code*@
+    <div class="form-group groupItemOfType">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.GLAccountCode, new { @class = "form-control", @min = 0, placeholder = "" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code") + "" })
+            @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Is Gift Card*@
+    @*<div class="form-group groupItemOfType">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Split Sales")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsGiftCard, new { @onClick = "CheckGiftCard(this)", @class = " text-left", @id= "IsCheckGiftCard" })
+        </div>
+    </div>*@
+
+    @*Is Include Net Sale*@
+    <div class="form-group groupItemOfType">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Net Sale")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsIncludeNetSale, new { @class = " text-left", @id = "IsCheckIncludeNetSale" })
+        </div>
+    </div>   
+
+    @*Description*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = "" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description") + "" })
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        //$('#divParentCate').hide();
+        $('#imgLoading').hide();
+        var ProductTypeText = $("#ProductTypeDdl").find("option:selected").text();
+        if (ProductTypeText != '@Commons.EProductType.Dish.ToString()')
+        {
+            $('.groupItemOfType').hide();
+        }
+
+        //var isCheck = $('#IsCheckGiftCard').is(':checked');
+        //if (isCheck == false) {
+        //    $('#IsCheckIncludeNetSale').attr('disabled', true);
+        //}
+        //if (isCheck == true) {
+        //    $('#IsCheckIncludeNetSale').attr('disabled', false);
+        //}
+
+        @if (!string.IsNullOrEmpty(_ID))
+        {
+           if (!string.IsNullOrEmpty(Model.ParentID)
+                || _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Model.ProductTypeName).Equals(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish")))
+            {
+                @:$('#divParentCate').show();
+                    }
+        }
+    });
+    @if (_ID != null)
+    {
+        <text>
+    $('#ProductTypeDdl').attr('disabled', true);
+        </text>
+    }
+
+    @if (Model.Type.ToString() != Commons.EProductType.Dish.ToString("d"))
+    {
+        <text>
+        $('#divParentCate').hide();
+        </text>
+    }
+
+    function CheckGiftCard(e) {
+        //var isCheck = $(e).prop('checked');
+        //if (isCheck == true) {
+        //    $('#IsCheckIncludeNetSale').attr('disabled', false);
+        //}
+        //if (isCheck == false) {
+        //    $('#IsCheckIncludeNetSale').attr('disabled', true);
+        //}
+    };
+
+    $("#storeDdl").change(function () {
+        StoreID = this.value;
+        $('.ParentCate').html('');
+        //=====
+        var text = $('#ProductTypeDdl').find("option:selected").text();
+        if (text.toLowerCase() === 'dish') {
+            $('#divParentCate').show();
+            var val = $('#ProductTypeDdl').val();
+            var ProductTypeID = val;
+            LoadParentCategory('.ParentCate', ProductTypeID);
+        } else {
+            $('#divParentCate').hide();
+        }
+    });
+
+    $("#ProductTypeDdl").change(function () {
+        var val = this.value;
+        var text = $(this).find("option:selected").text();
+        if (text.toLowerCase() === 'dish') {
+            $('.ParentCate').html('');
+            $('#divParentCate').show();
+            $('.groupItemOfType').show();
+            var ProductTypeID = val;
+            LoadParentCategory('.ParentCate', ProductTypeID);
+        } else {
+            $('#divParentCate').hide();
+            $('.groupItemOfType').hide();
+        }
+    });
+
+</script>

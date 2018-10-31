@@ -1,0 +1,298 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.UsageManagementRequest
+
+@{
+    ViewBag.Title = "Usage Management";
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display:none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                         new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Report" }, { "C", "Usage Management" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    @using (Html.BeginForm("Export", "IngUsageManagement", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12">
+                                    Choose Store
+                                </div>
+                                <div class="col-md-4 col-sm-8 col-xs-12">
+                                    @Html.DropDownListFor(model => model.StoreId,
+                                    new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), "---- Please choose store ----",
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "storeDdlView",
+                                        @style = "width:100%;"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "validateLevel label label-danger" })
+                                </div>
+
+                            </div>
+                            <!--Date filter-->
+                            <div class="form-group">
+                                <label for="FromDate" class="col-md-2 col-sm-2 col-xs-12 control-label">From Date</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                    <div class="input-prepend input-group">
+                                        <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                        @Html.TextBoxFor(model => model.DateFrom, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "fromDate",
+                                        @class = "form-control datepicker",
+                                        @placeholder = "From Date"
+                                    })
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateFrom, null, new { @class = "label" })
+                                </div>
+                                <label for="ToDate" class="col-md-1 col-sm-3 col-xs-12 control-label">To Date</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                    <div class="input-prepend input-group">
+                                        <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                        @Html.TextBoxFor(model => model.DateTo, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "toDate",
+                                        @class = "form-control datepicker",
+                                        @placeholder = "To Date"
+                                    })
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateTo, null, new { @class = "label" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-2 col-sm-2 col-xs-12"></div>
+                                <div class="col-md-4 col-sm-8 col-xs-12">
+                                    <button type="button" class="btn btn-primary" value="loadData" id="btnSearch"><i class="fa fa-search"></i>&nbsp;Load Data</button>
+                                    <button type="submit" class="btn btn-success" value="export" id="btnExport"><i class="fa fa-file-excel-o"></i>&nbsp;Export</button>
+                                    <button type="button" class="btn btn-warning" value="pushxero" id="btnPush"><i class="fa fa-file-code-o"></i>&nbsp;PushToXero</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div><!--End x_content-->
+            </div>
+        </div>
+
+    </div><!--End class=""-->
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#storeDdlView").select2({
+            placeholder: "Please choose store",
+            allowClear: true
+        });
+
+        //disablePushButton(true);
+        $('.datepicker').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_2"
+        }, function (start, end, label) {
+        });
+    });
+
+    $("#btnSearch").click(function () {
+        LoadData();
+    });
+
+    $("#btnPush").click(function () {
+        //push data
+        PushDataToXero();
+    });
+
+    function disablePushButton(status) {
+        if (status) {
+            $('#btnPush').addClass('disabled');
+        } else {
+            $('#btnPush').removeClass('disabled');
+        }
+    }
+    $("#btnExport").click(function () {
+        var storeId = $("#storeDdlView").val();
+        if (storeId == '') {
+            $('.validateLevel').html('Please choose store');
+            return false;
+        }
+        $('.validateLevel').html('');
+        return true;
+    });
+
+    function PushDataToXero() {
+        var storeId = $("#storeDdlView").val();
+        if (storeId == '') {
+            $('.validateLevel').html('Please choose store');
+            return;
+        }
+        $('.validateLevel').html('');
+        var form = $(".search-form");
+        var request = $(form).serialize();
+        $.ajax({
+            //url: "/IngUsageManagement/PushDataToXero",
+            url: '@Url.Action("PushDataToXero", "IngUsageManagement")',
+            type: 'post',
+            data: $(form).serialize(),
+            dataType: 'html', /*trongntn*/
+            //contentType: false, /*trongntn*/
+            beforeSend: function () {
+                $(".se-pre-con").show();
+            },
+            success: function (response) {
+                var obj = $.parseJSON(response);
+                var msg = obj.responseText;
+                var success = obj.success;
+                if (obj != null && success) {
+                    alert(msg);
+                } else {
+                    alert(msg);
+                }
+            },
+            //error: function (result) {
+            //    alert("Push data error!");
+            //},
+            complete: function () {
+                $(".se-pre-con").hide();
+            }
+        });
+        return false;
+    }
+
+    function LoadData() {
+        $(".gridview").html('');
+        var storeId = $("#storeDdlView").val();
+        if (storeId == '') {
+            $('.validateLevel').html('Please choose store');
+            return;
+        }
+        $('.validateLevel').html('');
+
+        var form = $(".search-form");
+        var request = $(form).serialize();
+        $.ajax({
+            //url: "/IngUsageManagement/Search",
+            url: '@Url.Action("Search", "IngUsageManagement")',
+            type: 'post',
+            data: $(form).serialize(),
+            dataType: "html",
+            beforeSend: function () {
+                $(".se-pre-con").show();
+            },
+            success: function (data) {
+                $(".gridview").html(data);
+                //disablePushButton(false);
+            },
+            complete: function () {
+                $(".se-pre-con").hide();
+            }
+        });
+        return false;
+    }
+    function LoadDetail(id, name) {
+        $('.se-pre-con').show();
+        //var a = JSON.stringify(id);
+        $.ajax({
+            url: '@Url.Action("LoadDetail", "IngUsageManagement")',
+            type: 'POST',
+            data: { usageManagementDetailId: id },
+            dataType: 'html',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+                $('.se-pre-con').hide();
+            },
+            success: function (data) {
+                $("#modelDetail").modal({
+                    keyboard: false,
+                    show: true,
+                    //backdrop: false
+                });
+                $('#tbl-listDetail').html(data);
+                //document.getElementById("modalLabelDetail").textContent = "Ingredient Name: " + name;
+                $('#modalLabelDetail').text("Ingredient Name: [" + name + "]");
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    };
+    function LoadDetail3(id, name) {
+        //$('#modelDetail').modal('show');
+
+        $('.se-pre-con').show();
+        var values = {};
+        $.each($(".search-form").serializeArray(), function (i, field) {
+            values[field.name] = field.value;
+        });
+        //Value Retrieval Function
+        var getValue = function (valueName) {
+            return values[valueName];
+        }
+
+        $.ajax({
+            url: '@Url.Action("LoadDetail", "IngUsageManagement")',
+            type: 'POST',
+            data: { storeId: getValue("StoreId"), dFrom: getValue("DateFrom"), dTo: getValue("DateTo"), ingredientId: id },
+            dataType: 'html',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+                $('.se-pre-con').hide();
+            },
+            success: function (data) {
+                $("#modelDetail").modal({
+                    keyboard: false,
+                    show: true,
+                    //backdrop: false
+                });
+                $('#tbl-listDetail').html(data);
+                //document.getElementById("modalLabelDetail").textContent = "Ingredient Name: " + name;
+                $('#modalLabelDetail').text("Ingredient Name: [" + name + "]");
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    };
+    function LoadDetail2(dataInput) {
+        $('.se-pre-con').show();
+        var request = $(".search-form").serialize();
+        var a = JSON.serialize(dataInput);
+        $.ajax({
+            url: '@Url.Action("LoadDetail2", "IngUsageManagement")',
+            type: 'POST',
+            data: { items: dataInput },
+            dataType: 'json',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+                $('.se-pre-con').hide();
+            },
+            success: function (data) {
+                $('#tbl-listDetail').html(data);
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+</script>

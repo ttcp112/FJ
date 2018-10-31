@@ -1,0 +1,152 @@
+﻿@model NuWebNCloud.Shared.Models.AccessControl.UserRoleModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accounts - Approval Role").ToString();
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Access Control" }, { "B", "Grouping Accounts" }, { "C", "Accounts - Approval Role" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-edit-save" onclick="SubmitForm('#form-edit')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("ApprovalRole", "ACGroupingAccount", FormMethod.Post, new { @id = "form-edit", @class = "form-horizontal" }))
+                            {
+                                @Html.HiddenFor(model => model.EmployeeID);
+
+                                @*Store Name*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+
+                                @*Employee Name*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Employee Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.EmployeeName
+                                    </div>
+                                </div>
+
+                                @*Email*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <label>@Model.EmployeeEmail</label>
+                                    </div>
+                                </div>
+
+                                @* List Roles *@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Roles"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.ListRole != null)
+                                        {
+                                            <table class="table table-bordered role-table">
+                                                <tr style="background-color:#34495e; color:#fff;">
+                                                    <th style="width:2%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).</th>
+                                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Role Name"))</th>
+                                                    <th style="width:2%;"><input type="checkbox" onchange="ToogleCheckAll(this, '#list-roles')" id="chkRoleAll"></th>
+                                                </tr>
+                                                <tbody id="list-roles">
+                                                    @for (int i = 0; i < Model.ListRole.Count; i++)
+                                                    {
+                                                        string styleRow = "row-evenItem";
+                                                        if (i % 2 == 0)
+                                                        {
+                                                            styleRow = "row-oddItem";
+                                                        }
+
+                                                        <tr class="@styleRow">
+                                                            <td style="text-align:center;">
+                                                                @(i + 1)
+                                                                @Html.HiddenFor(model => model.ListRole[i].Id)
+                                                                @Html.HiddenFor(model => model.ListRole[i].RoleId)
+                                                                @Html.HiddenFor(model => model.ListRole[i].RoleName)
+                                                            </td>
+                                                            <td style="color:#34495e; font-weight:bold;" onclick="TickCheckBox(this)">
+                                                                @Model.ListRole[i].RoleName
+                                                            </td>
+                                                            <td style="text-align:center;">
+                                                                @Html.CheckBoxFor(model => model.ListRole[i].Checked,
+                                                                                          new { @class="chkRole", @style = "cursor:pointer;", @onclick = "TickItemCheckBox()" })
+                                                        </td>
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        @Html.ValidationMessageFor(model => model.ListRole, null, new { @class = "label" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $("#form-edit").submit(function (e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function () {
+                CloseDetail();
+                Search();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');;
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+        var length = $('.chkRole').length;
+        var countSelected = $('.chkRole:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkRoleAll').prop('checked', true);
+        } else {
+            $('#chkRoleAll').prop('checked', false);
+        }
+    }
+
+    function TickItemCheckBox() {
+        var length = $('.chkRole').length;
+        var countSelected = $('.chkRole:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkRoleAll').prop('checked', true);
+        } else {
+            $('#chkRoleAll').prop('checked', false);
+        }
+    }
+</script>

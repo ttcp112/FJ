@@ -1,0 +1,343 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note - Add New"));
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                <h4>
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management")) <small>
+                        <i class="fa fa-angle-double-right"></i><a href="@Url.Action("Index", "IngReceiptNote",new { area = "" })">
+                            <span style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Data"))</span>
+                        </a>&nbsp;<i class="fa fa-angle-double-right"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note - Add New")) 
+                    </small>
+                </h4>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "returnnote")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitFormCreateReturnNote('.create-form-returnnote')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Create"))</a></li>
+                                @*<li><a href="#" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>*@
+                                <li><a href="@Url.Action("Index", "IngReceiptNote")" clas class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("CreateReturnNote", "IngReceiptNote", FormMethod.Post,
+new
+{
+    @class = "form-horizontal create-form-returnnote",
+    @enctype = "multipart/form-data"
+}))
+                            {
+                                @Html.Hidden("Id", Model.Id)
+                                @Html.Hidden("StoreId", Model.StoreId)
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Note")):</label>
+                                    @Html.HiddenFor(ss => ss.ReceiptNo)
+                                    <div class="col-md-2 col-sm-2 col-xs-12">@Model.ReceiptNo</div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier")):</label>
+                                    @Html.HiddenFor(ss => ss.SupplierName)
+                                    <div class="col-md-3 col-sm-3 col-xs-12">@Model.SupplierName</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Date")):</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-12">
+                                        @Model.ReceiptDate.ToString("MM/dd/yyyy")
+                                    @Html.HiddenFor(ss => ss.ReceiptDate)
+                                </div>
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received by")):</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    @Model.ReceiptBy
+                                @Html.HiddenFor(ss => ss.ReceiptBy)
+                            </div>
+                        </div>
+
+                                <div class="form-group" style="background-color:#000; color:#fff; padding:10px 0; margin-bottom: 0;">
+                                    <div class="col-md-10 col-sm-10 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note")): @*RT-000526*@</div>
+                                    <div class="col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return by")): @*@Model.ReceiptBy*@</div>
+                                </div>
+
+                                if (Model.ListPurchaseOrder != null && Model.ListPurchaseOrder.Count > 0)
+                                {
+                                    for (int i = 0; i < Model.ListPurchaseOrder.Count; i++)
+                                    {
+                                        /*Parent*/
+                                        var itemParent = Model.ListPurchaseOrder[i];
+                                        <div class="box-body form-group" style="text-align:center;">
+                                            <table class="tbCustom">
+                                                <thead>
+                                                    <tr>
+                                                        <td class="text-center" style="width:3%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO"))</td>
+                                                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                                                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                                                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                                                        <td class="text-center" style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Quantity"))</td>
+                                                        <td class="text-center" style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Quantity"))</td>
+                                                        <td class="text-center" style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remaining Quantity"))</td>
+                                                        <td class="text-center" style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Quantity"))</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="8" class="text-left ng-PurchaseOrder" style="font-size:20px; padding-left:15px;"
+                                                            data-poId="@Model.ListPurchaseOrder[i].Id">
+                                                            @Html.Hidden(string.Format("ListPurchaseOrder[{0}].PONumber", i), Model.ListPurchaseOrder[i].PONumber, new { @id = "POCode" })
+
+                                                            @itemParent.PONumber
+                                                            @Html.Hidden(string.Format("ListPurchaseOrder[{0}].Id", i), Model.ListPurchaseOrder[i].Id, new { @id = "POId" })
+
+                                                            @Html.Hidden(string.Format("ListPurchaseOrder[{0}].StoreID", i), Model.ListPurchaseOrder[i].StoreID, new { @id = "POStoreID" })
+                                                        </td>
+                                                    </tr>
+                                                    @if (itemParent.ListItem != null && itemParent.ListItem.Count > 0)
+                                                    {
+                                                        int rowCount = itemParent.ListItem.Count;
+                                                        for (int j = 0; j < itemParent.ListItem.Count; j++)
+                                                        {
+                                                            var itemChild = Model.ListPurchaseOrder[i].ListItem[j];
+                                                            /*Child*/
+                                                            <tr data-poId="@Model.ListPurchaseOrder[i].Id" class="ng-PurchaseOrder_@Model.ListPurchaseOrder[i].Id">
+                                                                @if (j == 0)
+                                                                {
+                                                                    <td rowspan="@rowCount" style="background-color: #fff;"></td>
+                                                                }
+                                                                <td>
+                                                                    @itemChild.IngredientCode
+                                                                    @Html.ValidationMessage(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReturnQty", i, j), new
+                                                               {
+                                                                   @id = "ltrValidate" + Model.ListPurchaseOrder[i].ListItem[j].Id,
+                                                                   @class = "label label-danger"
+                                                               })
+                                                                    @Html.ValidationMessage("error_msg" + Model.ListPurchaseOrder[i].ListItem[j].Id)
+                                                                </td>
+                                                                <td>
+                                                                    @itemChild.IngredientName
+                                                                </td>
+                                                                <td>
+                                                                    @itemChild.BaseUOM
+                                                            </td>
+                                                            <td>
+                                                                <span id="ltrOrderQty">
+                                                                    @itemChild.Qty
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span id="ltrReceivingQty">
+                                                                @itemChild.ReceivingQty
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span id="ltrRemainingQty">
+                                                            @itemChild.RemainingQty
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @*Get Value*@
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].Id", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].Id, new { @id = "PODId" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IngredientCode", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].IngredientCode, new { @id = "IngredientCode" })
+
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].BaseQty", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].BaseQty, new { @id = "BaseQty" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IngredientId", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].IngredientId, new { @id = "IngredientId" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReturnReceiptNoteQty", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].ReturnReceiptNoteQty)
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceiptNoteDetailId", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].ReceiptNoteDetailId)
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IsVisible", i, j),
+                                                                    Model.ListPurchaseOrder[i].ListItem[j].IsVisible, new { @id = "hidIsVisible" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceivingQty", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].ReceivingQty, new { @id = "ReceivingQty" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IngredientName", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].IngredientName, new { @id = "IngredientName" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].BaseUOM", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].BaseUOM, new { @id = "BaseUOM" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].Qty", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].Qty, new { @id = "Qty" })
+
+                                                    @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].RemainingQty", i, j),
+                                                                   Model.ListPurchaseOrder[i].ListItem[j].RemainingQty, new { @id = "RemainingQty" })
+
+
+                                                    @**Set Value*@
+                                                    @Html.TextBox(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReturnQty", i, j),
+                                                                                    Model.ListPurchaseOrder[i].ListItem[j].ReturnQty,
+                                                                                     Model.ListPurchaseOrder[i].ListItem[j].IsVisible ? (object)new
+                                                                                     {
+                                                                                         @class = "form-control text-center number",
+                                                                                         @disabled = "disabled",
+                                                                                         @min = 0,
+                                                                                         @id = "txtReturnQty",
+                                                                                         @autocomplete = "Off"
+                                                                                     } : new
+                                                                                     {
+                                                                                         @class = "form-control text-center number",
+                                                                                         @min = 0,
+                                                                                         @id = "txtReturnQty",
+                                                                                         @autocomplete = "Off"
+                                                                                     })
+                                                </td>
+                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+@*<script type="text/javascript" src="@Url.Content("~/vendors/jquery/dist/jquery.min.js")"></script>*@
+<script type="text/javascript">
+    //$(".create-form-returnnote").submit(function (e) {
+    function SubmitFormCreateReturnNote(form) {
+        var isSubmit = true;
+        $.each($('.ng-PurchaseOrder'), function () {
+            var div = $(this);
+            var poId = $(div).attr("data-poId");
+            $.each($('.ng-PurchaseOrder_' + poId), function () {
+                var divChild = $(this);
+                if ($(divChild).css('display') !== 'none') {
+
+                    var PODId = $(divChild).find('#PODId').val();
+
+                    var OrderQty = parseFloat($(divChild).find('#ltrOrderQty').html());
+                    var RemainingQty = parseFloat($(divChild).find('#ltrRemainingQty').html());
+                    var ReceivingQty = parseFloat($(divChild).find('#ltrReceivingQty').html());
+                    var ReturnQty = $(divChild).find('#txtReturnQty').val();
+
+                    var IsVisible = $(divChild).find('#hidIsVisible').val();
+                    if (IsVisible === 'False') {
+                        if (ReturnQty < 0) {
+                            $('#ltrValidate' + PODId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please, can not input negative number"))');
+                            isSubmit = false;
+                        } else {
+                            if (ReturnQty > ReceivingQty) {
+                                $('#ltrValidate' + PODId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Can not return more than receiving quantity"))');
+                                isSubmit = false;
+                            } else {
+                                $('#ltrValidate' + PODId).html('');
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        var countPOSelected = $('.ng-PurchaseOrder').length;
+        if (countPOSelected == 0) {
+            alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose receipt note have purchase order !!!"))');
+            isSubmit = false;
+        }
+        //=====
+        if (isSubmit) {
+            OneClickButton('#btn-actives', true);
+            $(form).submit();
+            //$.ajax({
+            //    url: $(this).attr('action'),
+            //    type: "post",
+            //    data: new FormData(this),
+            //    processData: false,
+            //    contentType: false,
+            //    success: function () {
+            //        alert('11');
+            //        CloseDetail();
+            //        Search();
+            //    },
+            //    error: function (jqXHR, textStatus, errorThrown) {
+            //        $(".detail-view").html(jqXHR.responseText);
+            //    },
+            //    beforeSend: function () {
+            //        $('.se-pre-con').show();
+            //    },
+            //    complete: function () {
+            //        $('.se-pre-con').hide();
+            //    }
+            //});
+            //}
+            //e.preventDefault();
+        }
+    }
+
+    //mini jQuery plugin that formats to two decimal places
+    $(document).ready(function () {
+        (function ($) {
+            $.fn.numberFormat = function () {
+                this.each(function (i) {
+                    $(this).change(function (e) {
+                        if (isNaN(parseFloat(this.value))) return;
+                        this.value = parseFloat(this.value).toFixed(4);
+                    });
+                });
+                return this; //for chaining
+            }
+        })(jQuery);
+    });
+
+    $(document).ready(function () {
+
+        //(function ($) {
+        //    $.fn.numberFormat = function () {
+        //        this.each(function (i) {
+        //            $(this).change(function (e) {
+        //                if (isNaN(parseFloat(this.value))) return;
+        //                this.value = parseFloat(this.value).toFixed(4);
+        //            });
+        //        });
+        //        return this; //for chaining
+        //    }
+        //})(jQuery);
+
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+
+        $('.number').on('focus', function () {
+            var qty = parseFloat(this.value)
+            if (qty == 0) {
+                this.value = '';
+            }
+        });
+    });
+
+</script>

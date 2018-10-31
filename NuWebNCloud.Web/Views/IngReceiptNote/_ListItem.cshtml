@@ -1,0 +1,83 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+
+@if (Model.ListItem != null && Model.ListItem.Count > 0)
+{
+    for (int i = 0; i < Model.ListItem.Count; i++)
+    {
+        var item = Model.ListItem[i];
+
+        <tr class="more_item ingredient_item" data-ingredientid="@item.IngredientId">
+            <td class="text-center">@item.IngredientCode</td>
+            <td class="text-center">@item.IngredientName</td>
+            <td class="text-center">
+                @Html.DropDownList(string.Format("ListItem[{0}].BaseUOMId", i),
+                    new SelectList(item.ListUOM, "Value", "Text", item.BaseUOMId),
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM")).ToString(),
+                                new {
+                                    @class = "form-control select2_multiple ddl_ingredient_item_uom",
+                                    @id = "ddlUOM",
+                                    @style = "width:100%;"
+                                })
+            </td>
+            <td class="text-center">
+                @Html.TextBox(string.Format("ListItem[{0}].Qty", i), item.Qty,
+                   new {
+                       @id = "hidReceivingQuantity",
+                       @class = "form-control text-center number",
+                       @value = item.Qty
+                   })
+            </td>
+            <td class="text-center">
+                <a href="javascript:void(0);" onclick="DeleteIngredient('@item.IngredientId', @i)" class="a-fnb">
+                    <i class="fa fa-remove" style="font-size:20px; color:red; padding-top:5px;"></i>
+                </a>
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientId", i), item.IngredientId, new { @id = "hidIngredientId" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientCode", i), item.IngredientCode, new { @id = "hidIngredientCode" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientName", i), item.IngredientName, new { @id = "hidIngredientName" })
+                @Html.Hidden(string.Format("ListItem[{0}].Description", i), item.Description, new { @id = "hidIngredientDescription" })
+                @Html.Hidden(string.Format("ListItem[{0}].Delete", i), item.Delete, new { @id = "hidIngredientDelete_" + i })
+            </td>
+        </tr>
+    }
+    <script>
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this;
+        }
+    })(jQuery);
+
+    $(document).ready(function () {
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+
+        $('.number').on('focus', function () {
+            var qty = parseFloat(this.value)
+            if (qty == 0) {
+                this.value = '';
+            }
+        });
+
+        $(".ddl_ingredient_item_uom").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM"))"
+            //allowClear: true
+        });
+
+    });
+    </script>
+}
+

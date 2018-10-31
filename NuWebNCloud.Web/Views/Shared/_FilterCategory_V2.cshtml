@@ -1,0 +1,214 @@
+﻿@using NuWebNCloud.Shared.Models.Reports
+@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+
+
+@helper ShowCategories(List<RFilterCategoryModel> categories, int level, int s, string inputName = null)
+    {
+        @Html.Raw("<ul>")
+        if (categories != null && categories.Any())
+        {
+            int countCate = categories.Count;
+            for (int i = 0; i < countCate; i++)
+            {
+                var cate = categories[i];
+                string newInputName = "";
+                if (string.IsNullOrEmpty(inputName)) // level 0. not child
+                {
+                    newInputName = string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}]", s, i);
+                }
+                else
+                {
+                    newInputName = string.Format(inputName + "[{0}]", i);
+                }
+                @Html.Raw("<li>")
+                <label class="label-text @level">
+                    + @cate.Name
+                </label>
+                <label class="label-checkbox">
+
+                    @Html.CheckBox(newInputName + ".checked", cate.Checked, new
+                    {
+                        @onClick = "checkAllCate('" + s + "')",
+                        //@id = "parent-" + s + "-" + i + "",
+                        @class = "chkReportZoom cate" + level
+                    })
+                    @*set value*@
+                    @Html.Hidden(newInputName + ".Id", cate.Id)
+                    @Html.Hidden(newInputName + ".Name", cate.Name)
+                    @Html.Hidden(newInputName + ".StoreId", cate.StoreId)
+                    @Html.Hidden(newInputName + ".StoreName", cate.StoreName)
+                    @Html.Hidden(newInputName + ".ParentId", cate.ParentId)
+                    @Html.Hidden(newInputName + ".Seq", cate.Seq)
+                </label>
+
+                @*Show categories child*@
+                if (cate.ListChilds != null && cate.ListChilds.Any())
+                {
+                    newInputName += ".ListChilds";
+                    @ShowCategories(cate.ListChilds, level + 1, s, newInputName)
+                }
+
+                @Html.Raw("</li>")
+
+            }
+        }
+        @Html.Raw("</ul>")
+}
+
+
+@if (Model.ListStoreCate != null && Model.ListStoreCate.Any())
+{
+    var lstStore = Model.ListStoreCate;
+    <!-- start accordion -->
+    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+        @if (lstStore != null && lstStore.Count > 0)
+        {
+            for (int s = 0; s < lstStore.Count; s++)
+            {
+                var store = lstStore[s];
+                /*======================*/
+                <div class="panel">
+                    @Html.Raw("<ul style =\"margin-bottom: 0;\">")
+                    @Html.Raw("<li>")
+                    <a class="panel-heading" role="tab" id="heading_@s" data-toggle="collapse" data-parent="#accordion" href="#s_@s"
+                       aria-expanded="@string.Format("{0}", s==0 ? "true" : "false")" aria-controls="s_@s" style="background-color: #337ab7; color: #fff;">
+                        <h4 class="panel-title" style="display: flow-root;">
+                            @store.StoreName&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="pull-right">
+                                <input type="checkbox" onchange="ToogleCheckAll(this, '.cate-items-@s')" id="checkAllCate-@s" class="chkAll chkReportZoom">
+                            </span>
+                        </h4>
+                    </a>
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].OffSet", s), Model.ListStoreCate[s].OffSet)
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].StoreID", s), Model.ListStoreCate[s].StoreID)
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].StoreName", s), Model.ListStoreCate[s].StoreName)
+
+                    @*Count categories of store for checkbox check all*@
+                    @Html.Hidden(string.Format("CountCate{0}", s), Model.ListStoreCate[s].ListCategoriesSel.Count)
+
+                    <div id="s_@s" class="panel-collapse collapse @string.Format("{0}", s==0 ? "in" : "")" role="tabpanel" aria-labelledby="heading_@s">
+                        <div class="" style="background-color: #ededed;">
+                            @ShowCategories(store.ListCategoriesSel, 0, s)
+                        </div>
+                    </div>
+                </div>
+                @Html.Raw("</li>")
+                @Html.Raw("</ul>")
+            }
+        }
+    </div>
+    <style>
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .label-text {
+            width: 95%;
+            padding: 8px;
+            line-height: 1.42857143;
+            font-weight: normal;
+            border: 1px solid #f4f4f4;
+            display: table-cell;
+        }
+
+        .label-checkbox {
+            border: 1px solid #f4f4f4;
+            padding: 8px;
+            line-height: 1.42857143;
+            display: table-cell;
+        }
+    </style>
+    <!-- end of accordion -->
+    <script>
+        var Store = null;
+        var NumberCate = 0;
+
+        // Update Checked or Unchecked for checkbox Check All Cate
+        function checkAllCate(store) {
+            Store = store;
+            NumberCate = $("#CountCate" + store).val();
+            if (Store != null && NumberCate > 0) {
+                var totalCateChecked = $("div#s_" + Store).find('input[type="checkbox"].cate0:checked').length;
+                if (totalCateChecked == NumberCate) {
+                    $("#checkAllCate-" + store).prop("checked", true);
+                } else {
+                    $("#checkAllCate-" + store).prop("checked", false);
+                }
+            }
+        }
+
+        // Update Unchecked checkbox for parent cate
+        function updateUnchecked(el) {
+            var parent = el.parent().parent(),
+                parentcheck = parent.children("label");
+            parentcheck.children('input[type="checkbox"]').prop({
+                checked: false
+            });
+            // Update checkbox Check All Cate
+            checkAllCate(Store);
+            var Elem = parent.parent().parent().get(0).tagName.toLowerCase();
+            if (Elem == 'li') {
+                updateUnchecked(parent);
+            }
+        }
+
+        $(function () {
+            $('.chkAll').on('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // Format
+            $('.label-text').each(function () {
+                var className = $(this).attr("class");
+                var level = (parseInt(className.substr(11)) + 1) * 1.8;
+                $(this).css("padding-left", level + "em");
+            });
+
+            $('input[type="checkbox"]').change(function (e) {
+                var checked = $(this).prop("checked"),
+                    container = $(this).closest("li"),
+                    siblings = container.siblings();
+                container.find('input[type="checkbox"]').prop({
+                    checked: checked
+                });
+
+                function checkSiblings(el) {
+                    var parent = el.parent().parent(),
+                        all = true,
+                        parentcheck = parent.children("label");
+                    el.siblings().each(function () {
+                        return all = ($(this).find('input[type="checkbox"]').prop("checked") === checked);
+                    });
+                    if (all && checked) {
+                        parentcheck.children('input[type="checkbox"]').prop({
+                            checked: checked
+                        });
+                        // Update checkbox Check All Cate
+                        checkAllCate(Store);
+                        checkSiblings(parent);
+                    } else if (all && !checked) {
+                        parentcheck.children('input[type="checkbox"]').prop("checked", checked);
+                        // Update checkbox Check All Cate
+                        checkAllCate(Store);
+                        checkSiblings(parent);
+                    } else {
+                        parentcheck.children('input[type="checkbox"]').prop({
+                            checked: false
+                        });
+                        // Update checkbox Check All Cate
+                        checkAllCate(Store);
+                        var Elem = parent.parent().parent().get(0).tagName.toLowerCase();
+                        if (Elem == 'li') {
+                            updateUnchecked(parent);
+                        }
+                    }
+                }
+                checkSiblings(container);
+            });
+        });
+
+    </script>
+}
+
+

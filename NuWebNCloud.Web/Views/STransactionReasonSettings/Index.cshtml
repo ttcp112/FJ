@@ -1,0 +1,103 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.TransactionReasonSetting.ReasonViewModels
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transaction Reason Settings");
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                             new Dictionary<string, string> { { "A", "Settings" }, { "B","Transaction Reason Settings"}, { "C","View Data" }
+                             })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "STransactionReasonSettings", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.LstStoreID,
+                                        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.LstStoreID), "Please Choose Store",
+                                        new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "storeDdlView",
+                                            @style = "width:100%;",
+                                            @multiple = "multiple"
+                                        })*@
+                                    @*<select name="LstStoreID" id="storeDdl" class="form-control list-stores-group" style="width:100%;"> </select>*@
+
+                                    @*Group by company, updated 07172018*@
+                                    @Html.DropDownListFor(model => model.LstStoreID, (SelectList)ViewBag.StoresInfoSession, new
+                                    {
+	                                    @class = "form-control select2_multiple list-stores-group",
+	                                    @id = "storeDdl",
+	                                    @multiple = "multiple",
+	                                    @style = "width:100%;"
+                                    })
+
+                                    @Html.ValidationMessageFor(model => model.LstStoreID, null, new { @class = "validateLevel label label-danger" })
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function () {
+        //////===== Updated 07192018
+        $("#storeDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please Choose Store"))",
+            allowClear: true
+        }).val(@Html.Raw(Json.Encode(Model.LstStoreID))).trigger('change.select2');
+    });
+
+    $(".search-form").submit(function (e) {
+        var storeid = $("#storeDdl").val();
+        if (storeid !== "" && storeid != null)
+            Search();
+        return false;
+    });
+    $(function () {
+        //ready
+        Search();
+    });
+</script>
+
+    @*<script>       
+             $(document).ready(function () {
+                @*$('.list-stores-group').select2({
+                    placeholder: _SStore,
+                    multiple: true,
+                    data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+                });         
+          
+            });
+    </script>*@
+}

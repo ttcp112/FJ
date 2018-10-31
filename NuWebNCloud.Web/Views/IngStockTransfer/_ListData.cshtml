@@ -1,0 +1,121 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferViewModels
+@using NuWebNCloud.Shared.Utilities;
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Transfers"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transfer No."))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issuing Store"))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Store"))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Items Total"))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Date"))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Date"))
+                        </th>
+                        <th style="text-align:center;">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+                                <td style="text-align:center; color:#34495e; font-weight:bold;">@item.StockTransferNo</td>
+                                <td>@item.IssueStoreName</td>
+                                <td>@item.ReceiveStoreName</td>
+                                <td class="text-center">@item.ItemsTotal</td>
+                                <td class="text-center">@item.IssueDate.ToString("MM/dd/yyyy")</td>
+                                <td class="text-center">@item.ReceiveDate.ToString("MM/dd/yyyy")</td>
+                                <td>
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("View", "IngStockTransfer", new { id = item.Id })')"
+                                       class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "type": "string-string-num", targets: 0 },
+                { "orderable": false, "targets": [6] },
+                { "width": "12%", "targets": [0] },
+                { "width": "8%", "targets": [3] },
+                { "width": "10%", "targets": [4, 5] },
+                { "width": "5%", "targets": [6] },
+            ],
+            "order": [
+                [1, 'asc'],
+                [2, 'asc']
+            ],
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

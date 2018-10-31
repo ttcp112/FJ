@@ -1,0 +1,10 @@
+﻿<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index", "ACModule")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "view" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;View Data</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create", "ACModule")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "create" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add new</a>
+    </li>
+</ul>

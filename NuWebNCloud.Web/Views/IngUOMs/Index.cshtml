@@ -1,0 +1,165 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.UnitOfMeasureViewModel
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM Management")) ;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Recipe" }, { "C", "UOM Management - List data" } })
+            </div>
+        </div><!--end page-->
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div><!--end x_title-->
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngUOMs", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-active" onclick="EnableActive(true)"><i class="fa fa-check-square"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-inactive" onclick="EnableActive(false)"><i class="fa fa-square"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("InActive"))</a></li>
+                            </ul>
+                        </div>
+                        @*<div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12">
+                                    Search ingredients
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input type="text" class="form-control" id="textSearch" />
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" id="btnSearch" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;Load Data</button>
+                                </div>
+                            </div>*@
+
+                    }
+                    <div class="gridview">
+                    </div>
+
+                </div><!--end x_content-->
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <!--Row content-->
+        <div class="row">
+        </div>
+
+    </div><!--end page-->
+    <div class="detail-view" style="height:100%;">
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(function () {
+            Search();
+            disableButton(false);
+        });
+        var lstIdSelected = [];
+
+        function toggleCheckedAll() {
+            var isCheckAll = $('#check-all').prop("checked");
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('id');
+                if (isCheckAll === true) {
+                    $(listChk[i]).prop('checked', true);
+                    lstIdSelected.push(item);
+                    disableButton(true);
+                } else {
+                    $(listChk[i]).prop('checked', false);
+                    disableButton(false);
+                }
+            }
+        }
+
+        function toggleChecked() {
+            var _count = 0;
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('id');
+                if ($(listChk[i]).prop('checked') === true) {
+                    lstIdSelected.push(item);
+                    _count++;
+                }
+                if (listChk.length !== _count) {
+                    $('#check-all').prop("checked", false);
+                }
+                else {
+                    $('#check-all').prop("checked", true);
+                }
+                if (_count === 0) {
+                    disableButton(false);
+                } else {
+                    disableButton(true);
+                }
+            }
+        }
+
+        function disableButton(status) {
+            if (!status) {
+                $('#btn-active').addClass('disabled');
+                $('#btn-inactive').addClass('disabled');
+            } else {
+                $('#btn-active').removeClass('disabled');
+                $('#btn-inactive').removeClass('disabled');
+            }
+        }
+       
+        function showAction(urlLink) {
+            $.ajax({
+                url: urlLink,
+                type: 'GET',
+                dataType: 'json',
+                cache: false,
+                //data: { id: id },
+                success: function (data) {
+                    $(".se-pre-con").hide();
+                    $(".detail-view").html(data);
+                    $(".detail-view").show();
+                    $(".gridview").css("display", "none");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //debugger;
+                    $(".se-pre-con").hide();
+                    $(".detail-view").html(jqXHR.responseText);
+                }
+            });
+        };
+
+        function EnableActive(isActive) {
+            if (typeof lstIdSelected == 'undefined' || lstIdSelected.length == 0) {
+                alert("@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose least one ingredient"))!");
+                return;
+            }
+            $(".se-pre-con").show();
+            $.ajax({
+                url: '@Url.Action("EnableActive", "IngUOMs")',
+                type: 'POST',
+                dataType: 'html',
+                cache: false,
+                data: { lstId: lstIdSelected, active: isActive },
+                success: function () {
+                    $(".se-pre-con").hide();
+                    //window.location.href = "/IngUOMs";
+                    Search();
+                    disableButton(false);
+                },
+                error: function () { }
+            });
+        };
+    </script>
+}

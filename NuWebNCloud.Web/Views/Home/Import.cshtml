@@ -1,0 +1,72 @@
+﻿@model NuWebNCloud.Shared.Models.Sandbox.Import.SandboxImportModel
+@{
+    ViewBag.Title = "Import Language";
+}
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="#" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;Import</a></li>
+                                <li><a href="@Url.Action("Index", "Home")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Import", "Home", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data" }))
+                            {
+                                @*Choose language*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                        Choose language
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Html.DropDownListFor(model => model.ListStores,
+                                            new SelectList(@ViewBag.ListLang, "Value", "Text", Model.ListStores), null,
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "languageDdl",
+                                                @style = "width:100%;"
+                                            })
+                                        @Html.ValidationMessageFor(model => model.ListStores, null, new { @class = "label" })
+                                    </div>
+                                </div>
+
+                                <!-- FILE EXCEL -->
+                                <div class="form-group">
+                                    <label for="fileExel" class="col-md-2 control-label lineHeight">Choose file excel: </label>
+                                    <div class="checkbox col-md-5">
+                                        <label>
+                                            @Html.TextBoxFor(model => model.ExcelUpload, new { @type = "file", @accept = "*.xlsx" })
+                                            @Html.ValidationMessageFor(model => model.ExcelUpload, null, new { @class = "label" })
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SubmitForm(form) {
+            $(form).submit();
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#languageDdl").select2({
+                placeholder: "Please choose language",
+            });
+        });
+    </script>
+}

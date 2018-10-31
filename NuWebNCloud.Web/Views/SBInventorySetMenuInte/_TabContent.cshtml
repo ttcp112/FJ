@@ -1,0 +1,106 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteGroupProductModels
+@using NuWebNCloud.Shared.Utilities;
+
+<tr data-id="@Model.ID" style='@string.Format("display:{0}", Model.Status== 9 ? "none" : "table-row")' class="trTabOffSet">
+    <td>
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].OffSet", Model.StoreOffSet, Model.OffSet), Model.OffSet)
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Status", Model.StoreOffSet, Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].SetMenuID", Model.StoreOffSet, Model.OffSet), Model.SetMenuID)
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ID", Model.StoreOffSet, Model.OffSet), Model.ID)
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].StoreID", Model.StoreOffSet, Model.OffSet), Model.StoreID)
+        @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].StoreOffSet", Model.StoreOffSet, Model.OffSet), Model.StoreOffSet)
+
+        @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Sequence", Model.StoreOffSet, Model.OffSet), Model.Sequence, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @maxlength = 2,
+       @min = 0,
+       @id = "txtTabSequence"
+   })
+    </td>
+    <td>
+        @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Name", Model.StoreOffSet, Model.OffSet), Model.Name, new
+   {
+       @class = "form-control",
+       @placeholder = "" + @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tab's Name")) + "",
+       @id = "txtTabName"
+   })
+        @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Name", Model.StoreOffSet, Model.OffSet))
+    </td>
+    <td>
+        @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Description", Model.StoreOffSet, Model.OffSet), Model.Description, new
+   {
+       @class = "form-control",
+       @placeholder = "" + @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Display Message")) + "",
+       @id = "txtTabMessage"
+   })
+        @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Description", Model.StoreOffSet, Model.OffSet))
+    </td>
+    <td>
+        @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Maximum", Model.StoreOffSet, Model.OffSet), Model.Maximum, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @min = 0,
+       @maxlength = 2,
+       @id = "txtTabQuantity"
+   })
+        @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].Maximum", Model.StoreOffSet, Model.OffSet))
+    </td>
+    <td>
+        <button class="btn bg-fnb" type="button" onclick="ShowModalAddDish(this,'@Model.StoreID')">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Dishes"))
+        </button>
+    </td>
+    <td width="50px">
+        <a href="#" onclick="DeleteTabPanel(this); return false;" style="font-size:28px; color:red;">
+            <i class="fa fa-remove"></i>
+        </a>
+        <!-- Modal Add Dishes-->
+        <div class="modal fade" id="modalDish" tabindex="-1" role="dialog" aria-labelledby="modalDishLabel" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Dishes"))</h4>
+                    </div>
+                    <div class="modal-body scroll popupTabConent-@Model.StoreID" @*id="popupTabConent_@Model.StoreID"*@>
+                        <div class="form-group-sm">
+                            <table class="table center-content">
+                                <thead>
+                                    <tr style="background-color:#34495e; color:#fff;">
+                                        <th width="10%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</th>
+                                        <th width="50%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</th>
+                                        <th width="20%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extra Price"))</th>
+                                        <th width="10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="body-dishes">
+                                    @if (Model.ListProductOnGroup != null && Model.ListProductOnGroup.Count > 0)
+                                    {
+                                        @Html.Partial("_DishModal", Model)
+                                    }
+                                    <tr id="tr-add-more-dish_@Model.StoreID-@Model.StoreOffSet-@Model.OffSet">
+                                        <td colspan="4" style="padding-top:12px; text-align:left">
+                                            <a href="#" data-toggle="modal" data-target="#modal-choose-dishes_@Model.StoreID"
+                                               class="a-fnb" data-whatever="@Model.OffSet"
+                                               style="font-size:14px; color:#34495e;">
+                                                <i class="fa fa-plus"></i>
+                                                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <span></span>
+                        <button class="btn btn-default" onclick="PasteHtml($(this).parents('.modal-content:first').find('table > tbody'));" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                        <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save Changes"))</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>

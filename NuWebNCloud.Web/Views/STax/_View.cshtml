@@ -1,0 +1,125 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.TaxModels
+@using NuWebNCloud.Shared.Utilities;
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Settings" }, { "B", "Taxes" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", (Model.IsActive ? _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes") : _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")))
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Code
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Percent"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Percent%
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Price"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.TaxType == (byte)Commons.ETax.AddOn)
+            {
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETaxAddOnTax).ToString())
+}
+else if (Model.TaxType == (byte)Commons.ETax.Inclusive)
+{
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETaxIncludeTax).ToString())
+}
+else
+{
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Other"))
+}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Applicable Items"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", (Model.ListProductOfTaxSel != null && Model.ListProductOfTaxSel.Count > 0 ? Model.ListProductOfTaxSel.Count.ToString() : "0"))
+                                    </div>
+                                </div>
+                                @if (Model.ListProductOfTaxSel != null && Model.ListProductOfTaxSel.Any())
+                                {
+                                <div class="form-group">
+                                    <div class="col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+                                        <table class="table table-striped list-items">
+                                            <thead>
+                                                <tr style="background-color:#34495e; color:#fff;">
+                                                    <th width="17%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</th>
+                                                    <th width="83%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="body-dishes">
+                                                @for (int i = 0; i < Model.ListProductOfTaxSel.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td width="17%">
+                                                            @Model.ListProductOfTaxSel[i].ProductCode
+                                                        </td>
+                                                        <td  width="83%">
+                                                            @Model.ListProductOfTaxSel[i].ProductName
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .list-items tbody {
+        display: block;
+        max-height: 400px;
+        overflow: auto;
+    }
+
+    .list-items thead, .list-items tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+</style>

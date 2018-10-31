@@ -1,0 +1,130 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.RecipeProductViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Recipe")) + " - " + @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dishes"));
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Recipe" }, { "C", "Recipes - Dishes" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "Product")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngRecipes", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        @Html.HiddenFor(model => model.Type)
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                   @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) 
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.StoreID,
+                                    new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        @id = "storeDdlView",
+                                        @style = "width:100%;"
+                                    })*@
+
+                                    @*Group by company, updated 041420180*@
+                                    @Html.DropDownList("StoreID", (SelectList)ViewBag.StoreID, new
+                                    {
+                                        @class = "form-control",
+                                        @id = "storeDdlView",
+                                        @style = "width:100%;"
+                                    })
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#storeDdlView").select2({
+                placeholder: " @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+                allowClear: true
+            }).val('@Model.StoreID').trigger('change.select2');
+
+            Search();
+        });
+        $(".search-form").submit(function (e) {
+            var storeid = $("#storeDdlView").val();
+            if (storeid !== "")
+                Search();
+            return false;
+        });
+
+        function SearchIngredient(btn) {
+            var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+            var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+            var arrKeySearch = keySearch.split(' ');
+            if (keySearch != '') {
+                for (var i = 0; i < trs.length; i++) {
+                    var name = $.trim($(trs[i]).find('td#search').text());
+                    for (var j = 0; j < arrKeySearch.length; j++) {
+                        if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                            if ($(trs[i]).css('display') == 'none')
+                                $(trs[i]).css('display', 'table-row');
+                            break;
+                        }
+                        else
+                            if ($(trs[i]).css('display') == 'table-row')
+                                $(trs[i]).css('display', 'none');
+                    }
+                }
+            }
+            else {
+                $(trs).each(function (e) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                });
+            }
+        }
+
+        function TickCheckBox(td) {
+            var tr = $(td).parents('tr:first');
+            var isChecked = $(tr).find('input[type=checkbox]').prop('checked');
+            $(tr).find('input[type=checkbox]').prop('checked', isChecked)
+            if (isChecked == false) {
+                $(tr).find('input[type=text]').prop('value', "0");
+            }
+        }
+
+        function TickAllCheckBox(chk) {
+            var trs = $('.modal-body:first').find('tbody tr');
+            for (var i = 0; i < trs.length; i++) {
+                $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+                if (chk.checked == false) {
+                    $(trs[i]).find('input[type=text]').prop('value', "0");
+                }
+            }
+        }
+
+</script>
+}

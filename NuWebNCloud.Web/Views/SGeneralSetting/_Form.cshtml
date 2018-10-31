@@ -1,0 +1,1975 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.GeneralSettingModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = "0"/*Model.StoreID*/;
+    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+
+}
+@if (Model.ListSettings != null)
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImgBackgroundURL", Model.ImgBackgroundURL)
+    @Html.Hidden("SigImgURL", Model.SigImgURL)
+}
+
+@if (Model.ListInvoice != null)
+{
+    for (int i = 0; i < Model.ListInvoice.Count; i++)
+    {
+        @Html.Hidden(string.Format("ListInvoice[{0}].Setting.PublicImages", i), Model.ListInvoice[i].Setting.PublicImages)
+        @Html.Hidden(string.Format("ListInvoice[{0}].Setting.Logo", i), Model.ListInvoice[i].Setting.Logo)
+        @Html.Hidden(string.Format("ListInvoice[{0}].Setting.ImageURL", i), Model.ListInvoice[i].Setting.ImageURL)
+    }
+}
+
+<!-- timepicker -->
+@*<link rel="stylesheet" href='@Url.Content("~/vendors/timepicker/bootstrap-timepicker.min.css")'>
+<script src="@Url.Content("~/vendors/timepicker/bootstrap-timepicker.min.js")"></script>*@
+<script type="text/javascript" src="~/vendors/textarea/multiple-emails.js"></script>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/periodpicker/jquery.periodpicker.min.css")'>
+    <link type="text/css" rel="stylesheet" href="~/vendors/textarea/multiple-emails.css" />
+
+<script type="text/javascript">
+
+    $('#demo').multiple_emails();
+</script>
+
+<style>
+    .multiple_emails-input text-left {
+        padding-left: 12px !important;
+    }
+</style>
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.StoreID,
+                       new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                       !string.IsNullOrEmpty(_ID) ? (object)new
+                       {
+                           @class = "form-control select2_multiple",
+                           @disabled = "disabled",
+                           @id = "storeDdl",
+                           @style = "width:100%;"
+                       } : new
+                       {
+                           @class = "form-control select2_multiple",
+                           @id = "storeDdl",
+                           @style = "width:100%;"
+                       })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Home Page Background*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Home Page Background")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-4">
+                        <button class="btn btn-default" type="button" onclick="showBackgroundUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+                        @Html.TextBoxFor(model => model.ImgBackgroundUpload,
+                  new { @type = "file", @onchange = "PreviewImage(this,\"background-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage1" })
+                    </div>
+                    <div class="col-sm-3">
+                        @if (!string.IsNullOrEmpty(Model.ImgBackgroundURL))
+                        {
+                            <img id="background-preview" src="@Model.ImgBackgroundURL" height="100" width="200" class="col-sm-offset-2" />
+                        }
+                        else
+                        {
+                            <img id="background-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Signature*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Signature")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Insert text in footer of Receipt")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.SigInserText)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Message")) </label>
+                    <div class="col-sm-6">
+                        @Html.TextAreaFor(model => model.SigMessage, new { @class = "form-control", @style = "height:250px;" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Sign_Image" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Signature Image")) </label>
+                    <div class="col-sm-4">
+                        <button class="btn btn-default" type="button" onclick="showSignatureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+                        @Html.TextBoxFor(model => model.SigImgUpload, new
+                        {
+                            @type = "file",
+                            @onchange = "PreviewImage(this,\"signimage-preview\")",
+                            @accept = "*.jpg",
+                            @class = "hidden",
+                            @id = "urlImage2"
+                        })
+                    </div>
+                    <div class="col-sm-3">
+                        @if (!string.IsNullOrEmpty(Model.SigImgURL))
+                        {
+                            <img id="signimage-preview" src="@Model.SigImgURL" height="100" width="200" class="col-sm-offset-2" />
+                        }
+                        else
+                        {
+                            <img id="signimage-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Sign_Image" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image Position")) </label>
+                    <div class="col-sm-5">
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsPositionSigImg, "true", new { @checked = "checked", @id = "idPositionSignYes", @class = "flat", @name = "Top" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Top"))
+                            </label>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsPositionSigImg, "false", new { @class = "flat", @name = "Bottom", @id = "idPositionSignNo" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Bottom"))
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Check Prefix*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Prefix")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Prefix")) </label>
+                    <div class="col-sm-6">
+                        @Html.TextBoxFor(model => model.ReceiptPrefix, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reset daily for receipt")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.ResetDailyForReceipt)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Prefix ")) </label>
+                    <div class="col-sm-6">
+                        @Html.TextBoxFor(model => model.OrderPrefix, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reset daily for order")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.ResetDailyForOrder)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Number")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.TextBoxFor(model => model.StartNumber, new { @class = "form-control", type = "number" })
+                            @Html.ValidationMessageFor(model => model.StartNumber, null, new { @class = "label" })
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Reservation*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reservation")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time in advance of valid reservation(minutes)")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.ReAdvanceForValid, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ReAdvanceForValid, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time in advance to remind customer for reservation(minutes)")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.ReAdvanceToRemind, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ReAdvanceToRemind, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of time for holding reserved table(minutes)")) </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Before")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.ReBefore, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ReBefore, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("After"))</label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.ReHAfter, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ReHAfter, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Timeslot Period (minutes)"))</label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.TimeslotPeriod, new { @class = "form-control", })
+                        @Html.ValidationMessageFor(model => model.TimeslotPeriod, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Maximum of person(s) come"))</label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.MaximunOfPersonCome, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MaximunOfPersonCome, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add on"))</label>
+                    <div class="col-sm-1">
+                        @Html.TextBoxFor(model => model.AddOnOfPersonForReservationOrBooking, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AddOnOfPersonForReservationOrBooking, null, new { @class = "label" })
+                    </div>
+                    <label class="col-sm-4">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("of persons for reservation/ booking"))</label>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Duplicates"))</label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.NumberofDuplicates, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NumberofDuplicates, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:20px">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow Duplicate Booking")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.AllowDuplicateBooking)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Delivery Time Setup*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Setup")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Auto Send Order(minutes)")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.AutoSendOrderTime, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AutoSendOrderTime, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Notification Reminder(minutes)"))</label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.NotificationReminder, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NotificationReminder, null, new { @class = "label" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Notification Push Time(minutes)")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.NotificationPushTime, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NotificationPushTime, null, new { @class = "label" })
+                    </div>
+                </div>
+
+                @*For Version 3*@
+                @if (user.POSInstanceVersion.HasValue)
+                {
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Minium Amount for Delivery Order")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.MinimumAmountForDeliveryOrder, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MinimumAmountForDeliveryOrder, null, new { @class = "label" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount of Time in Advance of Valid Delivery/Pickup(min)")) </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("After Starting Bussiness")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.AfterStartingBusiness, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.AfterStartingBusiness, null, new { @class = "label" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Before Ending Bussiness")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.BeforeEndingBusiness, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.BeforeEndingBusiness, null, new { @class = "label" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time slot")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.DeliveryTimeSlot, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.DeliveryTimeSlot, null, new { @class = "label" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Need Pincode to Confirm Delivery/Pickup(min)")) </label>
+                        <div class="col-sm-3">
+                            <label>
+                                @Html.CheckBoxFor(model => model.NeedPincodeToConfirmPickupDeliveryNupos)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to auto accept")) </label>
+                        <div class="col-sm-3">
+                            <label>
+                                @Html.CheckBoxFor(model => model.DeliveryAllowToAutoAccept)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Create Online Pickup Order")) </label>
+                        <div class="col-sm-3">
+                            <label>
+                                @Html.CheckBoxFor(model => model.AllowToCreateOnlinePickupOrder)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Create Online Delivery Order")) </label>
+                        <div class="col-sm-3">
+                            <label style="padding-right: 10px; ">
+                                @Html.CheckBoxFor(model => model.AllowToCreateOnlineDeliveryOrder)
+                            </label>
+                            <a id="" href="javascript:void(0)" class="btn btn-primary btn-sm" style="font-size:15px; background-color: #337ab7; color: #fff; "
+                               data-toggle="modal" @*data-backdrop="static"*@ data-target=".bs-example-modal-order-form-wallet">
+                                <i class="fa fa-plus-square" style="font-size:14px;"></i>
+                                <span>Served Area</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply Tax on Delivery Fee")) </label>
+                        <div class="col-sm-3">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ApplyTaxOnDeliveryFee)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Cancel Delivery/Pickup Order from Wallet")) </label>
+                        <div class="col-sm-3">
+                            <label style="padding-right: 10px; ">
+                                @Html.CheckBoxFor(model => model.AllowToCancelDeliveryPickupOrderFromWallet)
+                            </label>
+                            <a id="" href="javascript:void(0)" class="btn btn-primary btn-sm" style="font-size:15px; background-color: #337ab7; color: #fff; " data-toggle="modal" @*data-backdrop="static"*@ data-target=".bs-example-modal-delivery-fee">
+                                <i class="fa fa-plus-square" style="font-size:14px;"></i>
+                                <span>Select</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Fee"))</label>
+                        <div class="col-md-5 text-right" style="border-bottom: 2px solid #ddd;">
+                            <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreTab01(this); return false;" style="font-size:16px; color:#34495e;">
+                                <i class="fa fa-plus"></i>
+                                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                            </a>
+                            @*<span style="color:red; display:none" id="storeSpending">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please entering...."))</span>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-xs-12"></label>
+                        <div id="div-delivery-fee" class="col-md-offset-3 col-md-6" style="float:none;">
+                            <table class="table center-content">
+                                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                                    @if (Model.ListDeliveryFee != null && Model.ListDeliveryFee.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.ListDeliveryFee.Count; i++)
+                                        {
+                                            @Html.Partial("_TabDeliveryFee", Model.ListDeliveryFee[i])
+                                        }
+                                    }
+                                    <tr id="tr-add-more-tab-delivery-fee">
+                                        <td style="padding-top:12px; text-align:left" colspan="6"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        @Html.ValidationMessage("DeliveryFee", new { @class = "col-md-offset-2 col-md-10 label" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @*Time for holding change popup after payment*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for holding change popup after payment")) </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for holding Change popup after payment(second)")) </label>
+                    <div class="col-sm-3">
+                        @Html.TextBoxFor(model => model.TimeHoldingAfterPayment, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TimeHoldingAfterPayment, null, new { @class = "label" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+            </div>
+        </div>
+    </div>
+
+    @*Auto Print Guest Check*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Auto Print Guest Check")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.AutoPrintGuestCheck)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Single Order Chit *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Single Order Chit")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.SingleOrderChit)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Total Order Chit*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Total Order Chit")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.TotalOrderChit)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Allow Booking Online*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow Booking Online")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.AllowBookingOnline)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Print Consolidated*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Consolidated")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PrintConsolidated)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Print Add On Items For Total Chit*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Add On Items For Total Chit")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PrintAddOnItemsForTotalChit)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show Value In Cash Drawer*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Cash Drawer")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowValueInCashDrawer)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Show Value In Shit*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Shift")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowValueInShift)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show Value In Store*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Value In Store")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowValueInStore)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show Deletion Confirmation For 'Sent' Item*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Deletion Confirmation For 'Sent' Item")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowDeletionConfirmationForSentItem)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show Deletion Confirmation For Whole Order*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Deletion Confirmation For Whole Order")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowDeletionConfirmationForWholeOrder)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show All Categories*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show All Categories")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowAllCategories)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Updated 08172017*@
+    @*Make Table Available*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Make Table Available")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.MakeTableAvailable)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*No Sale Setting*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No Sale Setting")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.NoSaleSetting)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Show BarCode*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show BarCode")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowBarcode)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Show Pop Up to Print receipt*@
+    @*<div class="form-group" style="margin-top:20px">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="box-header with-border">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Pop Up to Print receipt")) </label>
+                            <div class="col-sm-1">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.ShowPopUpToPrintReceipt)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    @*Print receipt*@
+    @*<div class="form-group" style="margin-top:20px">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="box-header with-border">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Receipt")) </label>
+                            <div class="col-sm-1">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.PrintReceipt)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    @*The Sales from Integration Include in Mall Report*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The Sales from Integration Include in Mall Report")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IntegrationInclude)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Allow to manually choose promotions having same priority*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to manually choose promotions having same priority")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ManualPromotion)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Mall Report Setting*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report Setting")) </h4>
+            </div>
+            <div class="box-body">
+            </div>
+        </div>
+    </div>
+
+    @*Is Submit Mall Report*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Submit Mall Report")) </label>
+
+
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsSubmitMallReport, "true", new { @checked = "checked", @id = "idIsSubmitMallReportYes", @class = "flat", @name = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("YES") }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes"))
+                            </label>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsSubmitMallReport, "false", new { @class = "flat", @name = "NO", @id = "idIsSubmitMallReportNo" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No"))
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Is Submit Mall Report*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Notify Submit Mall Report")) </label>
+
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsNotifySubmitMallReport, "true", new { @checked = "checked", @class = "flat", @name = "YES", @id = "idIsNotifySubmitMallReportYes" })
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes").ToUpper())
+                            </label>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsNotifySubmitMallReport, "false", new { @class = "flat", @name = "NO", @id = "idIsNotifySubmitMallReportNo" })
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No").ToUpper())
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Mall Report Mail To*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report Mail To")) </label>
+                        <div class="col-sm-3">
+                            @*<input type="text" id="demo" style="padding-left: 20px !important;" name="email" value="[@Model.MallReportMailTo]">*@
+                            @Html.TextBoxFor(model => model.MallReportMailTo, new { @id = "demo", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MallReportMailTo, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Local folder report*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Local folder report")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.FTPFolderReport, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.FTPFolderReport, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*FTP User*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("FTP User")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.FTPUser, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.FTPUser, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*FTP Password*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("FTP Password")) </label>
+                        <div class="col-sm-3">
+                            @Html.PasswordFor(model => model.FTPPassword, new
+                            {
+                                @class = "form-control",
+                                @value = Model.FTPPassword
+                            })
+                            @Html.ValidationMessageFor(model => model.FTPPassword, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Mall Report File Name Format*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group" style="margin-bottom:0px;">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mall Report File Name Format")) </label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.DropDownListFor(model => model.IDMachineID,
+                                            new SelectList(Model.ListMachineID, "Value", "Text", Model.IDMachineID),
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "ListMachineID",
+                                                @style = "width:100%;"
+                                            })
+                            @Html.ValidationMessageFor(model => model.IDMachineID, null, new { @class = "label" })
+                        </div>
+
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.DropDownListFor(model => model.IDDate,
+                                            new SelectList(Model.ListDate, "Value", "Text", Model.IDDate),
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "ListDate",
+                                                @style = "width:100%;"
+                                            })
+                            @Html.ValidationMessageFor(model => model.IDDate, null, new { @class = "label" })
+                        </div>
+
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.DropDownListFor(model => model.IDHour,
+                                            new SelectList(Model.ListHour, "Value", "Text", Model.IDHour),
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "ListHour",
+                                                @style = "width:100%;"
+                                            })
+                            @Html.ValidationMessageFor(model => model.IDHour, null, new { @class = "label" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Separator")) </label>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        @Html.DropDownListFor(model => model.IDSeparator,
+                                            new SelectList(Model.ListSeparator, "Value", "Text", Model.IDSeparator),
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "ListSeparator",
+                                                @style = "width:100%;"
+                                            })
+                        @Html.ValidationMessageFor(model => model.IDSeparator, null, new { @class = "label" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*MachineID*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("MachineID"))</label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.MachineID, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MachineID, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Order Management Setting*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Management Setting")) </h4>
+            </div>
+            <div class="box-body">
+            </div>
+        </div>
+    </div>
+
+    @*System will not keep last orders in serve tab anymore => At Settings module - General - Order Management Settings - Remove "Number of Latest Order" will be removed, updated 09142018*@
+    @*Number Of Latest Order*@
+    @*<div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number Of Latest Order")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.NumberOfLatestOrder, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.NumberOfLatestOrder, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    @*Number of Days Allow for Refund*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Days Allow for Refund")) </label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.NumberofDaysAllowforRefund, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.NumberofDaysAllowforRefund, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Sound Prepare Screen*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sound Prepare Screen")) </label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.DropDownListFor(model => model.SoundPrepareScreen,
+                                              new SelectList(Model.ListSounds, "Value", "Text", Model.SoundPrepareScreen),
+                                              new
+                                              {
+                                                  @class = "form-control select2_multiple",
+                                                  @id = "ListSoundPrepare",
+                                                  @style = "width:100%;"
+                                              })
+                            @Html.ValidationMessageFor(model => model.SoundPrepareScreen, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Sound Serve Screen*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sound Serve Screen")) </label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.DropDownListFor(model => model.SoundServeScreen,
+                                              new SelectList(Model.ListSounds, "Value", "Text", Model.SoundServeScreen),
+                                              new
+                                              {
+                                                  @class = "form-control select2_multiple",
+                                                  @id = "ListSoundServe",
+                                                  @style = "width:100%;"
+                                              })
+                            @Html.ValidationMessageFor(model => model.SoundServeScreen, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Item Background After Changed to Ready(Frid View)*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Background After Changed to Ready(Frid View)")) </label>
+                        <div class="col-sm-3">
+                            <div class="input-group" id="divItemBackgroundReady">
+                                @Html.TextBoxFor(model => model.ItemBackgroundReady, new
+                                {
+                                    @class = "form-control",
+                                    @value = "#dddfe1",
+                                    @id = "txtItemBackgroundReady",
+                                })<span class="input-group-addon"><i></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Item Background After Changed to Served(Frid View)*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Background After Changed to Served(Frid View)")) </label>
+                        <div class="col-sm-3">
+                            <div class="input-group" id="divItemBackgroundServed">
+                                @Html.TextBoxFor(model => model.ItemBackgroundServed, new
+                                {
+                                    @class = "form-control",
+                                    @value = "#dddfe1",
+                                    @id = "txtItemBackgroundServed",
+                                })<span class="input-group-addon"><i></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Number of cell shown in Order Managementt(Grid View)*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of cell shown in Order Managementt(Grid View)")) </label>
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsNumOfCellOrderMana, "true", new { @checked = "checked", @id = "idIsNumOfCellOrderManaYes", @class = "flat", @name = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("3 Cells") }) &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(" 3 Cells"))
+                            </label>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.IsNumOfCellOrderMana, "false", new { @class = "flat", @name = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("6 Cells"), @id = "idIsNumOfCellOrderManaNo" }) &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(" 6 Cells"))
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Time for order stays in PENDING status (min)*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for order stays in PENDING status (min)"))</label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.PendingTime, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PendingTime, null, new { @class = "label" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Time Configuration in Reports*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Configuration in Reports")) </h4>
+            </div>
+            <div class="box-body">
+            </div>
+        </div>
+    </div>
+
+    @*BreakFast*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="BreakFast" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BreakFast")) </label>
+
+                    <div class="form-group">
+                        <label for="BreakfastStart" class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start"))</label>
+                        <div class="col-md-3 col-sm-8 col-xs-12 ">
+
+                            <div class="bootstrap-timepicker">
+                                <div class="bootstrap-timepicker-widget dropdown-menu">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                                <td class="separator">&nbsp;</td>
+                                                <td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                                <td class="separator">&nbsp;</td>
+                                                <td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="bootstrap-timepicker-hour">12</span></td>
+                                                <td class="separator">:</td>
+                                                <td><span class="bootstrap-timepicker-minute">15</span></td>
+                                                <td class="separator">&nbsp;</td>
+                                                <td><span class="bootstrap-timepicker-meridian">PM</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                                <td class="separator"></td>
+                                                <td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                                <td class="separator">&nbsp;</td>
+                                                <td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.BreakfastStart,
+                                                      new
+                                                      {
+                                                          @class = "form-control timepicker",
+                                                          @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Breakfast Start")
+                                                      })
+                                </div>
+                            </div>
+                        </div>
+                        <label for="BreakfastEnd" class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End"))</label>
+                        <div class="col-md-3 col-sm-8 col-xs-12 ">
+                            <div class="bootstrap-timepicker">
+                                <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.BreakfastEnd,
+                                              new
+                                              {
+                                                  @class = "form-control timepicker",
+                                                  @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Breakfast End")
+                                              })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Lunch*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="Lunch" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Lunch")) </label>
+                    <label class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start"))</label>
+                    <div class="col-md-3 col-sm-8 col-xs-12 ">
+                        <div class="bootstrap-timepicker">
+                            <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                @Html.TextBoxFor(model => model.LunchStart,
+                                          new
+                                          {
+                                              @class = "form-control timepicker",
+                                              @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Lunch Start")
+                                          })
+                            </div>
+                        </div>
+                    </div>
+                    <label class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End"))</label>
+                    <div class="col-md-3 col-sm-8 col-xs-12 ">
+                        <div class="bootstrap-timepicker">
+                            <div class="bootstrap-timepicker-widget dropdown-menu">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                            <td class="separator">&nbsp;</td>
+                                            <td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                            <td class="separator">&nbsp;</td>
+                                            <td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="bootstrap-timepicker-hour">12</span></td>
+                                            <td class="separator">:</td>
+                                            <td><span class="bootstrap-timepicker-minute">15</span></td>
+                                            <td class="separator">&nbsp;</td>
+                                            <td><span class="bootstrap-timepicker-meridian">PM</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                            <td class="separator"></td>
+                                            <td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                            <td class="separator">&nbsp;</td>
+                                            <td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                @Html.TextBoxFor(model => model.LunchEnd,
+                                          new
+                                          {
+                                              @class = "form-control timepicker",
+                                              @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Lunch End")
+                                          })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Dinner*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="Dinner" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dinner")) </label>
+                    <div class="form-group">
+                        <label class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start"))</label>
+                        <div class="col-md-3 col-sm-8 col-xs-12 ">
+                            <div class="bootstrap-timepicker">
+                                <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.DinnerStart,
+                                              new
+                                              {
+                                                  @class = "form-control timepicker",
+                                                  @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dinner Start")
+                                              })
+                                </div>
+                            </div>
+                        </div>
+                        <label class="col-md-1 col-sm-1 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End"))</label>
+                        <div class="col-md-3 col-sm-8 col-xs-12 ">
+                            <div class="bootstrap-timepicker">
+                                <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.DinnerEnd,
+                                              new
+                                              {
+                                                  @class = "form-control timepicker",
+                                                  @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dinner End")
+                                              })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Invoice Setting*@
+    <div class="form-group" style="margin-top:20px">
+        @if (Model.ListInvoice != null)
+        {
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="box-header with-border">
+                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice Settings"))</h4>
+                </div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice"))</label>
+                        <div class="col-sm-3">
+                            <div class="invoice">
+                                @Html.DropDownListFor(model => model.InvoiceID, new SelectList(Model.ListInvoice, "ID", "Name", Model.InvoiceID),
+                                            null, new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "ddlInvoice",
+                                                @style = "width:100%;",
+                                                @onChange = "chkItemInvoiceSettingClick(this, '" + @Model.StoreID + "')",
+                                            })
+                            </div>
+                            @Html.ValidationMessageFor(model => model.InvoiceID, null, new { @class = "label" })
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="tr-tab-Invoice-Setting">
+                        @for (int i = 0; i < Model.ListInvoice.Count; i++)
+                        {
+                            if (Model.ListInvoice[i].IsSelected)
+                            {
+                                @Html.Partial("_TabInvoiceSetting", Model.ListInvoice[i])
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @*Bottle Service *@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <div class="box-header with-border">
+                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Bottle Service")) </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Text to Show at Label Format*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <label for="" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Text to Show at Label Format")) </label>
+                <div class="col-md-3 col-sm-3 col-xs-12 ">
+                    @Html.TextBoxFor(model => model.FormatText, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.FormatText, null, new { @class = "label" })
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Expiry Date*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <label for="" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Expiry Date (days)")) </label>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    @Html.TextBoxFor(model => model.ExpiryDate, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ExpiryDate, null, new { @class = "label" })
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Time for Notification Reminder ( days)*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <label for="" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time for Notification Reminder (days)")) </label>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    @Html.TextBoxFor(model => model.TimeforNotificationReminder, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TimeforNotificationReminder, null, new { @class = "label" })
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Set up Payment Options when Making Order on IOne2*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <div class="box-header with-border">
+                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set up Payment Options when Making Order on IOne2")) </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Add to Tab*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add to Tab")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.AddToTab)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Pay to Waiter *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Pay to Waiter")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.PayToWaiter)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    @*End day report*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <div class="box-header with-border">
+                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Day Report")) </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Print and of day report when close drawer*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of day report when close Drawer"))</label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PrintReportWhenCloseDrawer)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print End of Day Report After Close Shift *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of Day Report After Close Shift")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.PrintEndShiftReport)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Include Drawer Data *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Drawer Data")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IncludeDrawerData)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print End of Day Report After Close Store *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print End of Day Report After Close Store"))</label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PrintEndDayReport)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Include Shift Data *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Shift Data")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IncludeShiftData)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print Out Categories *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Out Categories")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.PrintDayCategorySale)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print Out Menu Item Sales *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Out Menu Item Sales")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.PrintDayMenuItemSale)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*Receipt Setting*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group">
+                <div class="box-header with-border">
+                    <h4 class="box-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Setting")) </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print Receipt *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Receipt")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PrintReceipt)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Show Pop Up to Print receiptPrint receipt*@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show Pop Up to Print receipt")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.ShowPopUpToPrintReceipt)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Print Company Name on Receipt/Audit/Refund *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print Company Name on Receipt/Audit/Refund")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.PrintReceiptCompany)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Add Extra Price to Dish/Set *@
+    <div class="form-group" style="margin-top:20px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Extra Price to Dish/Set")) </label>
+                    <div class="col-sm-1">
+                        <label>
+                            @Html.CheckBoxFor(model => model.AddExtraPriceToDishSet)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*Modal DELIVERY FEE*@
+    <div class="modal fade bs-example-modal-delivery-fee" id="modal-choose-delivery-fee" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style=" text-align: left;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select Order Status Allowed to Cancel"))</h4>
+                </div>
+                <div class="modal-body scroll" style="">
+                    <div class="" style="background-color: #34495e; color: #fff;  padding-top: 5px; padding-bottom: 5px; padding-left: 15px; margin-bottom: 5px; ">Pickup Order</div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("New")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PickupNew)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accepted")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PickupAccepted)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ready")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.PickupReady)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="" style="background-color: #34495e; color: #fff; padding-top: 5px; padding-bottom: 5px; padding-left: 15px; margin-bottom: 5px; ">Delivery Order</div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("New")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.DeliveryNew)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Accepted")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.DeliveryAccepted)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ready")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.DeliveryReady)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivering")) </label>
+                        <div class="col-sm-1">
+                            <label>
+                                @Html.CheckBoxFor(model => model.DeliveryDelivering)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align:right;">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Modal Allow to Cancel Delivery/Pickup Order from Wallet*@
+    <div class="modal fade bs-example-modal-order-form-wallet" id="modal-choose-order-from-wallet" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style=" text-align: left;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Served Area Setup"))</h4>
+                </div>
+                <div id="div-postal-code" class="modal-body scroll" style="padding-top: 10px; ">
+                    <table class="table center-content">
+                        <thead style=" background-color: #34495e">
+                            <tr style="color: #fff; ">
+                                <th>Postal Code</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListPostalCode != null && Model.ListPostalCode.Count > 0)
+                            {
+                                for (int i = 0; i < Model.ListPostalCode.Count; i++)
+                                {
+                                    @Html.Partial("_TabPostalCode", Model.ListPostalCode[i])
+                                }
+                            }
+                            <tr id="tr-add-more-tab-wallet">
+                                <td style="padding-top:12px; text-align:left" colspan="7">
+                                    <a id="btn-add-more-tabPostal" href="#" class="a-fnb" onclick="AddMorePostal(this, true); return false;" style="font-size:16px; color:#34495e;">
+                                        <i class="fa fa-plus"></i>
+                                        <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="modal-footer" style="text-align:right;">
+                        <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .bootstrap-timepicker-widget.dropdown-menu {
+        z-index: 99999 !important;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $(".timepicker").timepicker({
+            timeFormat: 'HH:mm',
+            showInputs: false,
+            showMeridian: false
+        });
+        Preview();
+        if (typeof ($.fn.colorpicker) === 'undefined') {
+            return;
+        }
+    
+        $('#divItemBackgroundReady').colorpicker();
+        $('#divItemBackgroundServed').colorpicker();
+    });
+
+    function colorpicker(index){
+
+    }
+
+    function Preview(bgColor) {
+    }
+
+    function showBackgroundUpload() {
+        $('[id=urlImage1]').click();
+    }
+    function showSignatureUpload() {
+        $('[id=urlImage2]').click();
+    }
+
+    function showLogoInvoiceUpload() {
+        $('[id=urllogoInvoice]').click();
+    }
+    //for tab delivery fee
+
+    function AddMoreTab01(e) {
+        AddMoreDeliveryFee(e);
+    }
+
+    function AddMoreDeliveryFee(e) {
+        $('.se-pre-con').show();
+        var currentOffset = $("#div-delivery-fee > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddDeliveryFee", "SGeneralSetting")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab-delivery-fee").before(data);
+            }
+        });
+    }
+
+    function DeleteTabPanelDeliveryFee(btn) {
+        var count = $(".deliveryFeeRow:visible").length;
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.GroupStatus').val(9);
+        $(tr).css('display', 'none');
+    }
+    //end delivery fee
+
+    //For tab Allow to Cancel Delivery/Pickup Order from Wallet Postal Code
+    function AddMorePostal(e) {
+        $('.se-pre-con').show();
+        var currentOffset = $("#div-postal-code > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddPostalCode", "SGeneralSetting")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab-wallet").before(data);
+            }
+        });
+    }
+
+    function DeleteTabPanelPostal(btn) {
+        var count = $(".PostalRow:visible").length;
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.GroupStatus').val(9);
+        $(tr).css('display', 'none');
+    }
+
+    function chkItemInvoiceSettingClick(e, StoreID) {
+        $('.se-pre-con').show();
+        var InvoiceID = $(e).val();
+        if (InvoiceID != "0") {
+            $("#tr-tab-Invoice-Setting").show();
+            $.ajax({
+                url: '@Url.Action("AddTabInvoiceSetting", "SGeneralSetting")',
+                type: 'get',
+                data: {
+                    invoiceID: InvoiceID,
+                    storeID: StoreID
+                },
+                dataType: 'html',
+                success: function (data) {
+                    $('.se-pre-con').hide();
+                    $("#tr-tab-Invoice-Setting").html(data);
+                }
+            });
+        }
+        else {
+            $("#tr-tab-Invoice-Setting").hide();
+            $('.se-pre-con').hide();
+        }
+    }
+
+    //End tab Allow to Cancel Delivery/Pickup Order from Wallet Postal Code
+</script>
+@*<script type="text/javascript" src="@Url.Content("~/vendors/jquery/dist/jquery.min.js")"></script>*@

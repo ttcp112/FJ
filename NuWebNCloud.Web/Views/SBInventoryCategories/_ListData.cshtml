@@ -1,0 +1,153 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.CategoriesViewModels
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Categories"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Parent Name"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+                                <td style="color:#34495e; font-weight:bold;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Model.ListItem[i].Name</td>
+                                <td style="text-align:center;color:#34495e; font-weight:bold;">@Model.ListItem[i].ParentName</td>
+                                <td style="text-align:center;">@Model.ListItem[i].ProductTypeName</td>
+                                <td style="text-align:center;">@Model.ListItem[i].StoreName</td>
+                                <td style="text-align:center;">
+                                    <img src="@Model.ListItem[i].ImageURL" height="30" width="30" class="img-circle" />
+                                </td>
+                                <td style="text-align:center;">
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("View", "SBInventoryCategories", new { id = Model.ListItem[i].ID })')"
+                                       class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>&nbsp;&nbsp;
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Edit", "SBInventoryCategories", new { id = Model.ListItem[i].ID })')"
+                                       class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Edit"))</a>&nbsp;&nbsp;
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Delete", "SBInventoryCategories", new { id = Model.ListItem[i].ID })')"
+                                       class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [4, 5] },
+                { "width": "10%", "targets": 1 },
+                { "width": "5%", "targets": 2 },
+                { "width": "8%", "targets": 3 },
+                { "width": "5%", "targets": 4 },
+                { "width": "10%", "targets": 5 },
+
+            ],
+            "order": [
+                [3, 'asc'],
+                [1, 'asc'],
+                [2, 'asc'],
+                [0, 'asc']
+            ],
+            "displayLength": 25,
+            "drawCallback": function ( settings ) {
+                var api = this.api();
+                var rows = api.rows( {page:'current'} ).nodes();
+                var last = null;
+                ////Column Group
+                //api.column(3, {page:'current'} ).data().each( function (group, i) {
+                //    if ( last !== group ) {
+                //        $(rows).eq(i).before(
+                //            '<tr class="group"><td colspan="6"><strong style="color:#d9534f;">'+(group === '' ? '|' :  group)+'</strong></td></tr>'
+                //        );
+                //        last = group;
+                //    }
+                //} );
+
+                var columns = [3, 1];
+                for (i = 0; i < columns.length; i++) {
+                    var last = null;
+                    var colNo = columns[i];
+                    api.column(colNo, { page: 'current' }).data().each(function (group, index) {
+                        if (last !== group) {
+                            //alert(group + '|' + index);
+                            if (group != '') {
+                                if (i == 0) {
+                                    $(rows).eq(index).before(
+                                        '<tr class="group"><td colspan="6"><strong style="color:#d9534f;">' + (group === '' ? '|' : group) + '</strong></td></tr>'
+                                    );
+                                } else {
+                                    $(rows).eq(index).before(
+                                        '<tr class="group row-group-category"><td colspan="6"><strong>&nbsp;&nbsp;' + (group === '' ? '-' : group) + '</strong></td></tr>'
+                                    );
+                                }
+                            }
+                            last = group;
+                        }
+                    });
+                }
+
+            }
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

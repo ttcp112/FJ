@@ -1,0 +1,159 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.CustomerViewModels
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Customers"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("NRIC"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Gender"))</th>
+                        <th style="text-align:center;"></th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Membership"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))</th>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+                                <td style="color:#34495e; font-weight:bold;">
+                                    &nbsp;&nbsp;&nbsp;@Model.ListItem[i].Name
+                                </td>
+                                <td style="text-align:center;">@Model.ListItem[i].IC</td>
+                                <td style="text-align:center;">@Model.ListItem[i].Phone</td>
+                                <td style="text-align:center;">@Model.ListItem[i].Email</td>
+                                <td style="text-align:center;">
+                                    @if (Model.ListItem[i].Gender)
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EGender.Male.ToString()))
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EGender.Female.ToString()))
+                                    }
+                                </td>
+                                <td style="text-align:center;">
+                                    @if (Model.ListItem[i].IsMembership)
+                                    {
+                                        <i class="glyphicon glyphicon-star" style="color: #FFB026;"></i>
+                                    }
+                                </td>
+                                <td style="text-align:center;">@Model.ListItem[i].JoinedDate.ToString("dd/MM/yyyy")</td>
+                                <td style="text-align:center;">@Model.ListItem[i].StoreName</td>
+                                <td style="text-align:center;">
+                                    <img src="@Model.ListItem[i].ImageURL" height="30" width="30" class="img-circle" />
+                                </td>
+                                <td style="text-align:center;">
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("View", "SBCustomer", new { id = Model.ListItem[i].ID, StoreId = Model.ListItem[i].StoreID })')"
+                                       class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>&nbsp;&nbsp;
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Edit", "SBCustomer", new { id = Model.ListItem[i].ID, StoreId = Model.ListItem[i].StoreID })')"
+                                       class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Edit"))</a>&nbsp;&nbsp;
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Delete", "SBCustomer", new { id = Model.ListItem[i].ID, StoreId = Model.ListItem[i].StoreID })')"
+                                       class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [8, 9] },
+                { "width": "8%", "targets": 1 },
+                { "width": "8%", "targets": 2 },
+                { "width": "8%", "targets": 3 },
+                { "width": "8%", "targets": 4 },
+                { "width": "2%", "targets": 5 },
+                { "width": "8%", "targets": 6 },
+                { "width": "5%", "targets": 7 },
+                { "width": "5%", "targets": 8 },
+                { "width": "10%", "targets": 9 },
+            ],
+            "order": [[7, 'asc']],
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(7, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="10"><strong style="color:#d9534f;">' + group + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+
+        $('#datatable-scroller').DataTable({
+            ajax: "js/datatables/json/scroller-demo.json",
+            deferRender: true,
+            scrollY: 380,
+            scrollCollapse: true,
+            scroller: true
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

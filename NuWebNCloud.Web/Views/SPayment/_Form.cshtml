@@ -1,0 +1,409 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.PaymentMethodModels
+@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+    var _IsDisabled = false;
+}
+@Html.HiddenFor(model => model.ID)
+@Html.HiddenFor(model => model.IsIncludeOnSale)
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    if (Model.Name.ToLower().Equals("cash"))
+    {
+        @Html.Hidden("IsHasConfirmCode", Model.IsHasConfirmCode)
+        @Html.Hidden("IsActive", Model.IsActive)
+        _IsDisabled = false;
+    }
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+            (SelectList)ViewBag.StoreID,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;",
+                @onchange = "GetAccountXeroByStore(this)"
+            })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Payment Method Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment Method Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, (_IsDisabled) ? (object)new
+       {
+           @class = "form-control",
+           @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment Method Name"),
+           @autocomplete = "off",
+           @readonly = "readonly",
+           @id = "txtPaymentMethodName"
+       } : new
+       {
+           @class = "form-control",
+           @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment Method Name"),
+           @autocomplete = "off",
+           @id = "txtPaymentMethodName"
+       })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Confirmation Code*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Confirmation Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>
+                @Html.CheckBoxFor(model => model.IsHasConfirmCode,
+                  _IsDisabled ? (object)new
+                  {
+                      @disabled = "disabled",
+                  } : new
+                  {
+
+                  })
+            </label>
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive,
+                  _IsDisabled ? (object)new
+                  {
+                      @disabled = "disabled",
+                  } : new
+                  {
+
+                  })</label>
+        </div>
+    </div>
+
+    @*Number of Copies*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Copies"))</label>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.NumberOfCopies, new
+       {
+           @class = "form-control",
+           @type = "number",
+           @id = "txtNumberOfCopies",
+           @min = "0"
+       })
+            @Html.ValidationMessageFor(model => model.NumberOfCopies, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Fixed Amount*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Fixed Amount"))</label>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.FixedAmount,
+           _IsDisabled ? (object)new
+           {
+               @class = "form-control",
+               @min = "0",
+               @type = "number",
+               @readonly = "readonly",
+                @id = "txtFixedAmount"
+           } : new
+           {
+               @class = "form-control",
+               @min = "0",
+               @type = "number",
+               @id = "txtFixedAmount"
+           })
+            @Html.ValidationMessageFor(model => model.FixedAmount, null, new { @class = "label" })
+        </div>
+    </div>
+    
+    @*Sequence*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</label>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Sequence,
+           _IsDisabled ? (object)new
+           {
+               @class = "form-control",
+               @min = "0",
+               @type = "number",
+               @readonly = "readonly",
+               @id = "txtSequence"
+           } : new
+           {
+               @class = "form-control",
+               @min = "0",
+               @type = "number",
+               @id = "txtSequence"
+           })
+            @Html.ValidationMessageFor(model => model.Sequence, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Give Back Change*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Give Back Change"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsGiveBackChange, new { @id = "chkIsGiveBackChange" })</label>
+        </div>
+    </div>
+
+    @*Allow To Kick Drawer*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow To Kick Drawer"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsAllowKickDrawer, new { @id = "chkIsAllowKickDrawer" })</label>
+        </div>
+    </div>
+
+    @*Include On Sale = Defaule Disabled *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include On Sale"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsIncludeOnSale, new { @disabled = "", @id = "chkIsIncludeOnSale" })</label>
+        </div>
+    </div>
+
+    @*Show On Pos = Defaule true *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show On POS"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsShowOnPos,
+            _IsDisabled ? (object)new
+            {
+                @disabled = "disabled",
+            } :
+                  new { @id = "chkIsShowOnPos" })</label>
+        </div>
+    </div>
+
+    @*GLAccount Code*@
+    @if ((Model.Name.ToLower().Equals("cash") || Model.Code == (byte)Commons.EPaymentCode.Cash || Model.Name.ToLower().Equals("gift card") || Model.Code == (byte)Commons.EPaymentCode.GiftCard) && ViewBag.ListAccountXero.Count > 0)
+    {
+        <div class="form-group" id="glaccount-combobox">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.DropDownListFor(model => model.GLAccountCode, new SelectList(ViewBag.ListAccountXero, "Code", "NameDisplayCombobox", "ReportingCodeName", (object)Model.GLAccountCode), "Please choose account", new
+           {
+               @class = "form-control select2_multiple",
+               @id = "ddlGLAccountCode",
+               //@multiple = "multiple",
+               @style = "width:100%;"
+           })
+
+                @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+            </div>
+        </div>
+    }
+    
+
+
+
+    <!-- Sub Payment Method -->
+    @if (Model.Name != null)
+    {
+        if (!Model.Name.ToLower().Equals("cash"))
+        {
+        <div class="form-group">
+            <label class="control-label col-md-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Card for Payment Method"))</label>
+            <div id="div-mediate" class="col-md-offset-2 col-md-6" style="float:none;">
+                <table class="table center-content">
+                    <thead>
+                        <tr style="background-color:#34495e; color:#fff;">
+                            <th width="95%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment name"))</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+
+                        @if (Model.ListChild != null && Model.ListChild.Count > 0)
+                        {
+                            for (int i = 0; i < Model.ListChild.Count; i++)
+                            {
+                                @Html.Partial("_SubPayment", Model.ListChild[i])
+                            }
+                        }
+                        <!-- Button Add More Tab Content-->
+                        <tr id="tr-add-more-tab">
+                            <td style="padding-top:12px; text-align:left" colspan="4">
+                                @*@if (string.IsNullOrEmpty(_ID))*@
+                                <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreSubPayment(this); return false;" style="font-size:16px; color:#34495e;">
+                                    <i class="fa fa-plus"></i>
+                                    <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                                </a>
+                                <span style="color:red; display:none">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please apply to store first"))</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            @Html.ValidationMessage("SubPayment", new { @class = "col-md-offset-2 col-md-10 label" })
+        </div>
+        }
+    }
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+        $("#ddlGLAccountCode").select2({
+            placeholder: "Please choose account",
+            allowClear: true,
+        })
+    });
+
+    function AddMoreSubPayment(e) {
+        AddSubPayment(e);
+    }
+
+    //Add Tab's Content
+    function AddSubPayment(btn) {
+        // Find OffSet
+        var currentOffset = $("#div-mediate > table > tbody > tr").length - 1;
+
+        var _Name = $('#txtPaymentMethodName').val();
+        var _NumberOfCopies = $('#txtNumberOfCopies').val();
+        var _FixedAmount = $('#txtFixedAmount').val();
+        var _GLAccountCode = '';//$('#txtPaymentMethodName').val();
+        var _Sequence = $('#txtSequence').val();
+
+        var _IsGiveBackChange = $('#chkIsGiveBackChange').prop('checked');
+        var _IsAllowKickDrawer = $('#chkIsAllowKickDrawer').prop('checked');
+        var _IsIncludeOnSale = $('#chkIsIncludeOnSale').prop('checked');
+        var _IsShowOnPos = $('#chkIsShowOnPos').prop('checked');
+        var _StoreID = $("#storeDdl").val();
+        //alert(_IsGiveBackChange + '|' + _IsAllowKickDrawer + '|' + _IsIncludeOnSale);
+
+        var PaymentMethodDTO = {
+            OffSet: currentOffset,
+            Name: _Name,
+            NumberOfCopies: _NumberOfCopies,
+            FixedAmount: _FixedAmount,
+            GLAccountCode: _GLAccountCode,
+            Sequence: _Sequence,
+
+            IsGiveBackChange: _IsGiveBackChange,
+            IsAllowKickDrawer: _IsAllowKickDrawer,
+            IsIncludeOnSale: true,
+            IsShowOnPos: _IsShowOnPos,
+            StoreID: _StoreID
+        }
+
+        $.ajax({
+            url: '@Url.Action("AddSubPayment", "SPayment")',
+            type: 'POST',
+            //data: { currentOffset: currentOffset },
+            data: JSON.stringify(PaymentMethodDTO),
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab").before(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function DeleteAddSubPaymentPanel(btn) {
+        var result = confirm('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Are you sure"))' + "?");
+        var tr = $(btn).parents('tr:first');
+        if (result) {
+            $(tr).find('input[name*=Name]:first').val("Deleted");
+            $(tr).find('input[name*=DisplayMessage]:first').val("Deleted");
+            $(tr).find('input[name*=Quantity]:first').val(1);
+
+            $(tr).find('input.GroupStatus').val(9);
+            $(tr).css('display', 'none');
+        }
+    }
+
+    function GetAccountXeroByStore(that)
+    {
+        var StoreId = $(that).val();
+        if (StoreId != null && StoreId != undefined)
+        {
+            $.ajax({
+            url: '@Url.Action("GetAccountXeroByStore", "SPayment")',
+            type: 'get',
+            data: {
+                StoreId: StoreId,
+            },
+            dataType: 'json',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.length > 0) {
+                    $(".glaccount-combobox").removeClass("hidden");
+                    $(".glaccount-textbox").addClass("hidden");
+                    $(".clsGLAccountCode").html("").select2({
+                        data: data,
+                        placeholder: 'Please choose account',
+                        allowClear: true,
+                    });
+                } else {
+                    $(".glaccount-combobox").addClass("hidden");
+                    $(".glaccount-textbox").removeClass("hidden");
+                }
+                //$(".clsGLAccountCode").html("").select2({
+                //    data: data,
+                //    placeholder: 'Please choose account',
+                //    allowClear: true,
+                //});
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+        }
+    }
+
+</script>

@@ -1,0 +1,19 @@
+﻿@model List<NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteGroupProductModels>
+@using NuWebNCloud.Shared.Utilities;
+
+
+@if (Model != null && Model.Count > 0)
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        @Html.Partial("_TabContent", Model[i])
+    }
+}
+
+<!-- Button Add More Tab Content-->
+<tr id="tr-add-more-tab">
+    <td style="padding-top:12px; text-align:left" colspan="4">
+        <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreTab(this); return false;"><i class="glyphicon glyphicon-plus-sign"></i> <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span></a>
+        <span style="color:red; display:none">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please apply to store first"))</span>
+    </td>
+</tr>

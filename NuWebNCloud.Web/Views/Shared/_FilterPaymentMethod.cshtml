@@ -1,0 +1,189 @@
+﻿@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+@if (Model.ListStorePay != null && Model.ListStorePay.Count > 0)
+{
+    var lstStore = Model.ListStorePay;
+    <!-- start accordion -->
+    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+        @if (lstStore != null && lstStore.Count > 0)
+        {
+            for (int s = 0; s < lstStore.Count; s++)
+            {
+                var store = lstStore[s];
+                /*======================*/
+                <div class="panel">
+                    <a class="panel-heading" role="tab" id="heading_@s" data-toggle="collapse" data-parent="#accordion" href="#s_@s"
+                       aria-expanded="@string.Format("{0}", s==0 ? "true" : "false")" aria-controls="s_@s" style="background-color: #337ab7; color: #fff;">
+                        <h4 class="panel-title" style="display: flow-root;">
+                            @store.StoreName&nbsp;&nbsp;
+                            <span class="pull-right"><input type="checkbox" onchange="ToogleCheckAll(this, '.payment-items-@s')" id="checkAllPayment-@s" class="chkAll chkReportZoom"></span>
+                        </h4>
+                    </a>
+                    @Html.Hidden(string.Format("ListStorePay[{0}].OffSet", s), Model.ListStorePay[s].OffSet)
+                    @Html.Hidden(string.Format("ListStorePay[{0}].StoreID", s), Model.ListStorePay[s].StoreID)
+                    @Html.Hidden(string.Format("ListStorePay[{0}].StoreName", s), Model.ListStorePay[s].StoreName)
+
+                    <div id="s_@s" class="panel-collapse collapse @string.Format("{0}", s==0 ? "in" : "")" role="tabpanel" aria-labelledby="heading_@s">
+                        <div class="">
+                            <table class="table table-bordered" style="margin-bottom:0px;">
+                                @*=table-hover*@
+                                <tbody class="payment-items-@s">
+                                    @for (int i = 0; i < store.ListPaymentMethodSel.Count; i++)
+                                    {
+                                        var item = store.ListPaymentMethodSel[i];
+
+                                        <tr style="background-color:#ededed">
+                                            <td class="parent">&nbsp;+ @item.Name</td>
+                                            <td class="text-right">
+                                                <label>
+                                                    @Html.CheckBox(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].Checked", s, i), item.Checked, new
+                                               {
+                                                   @onClick = "checkItemPayment('" + s + "','" + i + "','-1')",
+                                                   @id = "parent-" + s + "-" + i + "",
+                                                   @class = "chkReportZoom"
+                                               })
+                                                    @*set value*@
+                                                    @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].Id", s, i), item.Id)
+                                                    @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].Name", s, i), item.Name)
+                                                    @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].Code", s, i), item.Code)
+                                                    @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].StoreId", s, i), item.StoreId)
+                                                    @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].StoreName", s, i), item.StoreName)
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        if (item.ListChilds != null && @item.ListChilds.Count > 0)
+                                        {
+                                            for (int j = 0; j < @item.ListChilds.Count; j++)
+                                            {
+                                                <tr>
+                                                    <td class="child">&nbsp;&nbsp;+ @item.ListChilds[j].Name</td>
+                                                    <td class="text-right">
+                                                        <label>
+                                                            @Html.CheckBox(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].Checked", s, i, j), item.ListChilds[j].Checked,
+                                                                new
+                                                                {
+                                                                    @onClick = "checkItemPayment('" + s + "','" + i + "','" + j + "')",
+                                                                    @id = "child-" + s + "-" + i + "-" + j + " ",
+                                                                    @class = "parentpayment-" + s + "-" + i + " chkReportZoom"
+                                                                })
+                                                            @*set value*@
+                                                            @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].Id", s, i, j), item.ListChilds[j].Id)
+                                                            @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].Name", s, i, j), item.ListChilds[j].Name)
+                                                            @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].Code", s, i, j), item.ListChilds[j].Code)
+                                                            @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].StoreId", s, i, j), item.ListChilds[j].StoreId)
+                                                            @Html.Hidden(string.Format("ListStorePay[{0}].ListPaymentMethodSel[{1}].ListChilds[{2}].StoreName", s, i, j), item.ListChilds[j].StoreName)
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <!-- end of accordion -->
+
+    @*<table class="table table-hover">
+        <thead>
+            <tr style="background-color: #337ab7; color: #fff;">
+                <td class="align-left"><label>Select All </label></td>
+                <td class="align-right"><label><input type="checkbox" onchange="ToogleCheckAll(this, '.payment-items')" id="checkAllPayment"></label></td>
+            </tr>
+        </thead>
+        <tbody class="payment-items">
+            @for (int i = 0; i < Model.ListPaymentMethod.Count; i++)
+            {
+                if (@Model.ListPaymentMethod[i].ListChilds != null && @Model.ListPaymentMethod[i].ListChilds.Count > 0)
+                {
+                    <tr>
+                        <td class="align-left" colspan="2" style="background-color:#ededed">@Model.ListPaymentMethod[i].StoreName - @Model.ListPaymentMethod[i].Name</td>
+                    </tr>
+                    for (int j = 0; j < @Model.ListPaymentMethod[i].ListChilds.Count; j++)
+                    {
+                        <tr style="background-color:#ededed">
+                            <td class="align-left" style="padding-left:20px;">@Model.ListPaymentMethod[i].ListChilds[j].StoreName - @Model.ListPaymentMethod[i].ListChilds[j].Name</td>
+                            <td class="align-right">
+                                <label>
+                                    @Html.CheckBox(string.Format("ListPaymentMethod[{0}].ListChilds[{1}].Checked", i, j), Model.ListPaymentMethod[i].ListChilds[j].Checked, new { @onClick = "checkItem()" })
+                                    @Html.Hidden(string.Format("ListPaymentMethod[{0}].ListChilds[{1}].Id", i, j), Model.ListPaymentMethod[i].ListChilds[j].Id)
+                                    @Html.Hidden(string.Format("ListPaymentMethod[{0}].ListChilds[{1}].Name", i, j), Model.ListPaymentMethod[i].ListChilds[j].Name)
+                                    @Html.Hidden(string.Format("ListPaymentMethod[{0}].ListChilds[{1}].StoreId", i, j), Model.ListPaymentMethod[i].ListChilds[j].StoreId)
+                                    @Html.Hidden(string.Format("ListPaymentMethod[{0}].ListChilds[{1}].StoreName", i, j), Model.ListPaymentMethod[i].ListChilds[j].StoreName)
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td class="align-left">@Model.ListPaymentMethod[i].StoreName - @Model.ListPaymentMethod[i].Name</td>
+                        <td class="align-right">
+                            <label>
+                                @Html.CheckBox(string.Format("ListPaymentMethod[{0}].Checked", i), Model.ListPaymentMethod[i].Checked, new { @onClick = "checkItem()" })
+                                @Html.Hidden(string.Format("ListPaymentMethod[{0}].Id", i), Model.ListPaymentMethod[i].Id)
+                                @Html.Hidden(string.Format("ListPaymentMethod[{0}].Name", i), Model.ListPaymentMethod[i].Name)
+                                @Html.Hidden(string.Format("ListPaymentMethod[{0}].StoreId", i), Model.ListPaymentMethod[i].StoreId)
+                                @Html.Hidden(string.Format("ListPaymentMethod[{0}].StoreName", i), Model.ListPaymentMethod[i].StoreName)
+                            </label>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>*@
+
+    <style>
+        /*.align-left {
+                text-align: left !important;
+            }
+
+            .align-right {
+                text-align: center !important;
+            }*/
+
+        .parent {
+            padding-left: 25px !important;
+        }
+
+        .child {
+            padding-left: 60px !important;
+        }
+
+        #accordion tr td {
+            background-color: #ededed;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('.chkAll').on('click', function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        function checkItemPayment(store, parent, child) {
+            if (child === '-1') {
+                var chkParent = $('#parent-' + store + '-' + parent + '').prop('checked');
+                $('table > tbody.payment-items-' + store + ' input.parentpayment-' + store + '-' + parent).prop('checked', chkParent);
+
+            } else {
+                //Child
+                var countchkParent = $('table > tbody.payment-items-' + store + ' input.parentpayment-' + store + '-' + parent).length;
+                var countchkCheckParent = $('table > tbody.payment-items-' + store + ' input.parentpayment-' + store + '-' + parent).filter(":checked").length;
+                $('#parent-' + store + '-' + parent + '').prop('checked', (countchkCheckParent == countchkParent));
+            }
+            //==============
+            var countchk = $('table > tbody.payment-items-' + store + ' input[type="checkbox"]').length;
+            var countchkCheck = $('table > tbody.payment-items-' + store + ' input[type="checkbox"]').filter(":checked").length;
+            $('#checkAllPayment-' + store).prop('checked', (countchkCheck == countchk));
+
+        }
+    </script>
+}
+
+

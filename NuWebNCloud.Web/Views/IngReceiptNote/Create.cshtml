@@ -1,0 +1,200 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes - Add New"));
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                <h4>
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management")) <small>
+                        <i class="fa fa-angle-double-right"></i><a href="@Url.Action("Index","IngReceiptNote",new { area = "" })">
+                            <span style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transaction Data"))</span>
+                        </a>&nbsp;<i class="fa fa-angle-double-right"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes - Add New"))
+                    </small>
+                </h4>
+
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Make Receipt Note"))</a></li>
+                                <li><a href="@Url.Action("Index", "IngReceiptNote")" clas class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "IngReceiptNote", FormMethod.Post,
+                            new
+                            {
+                                @class = "form-horizontal create-form",
+                                @enctype = "multipart/form-data"
+                            }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        function SubmitForm(form) {
+            var storeId = $('#storeDdl').val();
+            if (storeId == '' || storeId == null) {
+                $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+                return false;
+            }
+            $('#validationStore').text('');
+            var IsPurchaseOrder = $('#hidIsPurchaseOrder').val();
+            IsPurchaseOrder = (IsPurchaseOrder.toLowerCase() === 'true');
+            var isSubmit = true;
+            //console.log(IsPurchaseOrder);
+            if (IsPurchaseOrder) {
+                //==Create Receipt Notes choose PO
+                $.each($('.ng-PurchaseOrder'), function () {
+                    var div = $(this);
+                    var poId = $(div).attr("data-poId");
+                    $.each($('.ng-PurchaseOrder_' + poId), function () {
+                        var divChild = $(this);
+                        if ($(divChild).css('display') !== 'none') {
+                            var PODId = $(divChild).find('#PODId').val();
+                            var OrderQty = parseFloat($(divChild).find('#ltrOrderQty').html());
+                            var RemainingQty = parseFloat($(divChild).find('#ltrRemainingQty').html());
+                            var QtyToleranceP = parseFloat($(divChild).find('#hidQtyToleranceP').val());
+                            var QtyToleranceS = $(divChild).find('#hidQtyToleranceS').val();
+                            var RequiredQty = RemainingQty + QtyToleranceP;
+
+                            var IsVisible = $(divChild).find('#hidIsVisible').val();
+                            if (IsVisible === 'False') {
+                                var Qty = $(divChild).find('#txtQty').val();
+                                if (Qty < 0) {
+                                    $('#ltrValidate' + PODId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The receiving quantity is larger 0"))');
+                                    isSubmit = false;
+                                } else {
+                                    //if (OrderQty == RemainingQty) { //First
+                                    //    alert(Qty > (OrderQty * QtyToleranceS) + '|' + (Qty < (OrderQty * QtyToleranceP)));
+                                    //    if (Qty > ((OrderQty * QtyToleranceS)) || Qty < (OrderQty * QtyToleranceP)) {
+                                    //        $('#ltrValidate' + PODId).html('The receiving quantity is larger than tolerance.<br/>Please enter the value less than the tolerance required.');
+                                    //        isSubmit = false;
+                                    //    } else {
+                                    //        $('#ltrValidate' + PODId).html('');
+                                    //    }
+                                    //}
+                                    //else { //have a value - RN 2,3,...,N
+                                    if (Qty > RequiredQty) {
+                                        $('#ltrValidate' + PODId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The receiving quantity is larger than remaining quantity.<br/>Please enter the value less than the remaining quantity required."))');
+                                        isSubmit = false;
+                                    } else {
+                                        $('#ltrValidate' + PODId).html('');
+                                    }
+                                    //}
+                                }
+                            }
+                        }
+                    });
+                });
+                var countPOSelected = $('.ng-PurchaseOrder:visible').length;
+                if (countPOSelected == 0) {
+                    $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose purchase order !!!"))');
+                    isSubmit = false;
+                }
+            }
+            else {
+                //Create Receipt Notes choose Item
+                var countItemSelected = $('.ingredient_item:visible').length;
+                if (countItemSelected == 0) {
+                    $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose item for Receipt Note !!!"))');
+                    isSubmit = false;
+                }
+            }
+            //=====submit form
+            if (isSubmit) {
+                disableButton('#btn-actives', true);
+                $(form).submit();
+            }
+
+        }
+
+        function disableButton(btn, status) {
+            if (status) {
+                $(btn).addClass('disabled');
+            } else {
+                $(btn).removeClass('disabled');
+            }
+        }
+        $(document).ready(function () {
+            $("#storeDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            });
+            $("#SupplierDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))',
+                allowClear: true
+            });
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                //maxDate: new Date()
+                showDropdowns: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            });
+        });
+
+        ////==== List suppliers by company of selected store
+        $("#storeDdl").change(function () {
+            // Clear all msg error
+            $('#txtPONo').val();
+            $('#chkPOAll').prop('checked', false);
+            $('#divListPO').html('');
+            $('#divListPODetail').html('');
+            $('#validationStore').html('');
+            $('#validationSupplier').html('');
+            $('#validationPONo').html('');
+            $('#ltrMsgAddRN').html('');
+
+            LoadSuppliers(this.value);
+        });
+        function LoadSuppliers(_storeId) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: '@Url.Action("LoadSuppliers", "IngReceiptNote")',
+                  type: "post",
+                traditional: true,
+                data: { storeId: _storeId },
+                dataType: 'json',
+                success: function (lstSupplier) {
+                    ReLoadOptionSupplier(lstSupplier);
+                    $(".se-pre-con").hide();
+                }
+            });
+        }
+
+        function ReLoadOptionSupplier(lstSupplier) {
+            $("#SupplierDdl").empty();
+            lstSupplier.forEach(function (el) {
+                var option = new Option(el.Name, el.Id, true, true);
+                $("#SupplierDdl").append(option).trigger('change.select2');
+            });
+            $("#SupplierDdl").val(null).trigger('change.select2');
+        }
+</script>
+}

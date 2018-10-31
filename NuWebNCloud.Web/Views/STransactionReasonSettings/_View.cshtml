@@ -1,0 +1,175 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared;
+@model NuWebNCloud.Shared.Models.Settings.TransactionReasonSetting.ReasonModels
+<style>
+    .Lever_class {
+        background-color: #dae6f1;
+    }
+
+    #Lever_ {
+        padding-left: 15px !important;
+        padding-top: 10px !important;
+    }
+</style>
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                                                             new Dictionary<string, string> { { "A","Settings" }, { "B", "Transaction Reason Settings" }, { "C", "View Detail"}
+                                                             })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr style="background-color: #337ab7; color: #fff;">
+                                                    <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label></td>
+                                                    <td class="align-right" style="width:2%;"><label></label></td>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody class="store-items">
+                                                @if (Model.ListStoreOnComp != null && Model.ListStoreOnComp.Count > 0)
+                                                {
+                                                    for (int i = 0; i < Model.ListStoreOnComp.Count; i++)
+                                                    {
+                                                        <tr id="@Model.ListStoreOnComp[i].Id" data-value="@Model.ListStoreOnComp[i].Name" class="Lever_@Model.ListStoreOnComp[i].IsCompany">
+                                                            <td id="Lever_@Model.ListStoreOnComp[i].IsCompany" class="align-left">@Model.ListStoreOnComp[i].Name</td>
+
+                                                            <td class="align-right">
+                                                                @if (!Model.ListStoreOnComp[i].IsCompany)
+                                                                {
+                                                                    <label>
+                                                                        @if (Model.ListStoreOnComp[i].Selected)
+                                                                        {
+                                                                            @Html.Hidden(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected, new { @value = "True" })
+                                                                            @Html.CheckBox(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected,
+                                                                                                                             new
+                                                                                                                             {
+                                                                                                                                 @onClick = "chkItemClick(this,'" + @Model.ListStoreOnComp[i].Id
+                                                                                                                                 + "','" + @Model.ListStoreOnComp[i].Name + "')",
+                                                                                                                                 @id = "chkStore_" + @Model.ListStoreOnComp[i].Id,
+                                                                                                                                 @class = "child_chkStore",
+                                                                                                                                 @data_disabled = "" + Model.ListStoreOnComp[i].Disabled + "",
+                                                                                                                                 @disabled = "disabled",
+                                                                                                                             })
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @Html.CheckBox(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected,
+                                                                                                                        new
+                                                                                                                        {
+                                                                                                                            @onClick = "chkItemClick(this,'" + @Model.ListStoreOnComp[i].Id
+                                                                                                                            + "','" + @Model.ListStoreOnComp[i].Name + "')",
+                                                                                                                            @id = "chkStore_" + @Model.ListStoreOnComp[i].Id,
+                                                                                                                            @class = "child_chkStore",
+                                                                                                                            @data_disabled = "" + Model.ListStoreOnComp[i].Disabled + "",
+                                                                                                                            @disabled = "disabled",
+                                                                                                                        })
+                                                                        }
+                                                                        @Html.Hidden(string.Format("ListStoreOnComp[{0}].Value", i), Model.ListStoreOnComp[i].Id)
+                                                                        @Html.Hidden(string.Format("ListStoreOnComp[{0}].Text", i), Model.ListStoreOnComp[i].Name)
+                                                                    </label>
+                                                                }
+                                                            </td>
+
+
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reason"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (@Model.Code == (byte)Commons.EReasonCode.Deposit)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deposit"))
+                                        }
+                                        @if (@Model.Code == (byte)Commons.EReasonCode.NoSale)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("NoSale"))
+                                        }
+                                        @if (@Model.Code == (byte)Commons.EReasonCode.Payout)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payout"))
+                                        }
+                                        @if (@Model.Code == (byte)Commons.EReasonCode.Refund)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Refund"))
+                                        }
+                                        @if (@Model.Code == (byte)Commons.EReasonCode.VoidItem_Order)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("VoidItem_Order"))
+                                        }
+                                    </div>
+                                </div>
+                                @if (Model.Code == (byte)Commons.EReasonCode.Payout || Model.Code == (byte)Commons.EReasonCode.Deposit)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GL Account Code"))</label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            @Model.GLAccountCode
+                                        </div>
+                                    </div>
+                                }
+                                @*Reason On Store*@
+                                <div class="form-group">
+                                    @if (Model.ListStore != null && Model.ListStore.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.ListStore.Count; i++)
+                                        {
+                                            <div class="reason-item-on-store">
+                                                <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                                    
+                                                </label>
+                                                @*Store Name*@
+                                                <div class="form-group">
+                                                    <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">
+                                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): @Model.ListStore[i].StoreName
+                                                    </label>
+
+                                                </div>
+
+                                                @* Active*@
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <label>@Html.CheckBoxFor(model => model.ListStore[i].IsActive, new { @disabled = "disabled", })</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

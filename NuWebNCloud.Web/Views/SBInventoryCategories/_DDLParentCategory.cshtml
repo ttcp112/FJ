@@ -1,0 +1,52 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.SBInventoryBaseModel
+
+@*@Html.DropDownList("ParentID", Model.ListCategories,
+               "---- Please choose parent category ----", new
+               {
+                   @class = "form-control select2_multiple",
+                   //@onchange = "ChangeCategory(this)",
+                   @id = "ddlCategory",
+                   @style = "width:100%;"
+               })
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlCategory").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose parent category"))',
+            allowClear: true
+        });
+    });
+</script>*@
+
+<select class="form-control select2_multiple" style="width: 100%" id="ddlCategory" name="ParentID">
+    <option></option>
+    @foreach (var cate in Model.lstCateGroup)
+    {
+        <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected") }>@cate.Name</option>
+    }
+</select>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlCategory").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose parent category"))',
+            allowClear: true,
+            // Updated 09082017
+            templateResult: function (data) {
+                if (!data.element) {
+                    return data.text;
+                }
+                var $element = $(data.element);
+                var $wrapper = $('<span></span>');
+                $wrapper.addClass($element[0].className);
+                $wrapper.text(data.text);
+                // Set format
+                var className = $element[0].className;
+                var level = className.substr(5) * 1.8;
+                $wrapper.css("padding-left", level + "em");
+                return $wrapper;
+            }
+        });
+    });
+</script>

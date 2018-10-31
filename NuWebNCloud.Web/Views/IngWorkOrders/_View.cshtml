@@ -1,0 +1,124 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.WorkOrderModels
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Purchasing" }, { "C", "Work Orders - View Detail" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    <div class="row text-right">
+                        <ul class="header-buttons pull-right list-inline">
+                            <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                        </ul>
+                    </div>
+                    <div class="row form-horizontal form-label-left">
+                        <div class="form-group" style="font-size:30px;">
+                            <div class="col-md-8 col-sm-8 col-xs-12">@Model.Store.Name</div>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Work Order"))
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-8 col-sm-8 col-xs-12">@Model.Store.Street</div>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Work Order Number")): <strong>@Model.WONumber</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">@Model.Store.City, @Model.Store.Zipcode </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")): @Model.Store.Phone </div>
+                        </div>
+
+                        <div class="box-body form-group" style="text-align:center; padding-bottom:30px;">
+                            <table class="tbCustom">
+                                <thead>
+                                    <tr>
+                                        <td style="width:15%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO Number"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO Date"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Completed Date"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Note"))</td>
+                                        <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Status"))</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight:bold;">@Model.WONumber</td>
+                                        <td>@Model.WODate.ToString("MM-dd-yyyy")</td>
+                                        <td>@Model.DateCompleted.ToString("MM-dd-yyyy")</td>
+                                        <td>@Model.Note</td>
+                                        <td>
+                                            @if (Model.Status == (int)Commons.EPOStatus.Open)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Open.ToString()))
+                                            }
+                                            else if (Model.Status == (int)Commons.EPOStatus.Approved)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Approved.ToString()))
+                                            }
+                                            else if (Model.Status == (int)Commons.EPOStatus.InProgress)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.InProgress.ToString()))
+                                            }
+                                            else if (Model.Status == (int)Commons.EPOStatus.Closed)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Closed.ToString()))
+                                                                                                                                                                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if (Model.ListItem != null && Model.ListItem.Count > 0)
+                        {
+                            <div class="box-body form-group" style="text-align:center;">
+                                <table class="tbCustom">
+                                    <thead>
+                                        <tr>
+                                            <td>#</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</td>
+                                            <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.ListItem.Count; i++)
+                                        {
+                                            var item = Model.ListItem[i];
+
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>@item.IngredientCode</td>
+                                                <td>@item.IngredientName</td>
+                                                <td>@item.Description</td>
+                                                <td>@item.Qty</td>
+                                                <td>@item.BaseUOM</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <div class="form-group" style="margin-bottom:30px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

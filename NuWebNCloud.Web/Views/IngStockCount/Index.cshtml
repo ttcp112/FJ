@@ -1,0 +1,92 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockCountViewModels
+@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Count - View Data").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display:none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px">
+                @Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                         new Dictionary<string, string> { { "A", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management") }, { "B", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory") }, { "C", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management") }, { "D", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Count - View Data") } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="x_panel">
+                        @using (Html.BeginForm("Search", "IngStockCount", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                        {
+                            
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                    </div>
+                                    <div class="col-md-4 col-sm-8 col-xs-12">
+                                        @*@Html.DropDownListFor(model => model.StoreId,
+                                            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), "---- Please choose store ----",
+                                            new
+                                            {
+                                                @class = "form-control select2_multiple",
+                                                @id = "storeDdlView",
+                                                @style = "width:100%;"
+                                            })*@
+
+                                        @*Group by company, updated 041420180*@
+                                        @Html.DropDownListFor(model => model.StoreId, (SelectList)ViewBag.StoreID, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "storeDdlView",
+	                                        @style = "width:100%;"
+                                        })
+
+                                        @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 col-xs-12">
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="gridview">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="detail-view" style="height:100%;">
+            <!-- detail partial view -->
+        </div>
+    </div>
+    </div>
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#storeDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            }).val('@Model.StoreId').trigger('change.select2');
+        });
+
+        $(".search-form").submit(function (e) {
+            Search();
+            return false;
+        });
+        $(function () {
+            //ready
+            Search();
+        });
+
+
+</script>
+

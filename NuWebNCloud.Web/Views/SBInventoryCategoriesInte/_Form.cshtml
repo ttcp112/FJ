@@ -1,0 +1,759 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.InteCategoriesModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+    var _Type = Model.Type;
+    var _clsHiddenXero = ViewBag.ListAccountXero.Items.Count > 0 ? "" : "hidden";
+    var _clsHidden = ViewBag.ListAccountXero.Items.Count > 0 ? "hidden" : "";
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+    @Html.Hidden("Type", Model.Type)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg" })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label-danger" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <table class="table table-hover table-max-height">
+                <thead>
+                    <tr style="background-color: #337ab7; color: #fff;">
+                        <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label></td>
+                        <td class="align-right" style="width:2%;"><label>@*<input type="checkbox" onchange="ToogleCheckAll(this, '.store-items')" id="checkAllStore">*@</label></td>
+                    </tr>
+                </thead>
+                <tbody class="store-items">
+                    @*@if (string.IsNullOrEmpty(_ID))
+                    {
+                        for (int i = 0; i < Model.ListStore.Count; i++)
+                        {
+                            <tr id="@Model.ListStore[i].Value" data-value="@Model.ListStore[i].Text">
+                                <td class="align-left">@Model.ListStore[i].Text</td>
+                                <td class="align-right">
+                                    <label>
+                                        @Html.CheckBox(string.Format("ListStore[{0}].Selected", i), Model.ListStore[i].Selected,
+                                             //Model.ListStore[i].Disabled ? (object)new
+                                             //{
+                                             //    @onClick = "chkItemClick(this,'" + @Model.ListStore[i].Value
+                                             //    + "','" + @Model.ListStore[i].Text + "')",
+                                             //    @disabled = "disabled",
+                                             //    @id = "chkStore_" + @Model.ListStore[i].Value,
+                                             //    @class = "child_chkStore"
+                                             //} :
+                                             new
+                                             {
+                                                 @onClick = "chkItemClick(this,'" + @Model.ListStore[i].Value
+                                                 + "','" + @Model.ListStore[i].Text + "')",
+                                                 @id = "chkStore_" + @Model.ListStore[i].Value,
+                                                 @class = "child_chkStore",
+                                                 @data_disabled = "" + Model.ListStore[i].Disabled + "",
+                                                 @data_value = "" + Model.ListStore[i].Value + "",
+                                             })
+                                        @Html.Hidden(string.Format("ListStore[{0}].Value", i), Model.ListStore[i].Value)
+                                        @Html.Hidden(string.Format("ListStore[{0}].Text", i), Model.ListStore[i].Text)
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < Model.ListStore.Count; i++)
+                        {
+                            if (Model.ListStore[i].Selected == true && Model.ListStore[i].Disabled == true)
+                            {
+                                <tr id="@Model.ListStore[i].Value" data-value="@Model.ListStore[i].Text">
+                                    <td class="align-left">@Model.ListStore[i].Text</td>
+                                    <td class="align-right" style="width:2%;">
+                                        <label>
+                                            @Html.Hidden(string.Format("ListStore[{0}].Value", i), Model.ListStore[i].Value)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Text", i), Model.ListStore[i].Text)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Disabled", i), Model.ListStore[i].Disabled)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Selected", i), Model.ListStore[i].Selected, new { @value = "True" })
+                                            @Html.CheckBox(string.Format("ListStore[{0}].Checked", i), Model.ListStore[i].Selected,
+                                        new
+                                        {
+                                            @onClick = "checkItem()",
+                                            @disabled = "disabled",
+                                            @id = "chkStore_" + @Model.ListStore[i].Value,
+                                            @class = "child_chkStore",
+                                            @data_disabled = "" + Model.ListStore[i].Disabled + "",
+                                            @data_value = "" + Model.ListStore[i].Value + "",
+                                        })
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr id="@Model.ListStore[i].Value" data-value="@Model.ListStore[i].Text">
+                                    <td class="align-left">@Model.ListStore[i].Text</td>
+                                    <td class="align-right" style="width:2%;">
+                                        <label>
+                                            @Html.Hidden(string.Format("ListStore[{0}].Value", i), Model.ListStore[i].Value)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Text", i), Model.ListStore[i].Text)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Selected", i), Model.ListStore[i].Selected, new { @value = "True" })
+                                            @Html.CheckBox(string.Format("ListStore[{0}].Checked", i), Model.ListStore[i].Selected,
+                                        new
+                                        {
+                                            @onClick = "chkItemClick(this,'" + @Model.ListStore[i].Value
+                                            + "','" + @Model.ListStore[i].Text + "')",
+                                            @id = "chkStore_" + @Model.ListStore[i].Value,
+                                            @class = "child_chkStore",
+                                            @data_disabled = "" + Model.ListStore[i].Disabled + "",
+                                            @data_value = "" + Model.ListStore[i].Value + "",
+                                        })
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }*@
+
+                    @*Group by company, updated 041420180*@
+                    @{ 
+                        var lstStoreGroup = Model.ListStore.GroupBy(gg => gg.Group.Name).OrderBy(oo => oo.Key).ToList();
+                        int index = 0;
+                        foreach (var company in lstStoreGroup)
+                        {
+                            <tr class="company-name"><td colspan="2">@Html.Raw(company.Key)</td></tr>
+                            var lstStores = company.ToList();
+                            lstStores = lstStores.OrderBy(oo => oo.Text).ToList();
+
+                            for (int i = 0; i < lstStores.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="align-left">@lstStores[i].Text</td>
+                                    <td class="align-right">
+                                        <label>
+                                            @if(lstStores[i].Disabled)
+                                            {
+                                                @Html.Hidden(string.Format("ListStore[{0}].Selected", i), lstStores[i].Selected, new { @value = "True" })
+                                                @Html.CheckBox(string.Format("ListStore[{0}].Selected", i), lstStores[i].Selected,
+                                                     new
+                                                     {
+                                                         @id = "chkStore_" + @lstStores[i].Value,
+                                                         @class = "child_chkStore",
+                                                         @data_disabled = "" + lstStores[i].Disabled + "",
+                                                         @disabled = "disabled",
+                                                         @data_value = "" + Model.ListStore[i].Value + "",
+                                                         @data_storename = "" + Model.ListStore[i].Text + ""
+                                                     })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBox(string.Format("ListStore[{0}].Selected", index), lstStores[i].Selected,
+                                                new
+                                                {
+                                                    @onClick = "chkItemClick(this,'" + @lstStores[i].Value + "','" + @lstStores[i].Text + "')",
+                                                    @id = "chkStore_" + @lstStores[i].Value,
+                                                    @class = "child_chkStore",
+                                                    @data_disabled = "" + lstStores[i].Disabled + "",
+                                                    @data_value = "" + Model.ListStore[i].Value + "",
+                                                    @data_storename = "" + Model.ListStore[i].Text + ""
+                                                })
+                                            }
+                                            
+                                            @Html.Hidden(string.Format("ListStore[{0}].Value", index), lstStores[i].Value)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Text", index), lstStores[i].Text)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Disabled", index), lstStores[i].Disabled)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Group.Name", index), company.Key)
+                                        </label>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+            @Html.ValidationMessageFor(model => model.ListStore, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    @*<div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Choose Store</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.DropDownListFor(model => model.StoreID,
+                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })
+                @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+            </div>
+        </div>*@
+
+    @*Type*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.ProductTypeID,
+            new SelectList(Model.ListProductType, "Value", "Text", Model.ProductTypeID), null,
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "ProductTypeDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.ProductTypeID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Category Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*GLAccount Code*@
+    <div class="form-group @_clsHiddenXero" id="glaccount-combobox">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div>
+                @Html.DropDownListFor(model => model.GLAccountCode, (SelectList)ViewBag.ListAccountXero, "Please choose account", new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "ddlGLAccountCode",
+                    //@multiple = "multiple",
+                    @style = "width:100%;"
+                })
+                @*@Html.DropDownListFor(model => model.GLAccountCode,
+                new SelectList(ViewBag.ListAccountXero, "Value", "Text", Model.GLAccountCode), "---- Please choose account ----",
+                new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "ddlGLAccountCode",
+                    @style = "width:100%;"
+                })*@
+            </div>
+            @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+        </div>
+    </div>
+   
+    <div class="form-group @_clsHidden" id="glaccount-textbox">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.GLAccountCode, new { @class = "form-control", placeholder = (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code")) })
+        </div>
+    </div>
+
+
+    @*Is Gift Card*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Split Sales")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsGiftCard, new { @class = " text-left" })
+        </div>
+    </div>
+
+    @*Is Include Net Sale*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include Net Sale")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+           @Html.CheckBoxFor(model => model.IsIncludeNetSale, new { @class = " text-left" })
+        </div>
+    </div>
+
+    @*Description*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")) })
+        </div>
+    </div>
+
+    @* Parent Cate *@
+    <div class="form-group" id="divParentCate">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Parent Category")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="ParentCate">
+                @*@Html.DropDownListFor(model => model.ParentID,
+               new SelectList(Model.ListCategories, "Value", "Text", Model.ParentID),
+               "Please choose parent category", new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "ddlParentCate",
+                   @style = "width:100%;",
+                   //@multiple = "multiple",
+               })*@
+
+                @*Updated 09222017*@
+                <select class="form-control select2_multiple" style="width: 100%" id="ddlParentCate" name="ParentID">
+                    <option></option>
+                    @foreach (var cate in Model.lstCateGroup)
+                    {
+                        <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected")   }>@cate.Name</option>
+                    }
+                </select>
+            </div>
+            @Html.ValidationMessageFor(model => model.ParentID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group" id="divAuto">
+        @if (Model.ListItemOnStores != null && Model.ListItemOnStores.Count > 0)
+        {
+            for (int i = 0; i < Model.ListItemOnStores.Count; i++)
+            {
+                @Html.Partial("_ListItemOnStore", Model.ListItemOnStores[i])
+            }
+        }
+    </div>
+
+</div>
+
+<!--Model Confirm clone data-->
+<div class="modal fade" id="modalComfirmStore" tabindex="-1" role="dialog" aria-labelledby="modalItemLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Confirm Store To Clone Data"))</h4>
+            </div>
+            <div class="modal-body scroll" id="popupSeason_@Model.StoreID">
+                <div class="form-group-sm">
+                    <table class="table center-content">
+                        <thead>
+                            <tr style="background-color:#34495e; color:#fff;">
+                                <th width="85%" style="text-align:left;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</th>
+                                <th width="5%" style="text-align:center;">
+                                    <input id="chkAllStoreClone" type="checkbox" onclick="ToogleCheckAllItem(this, '#body-comfirm-store')" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-comfirm-store" class="timeslot"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span></span>
+                <button class="btn btn-default" data-dismiss="modal" onclick="CloneDataByStore();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Done"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //var ProductTypeID = $('#ProductTypeID').val();
+    $(document).ready(function () {
+        $("#ddlGLAccountCode").select2({
+            placeholder: "Please choose account",
+            allowClear: true,
+        })
+        $("#modalComfirmStore").on('shown.bs.modal', function (event) {
+            $('#chkAllStoreClone').prop('checked', false);
+            var mStr = "";
+            mListStore = [];
+            $('tbody.store-items tr:not(.company-name)').find('input[type="checkbox"]:checked').each(function () {
+                //var _key = $(this).parents('tr:first').attr('id');
+                //var _text = $(this).parents('tr:first').attr('data-value');
+                var _key = $(this).attr('data-value');
+                var _text = $(this).attr('data-storename');
+                if (_key !== _StoreID) {
+                    mStr += "<tr id='" + _key + "'>";
+                    mStr += "<td width='20%' style='text-align:left;'>" + _text + "</td>";
+                    mStr += "<td width='2%' style='text-align:center;'> <input type='checkbox' onclick='TickCheckBoxTd(this,\"#body-comfirm-store\",\"" + _key + "\")' class='chkAll_" + _key + "' />" + "</td>";
+                    mStr += "</tr>";
+                } else {
+                    var mStore = {
+                        key: _key,
+                        text: _text
+                    };
+                    mListStore.push(mStore);
+                }
+            });
+            if (mStr !== "") {
+                $('#body-comfirm-store').append(mStr);
+            }
+            $('.se-pre-con').hide();
+        });
+    });
+
+    function ToogleCheckAllItem(e, containElementSelector) {
+        checkAll = $(e).prop("checked");
+        $(containElementSelector).find("tr:visible").find("input[type='checkbox']").prop("checked", checkAll);
+        if ($(e).prop('id') != 'select-all') {
+            ToggleBtnDelete();
+        }
+    }
+
+     @if (_ID != null) {
+         <text>
+     $('#ProductTypeDdl').attr('disabled', true);
+         </text>
+     }
+
+    @*@if (Model.Type == Convert.ToInt32(Commons.EProductType.Dish.ToString("d"))) {
+        <text>
+    $('#ProductTypeDdl').attr('disabled', true);
+    $('#ddlParentCate').attr('disabled', false);
+    </text>
+    }*@
+    @if (Model.ProductTypeID != Commons.EProductType.Dish.ToString("d")) {
+        <text>
+    $('#ddlParentCate').attr('disabled', true);
+    </text>
+    }
+
+    function LoadParentCate(_StoreID, LstStoreID) {
+        $('.se-pre-con').show();
+        var currentOffset = $(".lst-category").length;
+        var ProductTypeID = $('#ProductTypeDdl').val();
+        $.ajax({
+            url: '@Url.Action("LoadParentCategory", "SBInventoryCategoriesInte")',
+            type: 'post',
+            data: {
+                StoreID: LstStoreID,
+                ProductTypeID: ProductTypeID
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $('#divAuto').show();
+                $(".ParentCate").html(data);
+            }
+        });
+    }
+
+    $("#ProductTypeDdl").change(function () {
+        var val = this.value;
+        var array = [];
+        ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString()';
+        var ProductTypeID = $('#ProductTypeDdl').find("option:selected").text();
+        if (ProductTypeID.toLowerCase() != ItemType.toLowerCase()) {
+            $('#ddlParentCate').attr('disabled', true);
+        }
+        else {
+            $('#ddlParentCate').attr('disabled', false);
+        }
+        $(".child_chkStore").each(function (index, element) {
+            var isCheck = $(this).is(':checked');
+            if (isCheck == true) {
+                array[index] = $(this).data("value");
+            }
+        });
+        if (array.length > 0 && ProductTypeID == ItemType) {
+            LoadParentCate("", array);
+        }
+    });
+
+    function LoadParentCategories(_StoreID, LstStoreID, checked) {
+        $('.se-pre-con').show();
+        var currentOffset = $(".lst-category").length;
+        var ProductTypeID = $('#ProductTypeDdl').val();
+        if (checked == true) {
+            $.ajax({
+                url: '@Url.Action("LoadParentCategory", "SBInventoryCategoriesInte")',
+                type: 'post',
+                data: {
+                    StoreID: LstStoreID,
+                    ProductTypeID: ProductTypeID
+                },
+                dataType: 'html',
+                success: function (data) {
+                    //alert(data);
+                    $('#divAuto').show();
+                    $(".ParentCate").html(data);
+
+                    LoadItemOnStore(currentOffset, _StoreID, ProductTypeID, "")
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '@Url.Action("LoadParentCategory", "SBInventoryCategoriesInte")',
+                type: 'post',
+                data: {
+                    StoreID: LstStoreID,
+                    ProductTypeID: ProductTypeID
+                },
+                dataType: 'html',
+                success: function (data) {
+                    //alert(data);
+                    $('#divAuto').show();
+                    $('.se-pre-con').hide();
+                    $(".ParentCate").html(data);
+                }
+            });
+        }
+    }
+
+    function LoadItemOnStore(Offset, _StoreID, ProductTypeID, _StoreName) {
+        $('.se-pre-con').show();
+        var currentOffset = $(".lst-category").length;
+        var ProductTypeID = $('#ProductTypeDdl').val();
+        $.ajax({
+            url: '@Url.Action("LoadItemOnStore", "SBInventoryCategoriesInte")',
+            type: 'post',
+            data: {
+                currentOffset: currentOffset,
+                StoreID: _StoreID,
+                ProductTypeID: ProductTypeID,
+                StoreName: _StoreName,
+            },
+            dataType: 'html',
+            success: function (data) {
+                //alert(kq);
+                $("#divAuto").append(data);
+                $('.se-pre-con').hide();
+                $('#divAuto').show();
+            }
+        });
+    }
+
+    function GetAccountXeroByStore(StoreID)
+    {
+        if (StoreID != null && StoreID != undefined)
+        {
+            $.ajax({
+            url: '@Url.Action("GetAccountXeroByStore", "SBInventoryCategoriesInte")',
+            type: 'get',
+            data: {
+                StoreID: StoreID,
+            },
+            dataType: 'json',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                if (data.length > 0)
+                {
+                    $("[id=glaccount-combobox]").removeClass("hidden");
+                    $("[id=glaccount-textbox]").addClass("hidden");
+                    $("#ddlGLAccountCode").html("").select2({
+                        data: data,
+                        placeholder: 'Please choose account',
+                        allowClear: true,
+                    });
+                } else {
+                    $("[id=glaccount-combobox]").addClass("hidden");
+                    $("[id=glaccount-textbox]").removeClass("hidden");
+                }
+                
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+        }
+    }
+
+    function chkItemClick(e, _StoreID, _StoreName) {
+        var LstStoreID = [];
+        var checked = $(e).prop('checked');
+        ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString()';
+        var ProductTypeID = $('#ProductTypeDdl').find("option:selected").text();
+        var StoreName = _StoreName;
+        $(".child_chkStore").each(function (index, element) {
+            var isCheck = $(this).is(':checked');
+            if (isCheck == true) {
+                LstStoreID[index] = $(this).data("value");
+            }
+        });
+        if (checked) {
+            $('.se-pre-con').show();
+            if (ProductTypeID.toLowerCase() === ItemType.toLowerCase()) {
+                LoadParentCategories(_StoreID, LstStoreID, checked);
+            }
+            else {
+                var currentOffset = $(".lst-category").length;
+                var ProductTypeID = $('#ProductTypeDdl').val();
+                LoadItemOnStore(currentOffset, _StoreID, ProductTypeID, _StoreName)
+            }
+        } else {
+            if (LstStoreID.length >= 0) {
+                $('.se-pre-con').show();
+                if (ProductTypeID.toLowerCase() === ItemType.toLowerCase()) {
+                    LoadParentCategories(_StoreID, LstStoreID, checked);
+                }
+                else {
+                    $('.se-pre-con').hide();
+                }
+            }
+            var div = $('.cls_' + _StoreID);
+            $(div).find('input.GroupStatus').val(9);
+            //$(div).css('display', 'none');
+            $(div).hide();
+        }
+        GetAccountXeroByStore(LstStoreID);
+        //}
+    }
+
+    function DeleteItemChild(StoreID) {
+        var LstStoreID = [];
+        ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString()';
+        var ProductTypeID = $('#ProductTypeDdl').find("option:selected").text();
+
+        var chkStore = $('#chkStore_' + StoreID);
+        var disabled = $(chkStore).attr("data-disabled");
+        //if (!chkStore.is(':disabled')) {
+        //if (disabled == 'False') {
+        var div = $('.cls_' + StoreID);
+        $(div).find('input.GroupStatus').val(9);
+        $(div).hide();
+        //$(div).css('display', 'none');
+        $('#chkStore_' + StoreID).prop('checked', false);
+        //} else {
+        //    $(chkStore).prop('checked', true);
+        //}
+        $(".child_chkStore").each(function (index, element) {
+            var isCheck = $(this).is(':checked');
+            if (isCheck == true) {
+                LstStoreID[index] = $(this).data("value");
+            }
+        });
+        if (LstStoreID.length >= 0) {
+            $('.se-pre-con').show();
+            if (ProductTypeID.toLowerCase() === ItemType.toLowerCase()) {
+                LoadParentCategories(StoreID, LstStoreID, false);
+            }
+            else {
+                $('.se-pre-con').hide();
+            }
+        }
+        GetAccountXeroByStore(LstStoreID);
+    }
+
+    function checkItemClone(e, listItemCheck, idCheckAll) {
+        var totalRow = $(listItemCheck).length;
+        var totalChecked = $(listItemCheck + ":checked").length;
+        $(idCheckAll).prop('checked', (totalRow == totalChecked));
+    }
+
+    function CloneDataByStore()
+    {
+        if (mListStore.length > 0)
+        {
+            var obj = {};
+            var mCountStore = 0;
+            mCountStore = $('tbody.timeslot tr').find('input[type="checkbox"]:checked').length;
+            if (mCountStore > 0)
+            {
+                var r = confirm('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("When clone data to other stores, some data may be lost at each store!"))');
+                if(r)
+                {
+                    $('.lst-category:visible').each(function (index, value) {
+                        var _offSet = $(this).attr('data-offset');
+                        var _storeID = $(this).attr('data-id');
+                        if (_storeID === mListStore[0].key) {
+                            obj = {
+                                IsShowInKiosk: $('#_IsShowInKiosk' + _offSet).is(':checked'),
+                                IsShowInReservation: $('#_IsShowInReservation' + _offSet).is(':checked'),
+                                Sequence: $('#_Sequence' + _offSet).val()
+                            };
+                        }
+                    });
+
+
+                    $('.lst-category:visible').each(function (index, value) {
+                        var _offSet = $(this).attr('data-offset');
+                        var _storeID = $(this).attr('data-id');
+                        $('tbody.timeslot tr').find('input[type="checkbox"]:checked').each(function () {
+                            var _key = $(this).parents('tr:first').attr('id');
+                            if (_storeID === _key) {
+                                //$('[id = _IsShowInReservation' + _offSet + ']').prop('checked', IsShowInReservation);
+                                //$('[id = _Sequence' + _offSet + ']').val(obj.Sequence)
+                                $('#_IsShowInKiosk' + _offSet).prop('checked', obj.IsShowInKiosk);
+                                $('#_IsShowInReservation' + _offSet).prop('checked', obj.IsShowInReservation);
+                                $('#_Sequence' + _offSet).val(obj.Sequence);
+                            }
+                        });
+                    });
+                }
+            }
+        }
+
+    }
+
+    function TickCheckBoxTd(td, containElementSelector, StoreID) {
+        //var tr = $(td).parents('tr:first');
+        //$(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'));
+
+        var _trCount = $(containElementSelector).find("tr:visible").length;
+        var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+        if (_trCount === lengthCheck) {
+            $('#chkAllStoreClone').prop('checked', true);
+        } else {
+            $('#chkAllStoreClone').prop('checked', false);
+        }
+    }
+
+    function CopyItem(StoreID, Offset) {
+        //var IsShowInReservation = $('#_IsShowInReservation' + Offset).is(':checked');
+        //var Sequence = $('#_Sequence' + Offset).val();
+        //var length = $(".lst-category").length;
+        //var count = 0;
+        //$(".child_chkStore").each(function (index, element) {
+        //    var isCheck = $(this).is(':checked');
+        //    if (isCheck == true) {
+        //        count = parseFloat(count) + 1;
+        //    }
+        //});
+        //if (count > 1) {
+        //    var result = confirm("When clone data to other stores, some data may be lost at each store!");
+        //    if (result == true) {
+        //        for (var i = 0; i < length; i++) {
+        //            $('#_IsShowInReservation' + i).prop('checked', IsShowInReservation);
+        //            $('#_Sequence' + i).val(Sequence);
+        //        }
+        //    }
+        //}
+
+        $('#body-comfirm-store').html('');
+        var mCountStore = 0;
+        mCountStore = $('tbody.store-items tr').find('input[type="checkbox"]:checked').length;
+        if (mCountStore > 1) {
+            $('.se-pre-con').show();
+            _StoreID = StoreID;
+            $("#modalComfirmStore").modal('show');
+        }
+    }
+
+</script>

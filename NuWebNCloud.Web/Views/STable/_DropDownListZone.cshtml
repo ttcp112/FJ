@@ -1,0 +1,20 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.TableModels
+
+@Html.DropDownList("ZoneID", Model.ListZone,
+              null, new
+               {
+                   @class = "form-control select2_multiple",
+                   //@onchange = "ChangeCategory(this)",
+                   @id = "ddlZone",
+                   @style = "width:100%;"
+               })
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlZone").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Zone"))",
+            allowClear: true
+        });
+    });
+</script>

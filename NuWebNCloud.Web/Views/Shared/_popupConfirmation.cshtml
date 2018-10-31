@@ -1,0 +1,19 @@
+﻿<div id="modal_@Model[0]" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel2" style="text-align: left">@Model[1]</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Model[2]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="delete (@Model[3])">OK </button>
+            </div>
+        </div>
+    </div>
+</div>

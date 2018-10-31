@@ -1,0 +1,10 @@
+﻿<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index","SettingSchedulerReport", new { area = "" })" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "view" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>View Data</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create","SettingSchedulerReport", new { area = "" })" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "create" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>Add new</a>
+    </li>
+</ul>

@@ -1,0 +1,33 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.UsageManagementModel
+@if (Model.ListDetail.Count > 0)
+{
+    <table class="table center-content">
+        <thead>
+            <tr style="background-color:#34495e; color:#fff;">
+                <th class="text-center">Index</th>
+                <th class="text-center">Business Date</th>
+                <th class="text-center">Dish</th>
+                <th class="text-center">Order Qty</th>
+                <th class="text-center">Usage</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ListDetail.Count; i++)
+            {
+                string styleRow = "row-even";
+                if (i % 2 == 0)
+                {
+                    styleRow = "row-odd";
+                }
+                var item = Model.ListDetail[i];
+                <tr class="@styleRow">
+                    <td class="text-center">@item.Index</td>
+                    <td>@item.BusinessDay</td>
+                    <td>@item.ItemName</td>
+                    <td class="text-center">@item.Qty</td>
+                    <td class="text-center">@item.Usage</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,246 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Monthly Transactions Report"));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                         new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Reports" }, { "C", "Monthly Transactions" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    @using (Html.BeginForm("Report", "IngMonthlyTransactionsReport", FormMethod.Post,
+new
+{
+@id = "formReport",
+@class = "form-horizontal",
+enctype = "multipart/form-data"
+}))
+                    {
+                        <div class="form-group">
+                            @Html.ValidationSummary(true, "", new { @style = "color: red;" })
+                        </div>
+
+                        //Default Date
+                        <div class="form-group" id="divDefDate">
+                            <label for="FromMonth" class="col-md-3 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Month"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    @{Html.EnableClientValidation(false); }
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+
+                                    @*@Html.TextBoxFor(model => model.FromDate, "{0:MM/dd/yyyy}",
+                                        new
+                                        {
+                                            @id = "fromDate",
+                                            @class = "form-control datepicker",
+                                            @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date")
+                                        })*@
+                                    @Html.TextBoxFor(model => model.FromMonth, "{0:MM/yyyy}",
+new
+{
+    @id = "fromDate",
+    @class = "form-control monthpicker",
+    @autocomplete = "off",
+    @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Month")
+})
+                                    @{Html.EnableClientValidation(true);
+                                    }
+                                </div>
+                                @Html.ValidationMessageFor(model => model.FromMonth, null, new { @class = "label" })
+                            </div>
+                            <label for="ToMonth" class="col-md-1 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Month"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    @{Html.EnableClientValidation(false);
+                                    }
+                                    @Html.TextBoxFor(model => model.ToMonth, "{0:MM/yyyy}",
+new
+{
+    @id = "toDate",
+    @class = "form-control monthpicker",
+    @autocomplete = "off",
+    @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Month")
+})
+                                    @{Html.EnableClientValidation(true);
+                                    }
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ToMonth, null, new { @class = "label" })
+                            </div>
+                        </div>
+
+                        //SELECT
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.Type,
+                         new SelectList(Model.ListType, "Value", "Text", Model.Type), null,
+                         new
+                         {
+                             @class = "select2_single form-control",
+                             @tabindex = "-1",
+                             @id = "ddlSeleted"
+                         })
+                            </div>
+                        </div>
+                        //COMPANY
+                        <div class="form-group" id="divCompany">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.ListCompanys,
+                         new SelectList(@ViewBag.Companys, "Value", "Text", Model.ListCompanys), null,
+                         new
+                         {
+                             @class = "form-control select2_multiple",
+                             @id = "companyDdl",
+                             @multiple = "multiple",
+                             @style = "width:100%;"
+
+                         })
+                                @Html.ValidationMessageFor(model => model.ListCompanys, null,
+                    new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+                        //STORE
+                        <div class="form-group" id="divStore">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Stores"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @*@Html.DropDownListFor(model => model.ListStores,
+                                    new SelectList(@ViewBag.Stores, "Value", "Text", Model.ListStores), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "storeDdl",
+                                        @multiple = "multiple",
+                                        @style = "width:100%;"
+                                    })*@
+                                @*<select name="ListStores" id="storeDdl" class="form-control list-stores-group" style="width:100%;"> </select>*@
+
+                                @*Updated 07202018*@
+                                @Html.DropDownListFor(model => model.ListStores, (SelectList)ViewBag.StoresInfoSession, new
+                                {
+	                                @class = "form-control select2_multiple list-stores-group",
+	                                @id = "storeDdl",
+	                                @multiple = "multiple",
+	                                @style = "width:100%;"
+                                })
+
+                                @Html.ValidationMessageFor(model => model.ListStores, null, new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+                        //End Update
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 ">
+                            </div>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div>
+                                    @Html.RadioButtonFor(m => m.FormatExport, "HTML",
+                         new
+                         {
+                             @class = "flat",
+                             @name = "export"
+                         }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Html))
+                        <br />
+                        @Html.RadioButtonFor(m => m.FormatExport, "Excel",
+                             new
+                             {
+                                 @class = "flat",
+                                 @name = "export"
+                             }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Excel))
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3 col-sm-3 col-xs-12 ">
+                    </div>
+                    <div class="col-md-4 col-sm-8 col-xs-12 ">
+                        <button id="btn-Export" class="btn btn-success btn-md">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Export"))</button>
+                    </div>
+                </div>
+            }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<link rel="stylesheet" href="@Url.Content("~/Assets/css/jquery-ui.css")" />
+<script src="@Url.Content("~/Assets/js/datepicker/jquery.ui.monthpicker.js")"></script>
+
+@section Scripts{
+<script>
+        var _typeState = @Model.Type;
+        var _listCompanys = [];
+        var _listStores = [];
+
+        $(document).ready(function () {
+            @*$('.list-stores-group').select2({
+                placeholder: _SStore,
+                multiple: true,
+                data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+            });*@
+
+            ///////======= Updated 07202018
+            $("#storeDdl").select2({
+	            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+	            allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.ListStores))).trigger('change.select2');
+
+            @if (Model.Type == Commons.TypeCompanySelected)
+            {
+                if (Model.ListCompanys != null && Model.ListCompanys.Count > 0)
+                {
+                    @:_listCompanys = '@Html.Raw(Json.Encode(Model.ListCompanys))';
+                }
+            }
+            else{
+                if (Model.ListStores != null && Model.ListStores.Count > 0)
+                {
+                    @:_listStores = '@Html.Raw(Json.Encode(Model.ListStores))';
+                }
+            }
+
+            @*datepicker*@
+        $('.monthpicker').monthpicker({ changeYear: true});
+        });
+</script>
+    <script src="@Url.Content("~/Scripts/baseJs.js")"></script>
+
+    @*demo datepicker - Get Data BussinessDay*@
+    @*<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">*@
+    @*@Styles.Render("~/Assets/css/jquery-ui.css")
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                var _dateFormat = "mm/dd/yy";
+                var available_arr = ["10/01/2016", "10/03/2016"];
+                var arr = [0, 1, 2, 3, 4, 5, 6]
+                $("._datepicker").datepicker({
+                    dateFormat: _dateFormat,
+                    beforeShowDay: function (date) {
+                        var day = date.getDay();
+                        return [(arr.indexOf(day) == -1)];
+                    }
+                });
+                $("._datepicker").datepicker("option", "beforeShowDay",
+                    function (date) {
+                        var string = jQuery.datepicker.formatDate(_dateFormat, date);
+                        return [available_arr.indexOf(string) != -1];
+                    }
+                );
+            });
+        </script>*@
+}

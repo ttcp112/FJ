@@ -1,0 +1,71 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+
+<div class="row form-horizontal form-label-left">
+    <div class="form-group" style="font-size:40px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Model.StoreName</div>
+    </div>
+
+    <div class="form-group" style="font-size:15px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Goods Receipt Document(Receipt Verification)"))</div>
+    </div>
+
+    <div class="form-group" style="font-size:30px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes")): <span class="borderBottomDot" style="padding:0 30px;">@Model.ReceiptNo</span></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Date")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">@Model.ReceiptDate.ToString("MMMM dd yyyy")</div>
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received by")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12"><strong>@Model.ReceiptBy</strong></div>
+    </div>
+
+    @if (Model.ListItem != null && Model.ListItem.Count > 0)
+    {
+        string _WONumber = "";
+
+        <div class="box-body form-group" style="text-align:center; padding-bottom:30px;">
+            <table class="tbCustom">
+                <thead>
+                    <tr>
+                        <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                        <td style="width:65%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                        <td style="width:15%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                        <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Quantity"))</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.ListItem.Count; i++)
+                    {
+                        var item = Model.ListItem[i];
+
+                        string CurWONumber = item.WONumber;
+                        if (_WONumber != CurWONumber)
+                        {
+                            _WONumber = CurWONumber;
+                            <text>
+                                <tr>
+                                    <td colspan="4" class="text-left" style="font-size:20px; padding-left:15px;">@item.WONumber</td>
+                                </tr>
+                            </text>
+                        }
+                        <tr>
+                            <td>@item.IngredientCode</td>
+                            <td>@item.IngredientName</td>
+                            <td>@item.BaseUOM</td>
+                            <td>@item.ReceivingQty</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="row text-right">
+    <ul class="header-buttons pull-right list-inline">
+        <li><a href="javascript:void(0)" data-dismiss="modal" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+    </ul>
+</div>

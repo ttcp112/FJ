@@ -1,0 +1,546 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{28543391-6A77-44DA-B1E0-D68318A8B860}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NuWebNCloud.Shared</RootNamespace>
+    <AssemblyName>NuWebNCloud.Shared</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.76.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.6\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSLog">
+      <HintPath>..\lib\NSLog.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.3.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.3.1\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commons.cs" />
+    <Compile Include="Factory\AccessControl\DrawerFactory.cs" />
+    <Compile Include="Factory\AccessControl\RoleOrganizationFactory.cs" />
+    <Compile Include="Factory\AccessControl\ModuleFactory.cs" />
+    <Compile Include="Factory\AccessControl\ModulePermissionFactory.cs" />
+    <Compile Include="Factory\AccessControl\RoleOnStoreFactory.cs" />
+    <Compile Include="Factory\AccessControl\UserRoleFactory.cs" />
+    <Compile Include="Factory\CreditInvoicesReportFactory.cs" />
+    <Compile Include="Factory\DetailItemizedSalesAnalysisModifiersviewReportFactory.cs" />
+    <Compile Include="Factory\PosSaleFactory.cs" />
+    <Compile Include="Factory\AuditTrailReportFactory.cs" />
+    <Compile Include="Factory\BaseFactory.cs" />
+    <Compile Include="Factory\Charts\DashBoardFactory.cs" />
+    <Compile Include="Factory\FJDailySalesReportFactory.cs" />
+    <Compile Include="Factory\ItemizedCancelRefundFactory.cs" />
+    <Compile Include="Factory\DailyItemizedSalesReportDetailFactory.cs" />
+    <Compile Include="Factory\BusinessDayFactory.cs" />
+    <Compile Include="Factory\CashInOutReportFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngDailyTransactionsReportFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngMonthlyTransactionsReportFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReceiptNoteSelfMadeFactory.cs" />
+    <Compile Include="Factory\Ingredients\WorkOrderFactory.cs" />
+    <Compile Include="Factory\LanguageFactory.cs" />
+    <Compile Include="Factory\NoIncludeOnSaleDataFactory.cs" />
+    <Compile Include="Factory\ClosedReceiptReportFactory.cs" />
+    <Compile Include="Factory\CompanyFactory.cs" />
+    <Compile Include="Factory\DailyReceiptReportFactory.cs" />
+    <Compile Include="Factory\DailySalesReportFactory.cs" />
+    <Compile Include="Factory\DateOfWeeksFactory.cs" />
+    <Compile Include="Factory\DetailItemizedSalesAnalysisReportHeaderFactory.cs" />
+    <Compile Include="Factory\DiscountDetailsReportDetailFactory.cs" />
+    <Compile Include="Factory\DiscountDetailsReportFactory.cs" />
+    <Compile Include="Factory\HourlyItemizedSalesReportFactory.cs" />
+    <Compile Include="Factory\HourlySalesReportFactory.cs" />
+    <Compile Include="Factory\IndustryFactory.cs" />
+    <Compile Include="Factory\Ingredients\CountryFactory.cs" />
+    <Compile Include="Factory\Ingredients\DataEntryDetailFactory.cs" />
+    <Compile Include="Factory\Ingredients\StockCountFactory.cs" />
+    <Compile Include="Factory\Ingredients\DataEntryFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngredientFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngredientSupplierFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngredientsUsageFactory.cs" />
+    <Compile Include="Factory\Ingredients\IngredientUOMFactory.cs" />
+    <Compile Include="Factory\Ingredients\InventoryFactory.cs" />
+    <Compile Include="Factory\Ingredients\PurchaseOrderDetailFactory.cs" />
+    <Compile Include="Factory\Ingredients\PurchaseOrderFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReceiptNoteDetailFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReceiptNoteFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReceiptPurchaseOrderFactory.cs" />
+    <Compile Include="Factory\Ingredients\RecipeFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReturnNoteDetailFactory.cs" />
+    <Compile Include="Factory\Ingredients\ReturnNoteFactory.cs" />
+    <Compile Include="Factory\Ingredients\StockManagementFactory.cs" />
+    <Compile Include="Factory\Ingredients\StockTransferDetailFactory.cs" />
+    <Compile Include="Factory\Ingredients\StockTransferFactory.cs" />
+    <Compile Include="Factory\Ingredients\StockUsageFactory.cs" />
+    <Compile Include="Factory\Ingredients\StoreSettingFactory.cs" />
+    <Compile Include="Factory\Ingredients\SupplierFactory.cs" />
+    <Compile Include="Factory\Ingredients\UnitOfMeasureFactory.cs" />
+    <Compile Include="Factory\Ingredients\UsageManagementFactory.cs" />
+    <Compile Include="Factory\ItemizedSalesAnalysisReportDetailFactory.cs" />
+    <Compile Include="Factory\ItemizedSalesAnalysisReportFactory.cs" />
+    <Compile Include="Factory\DiscountAndMiscReportFactory.cs" />
+    <Compile Include="Factory\NoSaleDetailReportFactory.cs" />
+    <Compile Include="Factory\OrderPaidFactory.cs" />
+    <Compile Include="Factory\OrderPaymentMethodFactory.cs" />
+    <Compile Include="Factory\OrderTipFactory.cs" />
+    <Compile Include="Factory\OrganizationFactory.cs" />
+    <Compile Include="Factory\POSMerchantConfigFactory.cs" />
+    <Compile Include="Factory\ProductTypeFactory.cs" />
+    <Compile Include="Factory\ReceiptsbyPaymentMethodsReportFactory.cs" />
+    <Compile Include="Factory\RefundFactory.cs" />
+    <Compile Include="Factory\ReportFactory.cs" />
+    <Compile Include="Factory\Sandbox\CustomerFactory.cs" />
+    <Compile Include="Factory\Sandbox\EmployeeFactory.cs" />
+    <Compile Include="Factory\Sandbox\Inventory\CategoriesFactory.cs" />
+    <Compile Include="Factory\Sandbox\Inventory\DiscountFactory.cs" />
+    <Compile Include="Factory\Sandbox\Inventory\PrinterFactory.cs" />
+    <Compile Include="Factory\Sandbox\Inventory\Product\ProductFactory.cs" />
+    <Compile Include="Factory\Sandbox\Inventory\PromotionFactory.cs" />
+    <Compile Include="Factory\Sandbox\RoleFactory.cs" />
+    <Compile Include="Factory\ScheduleTrackingLogFactory.cs" />
+    <Compile Include="Factory\Settings\ChatTemplateFactory.cs" />
+    <Compile Include="Factory\Settings\DefaultCurrencyFactory.cs" />
+    <Compile Include="Factory\Settings\EditCompanyFatory.cs" />
+    <Compile Include="Factory\Settings\EmployeeAddCompanyFactory.cs" />
+    <Compile Include="Factory\Settings\GeneralSettingFactory.cs" />
+    <Compile Include="Factory\Settings\LocationFactory.cs" />
+    <Compile Include="Factory\Settings\MerchantSettingFactory.cs" />
+    <Compile Include="Factory\Settings\PaymentMethodFactory.cs" />
+    <Compile Include="Factory\Settings\RSVPProductMappingFactory.cs" />
+    <Compile Include="Factory\Settings\SchedulerReportFactory.cs" />
+    <Compile Include="Factory\Settings\ScreenSaverModeFactory.cs" />
+    <Compile Include="Factory\Settings\SeasonFactory.cs" />
+    <Compile Include="Factory\Settings\SRegisterAccountFactory.cs" />
+    <Compile Include="Factory\Settings\TableFactory.cs" />
+    <Compile Include="Factory\Settings\TaxFactory.cs" />
+    <Compile Include="Factory\Settings\TipServiceChargeFactory.cs" />
+    <Compile Include="Factory\Settings\TransactionReasonSettingFactory.cs" />
+    <Compile Include="Factory\Settings\ZoneFactory.cs" />
+    <Compile Include="Factory\StoreFactory.cs" />
+    <Compile Include="Factory\UtilitiesFactory.cs" />
+    <Compile Include="Factory\TaxFactory.cs" />
+    <Compile Include="Factory\TimeClockReportFactory.cs" />
+    <Compile Include="Factory\TopSellingProductsReportFactory.cs" />
+    <Compile Include="Factory\UserFactory.cs" />
+    <Compile Include="Factory\Xero\Settings\Tax\TaxXeroFactory.cs" />
+    <Compile Include="Factory\Xero\SupplierXeroFactory.cs" />
+    <Compile Include="Factory\Xero\XeroFactory.cs" />
+    <Compile Include="InitData\InitModuleData.cs" />
+    <Compile Include="Integration\Factory\Sandbox\Categories\InteCategoriesFactory.cs" />
+    <Compile Include="Integration\Factory\Sandbox\InteEmployeeFactory.cs" />
+    <Compile Include="Integration\Factory\Sandbox\Product\InteProductFactory.cs" />
+    <Compile Include="Integration\Models\Sandbox\InteEmployeeModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\InteCategoriesApiModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\InteCategoriesModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\InteCategoriesViewModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteCategoryApplyModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteGroupProductModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteGroupProductViewModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductApiModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductApplyItemModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductLiteModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductOnGroupModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductStoreModels.cs" />
+    <Compile Include="Integration\Models\Sandbox\Inventory\Product\InteProductViewModels.cs" />
+    <Compile Include="Models\AccessControl\DrawerApiModels.cs" />
+    <Compile Include="Models\AccessControl\DrawerModels.cs" />
+    <Compile Include="Models\AccessControl\RoleOrganizationModels.cs" />
+    <Compile Include="Models\AccessControl\ModuleApiModels.cs" />
+    <Compile Include="Models\AccessControl\ModuleModels.cs" />
+    <Compile Include="Models\AccessControl\ModulePermissionModels.cs" />
+    <Compile Include="Models\AccessControl\RoleOnStoreModels.cs" />
+    <Compile Include="Models\AccessControl\UserRoleModels.cs" />
+    <Compile Include="Models\Api\BaseApiRequestModel.cs" />
+    <Compile Include="Models\Api\CategoryApiRequestModel.cs" />
+    <Compile Include="Models\Api\CompanyApiModels.cs" />
+    <Compile Include="Models\Api\MerchantExtendRequestModel.cs" />
+    <Compile Include="Models\Api\CountryApiModels.cs" />
+    <Compile Include="Models\Api\Language\LanguageLinkDetailModels.cs" />
+    <Compile Include="Models\Api\Language\LanguageLinkModels.cs" />
+    <Compile Include="Models\Api\Language\LanguageModels.cs" />
+    <Compile Include="Models\Api\MerchantConfigApiModels.cs" />
+    <Compile Include="Models\Api\EmployeeApiModels.cs" />
+    <Compile Include="Models\Api\RegisterModels.cs" />
+    <Compile Include="Models\Api\RegisterTokenModels.cs" />
+    <Compile Include="Models\Api\ResponseApiModels.cs" />
+    <Compile Include="Models\Api\ResponseLogIn.cs" />
+    <Compile Include="Models\Api\StoreApiModels.cs" />
+    <Compile Include="Models\CreditInvoiceReportModels.cs" />
+    <Compile Include="Models\DetailItemizedSalesAnalysisModifiersviewModels.cs" />
+    <Compile Include="Models\Ingredients\TaxPurchasing\TaxPurchasingModels.cs" />
+    <Compile Include="Models\Ingredients\TaxPurchasing\TaxPurchasingViewModels.cs" />
+    <Compile Include="Models\PosSaleDetailModels.cs" />
+    <Compile Include="Models\PosSaleModels.cs" />
+    <Compile Include="Models\Charts\DashBoardModels.cs" />
+    <Compile Include="Models\FJDailySalesReportModels.cs" />
+    <Compile Include="Models\ItemizedCancelRefundModels.cs" />
+    <Compile Include="Models\DailyTransactionsReportModels.cs" />
+    <Compile Include="Models\AuditTrailReportModels.cs" />
+    <Compile Include="Models\BusinessDayModels.cs" />
+    <Compile Include="Models\CashInOutReportModels.cs" />
+    <Compile Include="Models\CategoryModels.cs" />
+    <Compile Include="Models\DailyItemizedSalesReportDetailModels.cs" />
+    <Compile Include="Models\Ingredients\ReceiptNoteSelfMadeDetailModels.cs" />
+    <Compile Include="Models\Ingredients\ReceiptNoteSelfMadeModels.cs" />
+    <Compile Include="Models\Ingredients\WorkOrderDetailModels.cs" />
+    <Compile Include="Models\Ingredients\WorkOrderModels.cs" />
+    <Compile Include="Models\NoIncludeOnSaleDataReportModels.cs" />
+    <Compile Include="Models\ClosedReceiptReportModels.cs" />
+    <Compile Include="Models\CompanyModels.cs" />
+    <Compile Include="Models\DailyReceiptReportModels.cs" />
+    <Compile Include="Models\DailySalesReportModels.cs" />
+    <Compile Include="Models\DateOfWeeksModels.cs" />
+    <Compile Include="Models\DetailItemizedSalesAnalysisReportDetailModels.cs" />
+    <Compile Include="Models\DetailItemizedSalesAnalysisReportHeaderModels.cs" />
+    <Compile Include="Models\DiscountDetailsReportDetailModels.cs" />
+    <Compile Include="Models\DiscountDetailsReportModels.cs" />
+    <Compile Include="Models\ErrorModel.cs" />
+    <Compile Include="Models\HourlyItemizedSalesReportModels.cs" />
+    <Compile Include="Models\HourlySalesReportModels.cs" />
+    <Compile Include="Models\IndustryModels.cs" />
+    <Compile Include="Models\Ingredients\CountryModels.cs" />
+    <Compile Include="Models\Ingredients\StockCountDetailModels.cs" />
+    <Compile Include="Models\Ingredients\DataEntryDetailModels.cs" />
+    <Compile Include="Models\Ingredients\StockCountModels.cs" />
+    <Compile Include="Models\Ingredients\DataEntryModels.cs" />
+    <Compile Include="Models\Ingredients\IngredientModel.cs" />
+    <Compile Include="Models\Ingredients\IngredientsUsageModels.cs" />
+    <Compile Include="Models\Ingredients\Ingredients_SupplierModel.cs" />
+    <Compile Include="Models\Ingredients\IngredientUOMModels.cs" />
+    <Compile Include="Models\Ingredients\InventoryModels.cs" />
+    <Compile Include="Models\Ingredients\PurchaseOrderDetailModels.cs" />
+    <Compile Include="Models\Ingredients\PurchaseOrderModels.cs" />
+    <Compile Include="Models\Ingredients\ReceiptNoteDetailModels.cs" />
+    <Compile Include="Models\Ingredients\ReceiptNoteModels.cs" />
+    <Compile Include="Models\Ingredients\ReceiptPurchaseOrderModels.cs" />
+    <Compile Include="Models\Ingredients\RecipeModels.cs" />
+    <Compile Include="Models\Ingredients\ReturnNoteDetailModels.cs" />
+    <Compile Include="Models\Ingredients\ReturnNoteModels.cs" />
+    <Compile Include="Models\Ingredients\StockManagementModels.cs" />
+    <Compile Include="Models\Ingredients\StockTransferDetailModels.cs" />
+    <Compile Include="Models\Ingredients\StockTransferModels.cs" />
+    <Compile Include="Models\Ingredients\StockUsageModel.cs" />
+    <Compile Include="Models\Ingredients\StoreSettingModels.cs" />
+    <Compile Include="Models\Ingredients\SupplierIngredientModels.cs" />
+    <Compile Include="Models\Ingredients\SupplierModels.cs" />
+    <Compile Include="Models\Ingredients\UnitOfMeasureModel.cs" />
+    <Compile Include="Models\Ingredients\UsageManagementModel.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReportDetailModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReportModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ItemizedSalesAnalysisModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ItemizedSalesAnalysisOuletTotalModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ItemizedSalesAnalysisSubTotalModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ItemizedSalesAnalysisSubTotalSetMenuModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ItemizedSalesAnalysisTotalModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ListPeriodChooseModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ListPeriodModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ListPeriodSetMenuModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\ListPeriodTotalModels.cs" />
+    <Compile Include="Models\ItemizedSalesAnalysisReport\MISCBillDiscountPeriodModels.cs" />
+    <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\MiscReportModels.cs" />
+    <Compile Include="Models\NoSaleDetailReportModels.cs" />
+    <Compile Include="Models\OrderPaidModels.cs" />
+    <Compile Include="Models\OrderTipModels.cs" />
+    <Compile Include="Models\OrganizationModels.cs" />
+    <Compile Include="Models\PaymentModels.cs" />
+    <Compile Include="Models\ProductTypeApiModels.cs" />
+    <Compile Include="Models\ReceiptsbyPaymentMethodsReportModels.cs" />
+    <Compile Include="Models\RefundReportDTO.cs" />
+    <Compile Include="Models\Reports\BaseReportModel.cs" />
+    <Compile Include="Models\Reports\BaseReportWithTimeMode.cs" />
+    <Compile Include="Models\Reports\BusinessDayDisplayModels.cs" />
+    <Compile Include="Models\Reports\DailySalesViewModel.cs" />
+    <Compile Include="Models\Reports\ItemizedSalesAnalysisReportModel.cs" />
+    <Compile Include="Models\Reports\ReportTimeItemModels.cs" />
+    <Compile Include="Models\Reports\RFilterCategoryModel.cs" />
+    <Compile Include="Models\Reports\RFilterChooseExtBaseModel.cs" />
+    <Compile Include="Models\Reports\RPEmployeeItemModels.cs" />
+    <Compile Include="Models\Reports\RPHourlyItemizedSalesModels.cs" />
+    <Compile Include="Models\Reports\RPHourlySalesModels.cs" />
+    <Compile Include="Models\Reports\RPTopSellingProductsModels.cs" />
+    <Compile Include="Models\ResultModels.cs" />
+    <Compile Include="Models\Sandbox\CustomerApiModels.cs" />
+    <Compile Include="Models\Sandbox\CustomerModels.cs" />
+    <Compile Include="Models\Sandbox\EmployeeModels.cs" />
+    <Compile Include="Models\Sandbox\Import\DishGroupImportItem.cs" />
+    <Compile Include="Models\Sandbox\Import\DishImportItem.cs" />
+    <Compile Include="Models\Sandbox\Import\DishImportResultItem.cs" />
+    <Compile Include="Models\Sandbox\Import\DishImportResultModels.cs" />
+    <Compile Include="Models\Sandbox\Import\DishModifierImportItem.cs" />
+    <Compile Include="Models\Sandbox\Import\ImportItem.cs" />
+    <Compile Include="Models\Sandbox\Import\ImportModel.cs" />
+    <Compile Include="Models\Sandbox\Import\ImportNoImageModel.cs" />
+    <Compile Include="Models\Sandbox\Import\ImportResult.cs" />
+    <Compile Include="Models\Sandbox\Import\InforImportModel.cs" />
+    <Compile Include="Models\Sandbox\Import\Promotion\ExportEarning.cs" />
+    <Compile Include="Models\Sandbox\Import\Promotion\ExportSpending.cs" />
+    <Compile Include="Models\Sandbox\Import\Promotion\PromotionImportResultItem.cs" />
+    <Compile Include="Models\Sandbox\Import\Promotion\PromotionImportResultModels.cs" />
+    <Compile Include="Models\Sandbox\Import\SandboxImportModel.cs" />
+    <Compile Include="Models\Sandbox\Import\SetMenuImportModel.cs" />
+    <Compile Include="Models\Sandbox\Import\SetMenuImportResultItem.cs" />
+    <Compile Include="Models\Sandbox\Import\SetMenuImportResultModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\CategoriesApiModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\CategoriesModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\CategoriesViewModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\DiscountApiModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\DiscountModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\DiscountViewModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\PrinterApiModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\PrinterModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\CategoryApplyModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\GroupProductModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\GroupProductViewModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\PriceItem.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\PrinterOnProductModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\ProductApiModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\ProductModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\ProductOnGroupModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Product\ProductViewModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\EarningRuleDTO.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\PromotionApiModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\PromotionCategoryDTO.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\PromotionModels.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\PromotionProductDTO.cs" />
+    <Compile Include="Models\Sandbox\Inventory\Promotion\SpendingRuleDTO.cs" />
+    <Compile Include="Models\Sandbox\Inventory\SBInventoryBaseModel.cs" />
+    <Compile Include="Models\Sandbox\RoleApiModels.cs" />
+    <Compile Include="Models\Sandbox\RoleModels.cs" />
+    <Compile Include="Models\Sandbox\SBEmployeeApiModels.cs" />
+    <Compile Include="Models\ScheduleEmailModel.cs" />
+    <Compile Include="Models\ServiceRequestModels\RequestBaseModels.cs" />
+    <Compile Include="Models\Settings\ChatTemplateApiModels.cs" />
+    <Compile Include="Models\Settings\ChatTemplateModels.cs" />
+    <Compile Include="Models\Settings\Company\CompanyModels.cs" />
+    <Compile Include="Models\Settings\Company\CompanyRequests.cs" />
+    <Compile Include="Models\Settings\DefaultCurency\DefaultCurrencyApiModels.cs" />
+    <Compile Include="Models\Settings\DefaultCurency\DefaultCurrencyModels.cs" />
+    <Compile Include="Models\Settings\DefaultCurency\DefautCurrencyViewModels.cs" />
+    <Compile Include="Models\Settings\EmployeeAddCompany\CompanyModels.cs" />
+    <Compile Include="Models\Settings\EmployeeAddCompany\EmployeeAddCompanyRequest.cs" />
+    <Compile Include="Models\Settings\GeneralSettingApiModels.cs" />
+    <Compile Include="Models\Settings\GeneralSettingModels.cs" />
+    <Compile Include="Models\Settings\Location\CountryModels.cs" />
+    <Compile Include="Models\Settings\Location\LocationModels.cs" />
+    <Compile Include="Models\Settings\MerchantSetting\CompanyMerSettingModels.cs" />
+    <Compile Include="Models\Settings\MerchantSetting\MerchantSettingApiModels.cs" />
+    <Compile Include="Models\Settings\MerchantSetting\MerchantSettingModels.cs" />
+    <Compile Include="Models\Settings\MerchantSetting\MerchantSettingViewModels.cs" />
+    <Compile Include="Models\Settings\MerchantSetting\StoreSettingModels.cs" />
+    <Compile Include="Models\Settings\PaymentMethodApiModels.cs" />
+    <Compile Include="Models\Settings\PaymentMethodModels.cs" />
+    <Compile Include="Models\Settings\RSVPProductMapping\ProductItemModels.cs" />
+    <Compile Include="Models\Settings\RSVPProductMapping\RSVPProductMappingApiModels.cs" />
+    <Compile Include="Models\Settings\RSVPProductMapping\RSVPProductMappingModels.cs" />
+    <Compile Include="Models\Settings\RSVPProductMapping\RSVPStoreProducMappingModels.cs" />
+    <Compile Include="Models\Settings\ScreenSaverMode\ScreenSaverImageModels.cs" />
+    <Compile Include="Models\Settings\ScreenSaverMode\ScreenSaverModeApiModels.cs" />
+    <Compile Include="Models\Settings\ScreenSaverMode\ScreenSaverModeModels.cs" />
+    <Compile Include="Models\Settings\Season\RepeatModels.cs" />
+    <Compile Include="Models\Settings\Season\SeasonApiModels.cs" />
+    <Compile Include="Models\Settings\Season\SeasonModels.cs" />
+    <Compile Include="Models\Settings\Season\SeasonModelsView.cs" />
+    <Compile Include="Models\Settings\SettingSchedulerTaskModels.cs" />
+    <Compile Include="Models\Settings\SettingSchedulerTaskViewModels.cs" />
+    <Compile Include="Models\Settings\SStoreModels.cs" />
+    <Compile Include="Models\Settings\StoreApiModel.cs" />
+    <Compile Include="Models\Settings\TableApiModels.cs" />
+    <Compile Include="Models\Settings\TableModels.cs" />
+    <Compile Include="Models\Settings\TaxApiModels.cs" />
+    <Compile Include="Models\Settings\TaxModels.cs" />
+    <Compile Include="Models\Settings\TipServiceChargeApiModels.cs" />
+    <Compile Include="Models\Settings\TipServiceChargeModels.cs" />
+    <Compile Include="Models\Settings\TransactionReasonSetting\ReasonModels.cs" />
+    <Compile Include="Models\Settings\TransactionReasonSetting\ReasonRequestModels.cs" />
+    <Compile Include="Models\Settings\TransactionReasonSetting\ReasonViewModels.cs" />
+    <Compile Include="Models\Settings\XeroSettingApiModels.cs" />
+    <Compile Include="Models\Settings\XeroSettingModels.cs" />
+    <Compile Include="Models\Settings\Zone\ZoneApiModels.cs" />
+    <Compile Include="Models\Settings\Zone\ZoneModels.cs" />
+    <Compile Include="Models\Settings\Zone\ZonesModelsView.cs" />
+    <Compile Include="Models\StatusResponse.cs" />
+    <Compile Include="Models\StoreModels.cs" />
+    <Compile Include="Models\ClearDataSaleReportModels.cs" />
+    <Compile Include="Models\TaxModels.cs" />
+    <Compile Include="Models\TimeClockReportModels.cs" />
+    <Compile Include="Models\TopSellingProductsReportModels.cs" />
+    <Compile Include="Models\UserModels.cs" />
+    <Compile Include="Models\UserSession.cs" />
+    <Compile Include="Models\Validation\FileSizeAttribute.cs" />
+    <Compile Include="Models\Validation\FileTypesAttribute.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GenerateInvoiceModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GeneratePOModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GeneratePurchaseOrderApiModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GenerateReceiptNoteApiModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GIAddressModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GIContactModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GILineItemModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GIPhoneModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GIRequestModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\GIResponseModels.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\XeroInvoiceReportDTO.cs" />
+    <Compile Include="Models\Xero\GenerateInvoice\XeroInvoiceResponseReportDTO.cs" />
+    <Compile Include="Models\Xero\GetIngredientResponseDTO.cs" />
+    <Compile Include="Models\Xero\Ingredient\NSXeroIngredientModels.cs" />
+    <Compile Include="Models\Xero\Ingredient\NSXeroIngredientRequestModels.cs" />
+    <Compile Include="Models\Xero\Ingredient\NSXeroIngredientResponseModels.cs" />
+    <Compile Include="Models\Xero\Ingredient\PurchaseDetailsModels.cs" />
+    <Compile Include="Models\Xero\Ingredient\SalesDetailsModels.cs" />
+    <Compile Include="Models\Xero\Settings\Tax\TaxXeroModels.cs" />
+    <Compile Include="Models\Xero\Suppliers\ContactModels.cs" />
+    <Compile Include="Models\Xero\Suppliers\SupplierXeroModels.cs" />
+    <Compile Include="Models\Xero\Suppliers\SupplierXeroRequestModels.cs" />
+    <Compile Include="Models\Xero\Suppliers\SupplierXeroResponseModels.cs" />
+    <Compile Include="Models\Xero\XeroBaseModel.cs" />
+    <Compile Include="Models\Xero\XeroIngredientModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ApiResponse.cs" />
+    <Compile Include="Utilities\ApiResponseXero.cs" />
+    <Compile Include="Utilities\CommonHelper.cs" />
+    <Compile Include="Utilities\DateTimeHelper.cs" />
+    <Compile Include="Utilities\DateTimeModelHelper.cs" />
+    <Compile Include="Utilities\EmailHelper.cs" />
+    <Compile Include="Utilities\FTP.cs" />
+    <Compile Include="Utilities\ImageHelper.cs" />
+    <Compile Include="Utilities\RoundingHelper.cs" />
+    <Compile Include="Utilities\_AttributeForLanguage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NuWebNCloud.Data\NuWebNCloud.Data.csproj">
+      <Project>{0604db2f-c83a-41eb-8e41-bd2b35cc0cd7}</Project>
+      <Name>NuWebNCloud.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

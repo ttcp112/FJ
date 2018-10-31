@@ -1,0 +1,23 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+@if (Model.LstPrinter != null)
+{
+    @Html.Hidden("StringPrinterName", Model.StringPrinterName, new { @id = "StringPrinterName_" + Model.StoreID })
+    for (int i = 0; i < Model.LstPrinter.Count; i++)
+    {
+        <tr data-id="@Model.LstPrinter[i].Id" class="PrinterSeason_@Model.StoreID" id="PrinterSeasonID_@Model.StoreID" style="cursor:pointer;"
+            data-value="@Model.LstPrinter[i].PrinterName" onclick="TogglePrinter(this, '@Model.StoreID', '@Model.OffSet', '@Model.LstPrinter[i].Id', '@Model.LstPrinter[i].PrinterName'); return false;">
+            <td width="98%">
+                @Model.LstPrinter[i].PrinterName
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].LstPrinter[{1}].PrinterName", Model.OffSet, i), Model.LstPrinter[i].PrinterName)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].LstPrinter[{1}].Id", Model.OffSet, i), Model.LstPrinter[i].Id)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].LstPrinter[{1}].StoreId", Model.OffSet, i), Model.LstPrinter[i].StoreId)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].LstPrinter[{1}].IsMapProduct", Model.OffSet, i), Model.LstPrinter[i].IsMapProduct)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].LstPrinter[{1}].Status", Model.OffSet, i), Model.LstPrinter[i].Status, new { @class = "PrinterStatus_" + Model.StoreID + "", @Value = Model.LstPrinter[i].Status })
+
+            </td>
+            <td style="text-align: center; width:2%">
+                <i class="fa @string.Format("{0}", Model.LstPrinter[i].Status != 9 ? "fa-check":"")"></i>
+            </td>
+        </tr>
+    }
+}

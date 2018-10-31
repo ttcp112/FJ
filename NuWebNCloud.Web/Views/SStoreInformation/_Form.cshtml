@@ -1,0 +1,245 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.SStoreModels
+
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.ID)
+    @Html.HiddenFor(model => model.OrganizationID)
+    @Html.HiddenFor(model => model.CompanyID)
+    @Html.HiddenFor(model => model.IndustryID)
+    @Html.HiddenFor(model => model.StoreID)
+    @Html.HiddenFor(model => model.ImageURL)
+
+}
+<link rel="stylesheet" href='@Url.Content("~/vendors/periodpicker/jquery.periodpicker.min.css")'>
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label >
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Name")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Street, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Street, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.City, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.City, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ZIP Code")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Zipcode, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Zipcode, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Code")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.StoreCode, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.StoreCode, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.TextBoxFor(model => model.Country, new { @class = "form-control", autocomplete = "off" })*@
+
+            @*Updated 08292017*@
+            @Html.DropDownListFor(model => model.Country, new SelectList(Model.ListCountries, "Value", "Text", Model.Country),
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Country")).ToString(), new
+            {
+                @class = "form-control select2_multiple",
+                @id = "countryDdl",
+                @style = "width:100%;"
+            })
+
+            @Html.ValidationMessageFor(model => model.Country, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GST Reg No")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.GSTRegNo, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.GSTRegNo, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Zone")) </label >
+        <div class="col-md-6 col-sm-6 col-xs-12">
+
+            @*@Html.TextBoxFor(model => model.TimeZone, new { @class = "form-control", autocomplete = "off" })*@
+
+            @*Updated 08312017*@
+            <div class="timeZones">
+                @Html.DropDownListFor(model => model.TimeZone, new SelectList(Model.ListTimezones, "Value", "Text", Model.ListTimezones),
+                new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "timeZoneDdl",
+                    @style = "width:100%;"
+                })
+            </div>
+
+            @Html.ValidationMessageFor(model => model.TimeZone, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label >
+        <div class="checkbox col-md-6">
+            <label>
+                @Html.CheckBoxFor(model => model.IsActive)
+            </label>
+        </div>
+    </div>
+    @*Business Hours*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Hours"))
+        </label >
+    </div >
+    @if(Model.ListBusinessHour != null)
+    {
+                    for (int i = 0; i < Model.ListBusinessHour.Count; i++)
+                    {
+            <div class="form-group margin_left_50px">
+                <label class="col-xs-offset-2 control-label col-md-1 col-sm-1 col-xs-2 text-right">@Model.ListBusinessHour[i].StrDate</label>
+                @Html.HiddenFor(model => model.ListBusinessHour[i].Day)
+                <div class="col-sm-4">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            @*@Html.DropDownListFor(model => model.ListBusinessHour[i].From,
+                                new SelectList(@Model.TimeItems, "Value", "Text",
+                                @Model.ListBusinessHour[i].From),
+                                new { @class = "form-control", @onchange = "UpdateWorkingTime(this,\"ListWorkingTime_" + i + "__To\")" })*@
+
+                            @Html.TextBoxFor(model => model.ListBusinessHour[i].From, new { @class = "form-control timepicker", @style = "text-align:center;", @id = "txtFrom_" + i + "" })
+
+                        </div>
+                        <div class="col-sm-1" style="text-align:center">
+                            <label class="control-label">--</label>
+                        </div>
+                        <div class="col-sm-3">
+                            @*@Html.DropDownListFor(model => model.ListBusinessHour[i].To,
+                                new SelectList(@Model.TimeItems, "Value", "Text",
+                                @Model.ListBusinessHour[i].To),
+                                new { @class = "form-control", @onchange = "UpdateWorkingTime(this, \"ListWorkingTime_" + i + "__From\")" })*@
+
+                            @Html.TextBoxFor(model => model.ListBusinessHour[i].To, new { @class = "form-control timepicker", @style = "text-align:center;", @id = "txtTo_" + i + "" })
+                        </div>
+                        <div class="col-sm-1 lineHeight" style="text-align:center">
+                            @Html.CheckBoxFor(model => model.ListBusinessHour[i].IsOffline, new { @class = "", @onclick = "chkItem(this,'" + (i) + "')" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.ValidationMessage("ListBusinessHour", new { @class = "label" })
+        </div>
+    </div>
+</div>
+@*TimePicker*@
+<script src="@Url.Content("~/vendors/periodpicker/jquery.periodpicker.full.min.js")"></script>
+<script>
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+
+    //Set Timepicker for Input
+    $('.timepicker').TimePickerAlone({
+        //hours: true,
+        //minutes: true,
+        //seconds: false,
+        //ampm: false,
+        inputFormat: 'HH:mm',
+        twelveHoursFormat: false
+    });
+
+    function chkItem(e, index) {
+        var isCheck = $(e).prop("checked");
+        if (isCheck) {
+            $('#txtFrom_' + index + '').val('00:00');
+            $('#txtTo_' + index + '').val('00:00');
+        } else {
+            $('#txtFrom_' + index + '').val('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OFF"))');
+            $('#txtTo_' + index + '').val('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OFF"))');
+        }
+    }
+
+    // Updated 08312017
+    $("#countryDdl").change(function () {
+        Country = this.value;
+        // Load Timezones
+        $(".se-pre-con").show();
+        $.ajax({
+            url: CreateAbsoluteUrl("LoadTimezones"),
+            type: "post",
+            traditional: true,
+            data: {
+                country: Country
+            },
+            dataType: 'html',
+            success: function (data) {
+                $(".se-pre-con").hide();
+                $(".timeZones").html(data);
+            }
+        });
+    });
+
+</script>

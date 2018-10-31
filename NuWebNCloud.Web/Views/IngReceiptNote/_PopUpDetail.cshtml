@@ -1,0 +1,97 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+
+<div class="row form-horizontal form-label-left">
+    <div class="form-group" style="font-size:40px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Model.StoreName</div>
+    </div>
+
+    <div class="form-group" style="font-size:15px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Goods Receipt Document(Receipt Verification)"))</div>
+    </div>
+
+    <div class="form-group" style="font-size:30px;">
+        <div class="col-md-12 col-sm-12 col-xs-12 text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes")): 
+        <span class="borderBottomDot" style="padding:0 30px;">@Model.ReceiptNo</span></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Date")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">@Model.ReceiptDate.ToString("MMMM dd yyyy")</div>
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO Number")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12"><strong>@Model.ListPONo</strong></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">@Model.SupplierName</div>
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received by")):</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">@Model.ReceiptBy</div>
+    </div>
+
+    @if (Model.ListPurchaseOrder != null && Model.ListPurchaseOrder.Count > 0)
+    {
+        for (int i = 0; i < Model.ListPurchaseOrder.Count; i++)
+        {
+            /*Parent*/
+            var itemParent = Model.ListPurchaseOrder[i];
+            <div class="box-body form-group" style="text-align:center; padding-bottom:30px;">
+                <table class="tbCustom">
+                    <thead>
+                        <tr>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Quantity"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Quantity"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remaining Quantity"))</td>
+                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Quantity"))</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="text-left" style="font-size:20px; padding-left:15px;">@itemParent.PONumber</td>
+                        </tr>
+                        @if (itemParent.ListItem != null && itemParent.ListItem.Count > 0)
+                        {
+                            int rowCount = itemParent.ListItem.Count;
+                            for (int j = 0; j < itemParent.ListItem.Count; j++)
+                            {
+                                var itemChild = Model.ListPurchaseOrder[i].ListItem[j];
+                                /*Child*/
+                                <tr>
+                                    @if (j == 0)
+                                    {
+                                        <td rowspan="@rowCount" style="background-color: #fff;"></td>
+                                    }
+                                    <td>@itemChild.IngredientCode</td>
+                                    <td>@itemChild.IngredientName</td>
+                                    <td>@itemChild.BaseUOM</td>
+                                    <td>@itemChild.Qty</td>
+                                    <td>@itemChild.ReceivingQty</td>
+                                    <td>@itemChild.RemainingQty</td>
+                                    <td>@itemChild.ReturnQty</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
+
+<div class="row text-right">
+    <ul class="header-buttons pull-right list-inline">
+        <li><a href="javascript:void(0)" data-dismiss="modal" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+        @*<li><a href="href="javascript:window.print()"  class="btn btn-primary" id="btn-print"><i class="fa fa-print"></i>&nbsp;Print</a></li>*@
+    </ul>
+</div>
+
+@*<script src="~/Scripts/jquery.printPage.js"  type="text/javascript"></script>*@
+<script type="text/javascript">
+    $(document).ready(function(){
+        //$("#btn-print").printPage();
+    });
+</script>

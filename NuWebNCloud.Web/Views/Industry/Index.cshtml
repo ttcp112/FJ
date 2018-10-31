@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NüWeb F&B - Select Industry</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/bootstrap/dist/css/bootstrap.min.css")'>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/font-awesome/css/font-awesome.min.css")'>
+
+    <!-- Custom Theme Style -->
+    <link rel="stylesheet" href='@Url.Content("~/build/css/custom.min.css")'>
+
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- page content -->
+            <div class="col-md-12">
+                <div class="col-middle">
+                    <div class="text-center">
+                        <h1 class="error-number">Select Industry</h1>
+                        <h2>Internal Server Error</h2>
+                        <p>
+                            We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing.
+                            <a href="#">Report this?</a>
+                        </p>
+                        @for (int i = 1; i <= ViewBag.listA.Count; i++)
+                        {
+                            if (i % 2 != 0)
+                            {
+                                string margin = i > 1 ? "margin-top:8px;" : "";
+                                @Html.Raw("<div class=\"row\" style=\"" + margin + "\"><div class=\"col-md-12 col-sm-12 col-xs-12\">")
+                            }
+                            <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top:30px;">
+                                <div class="pricing">
+                                    <div class="title">
+                                        <h2>Industry</h2>
+                                        <h1>@ViewBag.listA[i - 1].Name</h1>
+                                        <a href="javascript:void(0)"
+                                           onclick="goInside('@Url.Action("GoInside", "Industry", new { area = "", name = @ViewBag.listA[i-1].AreaName })')"
+                                           class="btn btn-success btn-block" role="button">Go!</a>
+                                    </div>
+                                </div>
+                            </div>
+                            if (i % 2 == 0)
+                            {
+                                @Html.Raw("</div></div>")
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="@Url.Content("~/vendors/jquery/dist/jquery.min.js")"></script>
+    <!--Bootstrap-->
+    <script src="@Url.Content("~/vendors/bootstrap/dist/js/bootstrap.min.js")"></script>
+    <script>
+        @{
+            string controller = this.ViewContext.RouteData.Values["controller"].ToString();
+            string baseUrl = new Uri(Request.Url, Url.Content("~")).ToString();
+        }
+        ControllerName = "@controller";
+        BaseUrl = "@baseUrl";
+        function goInside(url) {
+            window.location.href = BaseUrl + url;
+        }
+    </script>
+</body>
+</html>

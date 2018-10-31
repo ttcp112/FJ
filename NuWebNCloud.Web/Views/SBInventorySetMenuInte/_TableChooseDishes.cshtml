@@ -1,0 +1,47 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteGroupProductModels
+
+@if (Model.ListProductOnGroup != null && Model.ListProductOnGroup.Count > 0)
+{
+    <table class="table table-striped table-hover">
+        @*<thead>
+                <tr style="background-color:#34495e; color:#fff;">
+                    <th style="width:1%;"><input type="checkbox" onchange="ToogleCheckAll(this, '#list-dishes')"></th>
+                    <th>Dish's Name</th>
+                </tr>
+            </thead>*@
+        <tbody id="list-dishes-@Model.OffSet">
+            @for (int i = 0; i < Model.ListProductOnGroup.Count; i++)
+            {
+                <tr data-id="@Model.ListProductOnGroup[i].ProductID" style="cursor:pointer;" class="SpecificItems">
+                    <td style="width:1%;">
+                        @Html.CheckBoxFor(model => model.ListProductOnGroup[i].Checked)
+                        @Html.HiddenFor(model => model.ListProductOnGroup[i].ProductName, new { @id = "hidName" })
+                        @Html.HiddenFor(model => model.ListProductOnGroup[i].Sequence, new { @id = "hidSeq" })
+                        @Html.HiddenFor(model => model.ListProductOnGroup[i].ExtraPrice, new { @id = "hidExtraPrice" })
+                    </td>
+                    <td onclick="TickCheckBoxTd(this,'#list-dishes-@Model.OffSet', '@Model.OffSet')"> @Model.ListProductOnGroup[i].ProductName </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function TickCheckBoxTd(td, containElementSelector, OffSet) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'));
+
+        var _trCount = $(containElementSelector).find("tr:visible").length;
+        var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+        if (_trCount === lengthCheck) {
+            $('#chkAll_' + OffSet + '').prop('checked', true);
+        } else {
+            $('#chkAll_' + OffSet + '').prop('checked', false);
+        }
+    }
+</script>

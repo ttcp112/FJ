@@ -1,0 +1,150 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteViewModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes"));
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Inventory" }, { "C", "Received Notes - View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngReceiptNote", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.StoreID,
+                                    new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "storeDdlView",
+                                        @style = "width:100%;"
+                                    })*@
+
+                                    @*Group by company, updated 041420180*@
+                                    @Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "storeDdlView",
+	                                        @style = "width:100%;"
+                                        })
+
+                                </div>
+                                <div class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Supplier"))
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    @Html.DropDownListFor(model => model.ListSupplierId,
+                                    new SelectList(Model.ListSupplier, "Value", "Text", Model.ListSupplierId),  null /*"---- Please choose supplier ----"*/,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "supplierDdlView",
+                                        @style = "width:100%;",
+                                        @multiple = "multiple"
+                                    })
+                                </div>
+                                <div class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Date"))
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    @*@Html.TextBoxFor(model => model.ReceiptNoteDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" })*@
+                                    @Html.TextBoxFor(model => model.ReceiptNoteDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off"})
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#storeDdlView").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+            //allowClear: true
+        }).val('@Model.StoreID').trigger('change.select2');
+
+        $("#supplierDdlView").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))',
+            allowClear: true
+        });
+        $('.datepicker').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_2",
+            maxDate: new Date(),
+            showDropdowns: true,
+            locale: {
+                daysOfWeek: _daysOfWeek,
+                monthNames: _monthNames
+            }
+        });
+    });
+
+    $(".search-form").submit(function (e) {
+        var storeid = $("#storeDdlView").val();
+        if (storeid !== "" && storeid !== null)
+            Search();
+        return false;
+    });
+    $(function () {
+        //ready
+        Search();
+    });
+
+    ////==== List suppliers by company of selected store
+    $("#storeDdlView").change(function () {
+        LoadSuppliers(this.value);
+    });
+    function LoadSuppliers(_storeId) {
+        $(".se-pre-con").show();
+        $.ajax({
+            url: '@Url.Action("LoadSuppliers", "IngReceiptNote")',
+                type: "post",
+            traditional: true,
+            data: { storeId: _storeId },
+            dataType: 'json',
+            success: function (lstSupplier) {
+                ReLoadOptionSupplier(lstSupplier);
+                $(".se-pre-con").hide();
+            }
+        });
+    }
+
+    function ReLoadOptionSupplier(lstSupplier) {
+        $("#supplierDdlView").empty();
+        lstSupplier.forEach(function (el) {
+            var option = new Option(el.Name, el.Id, true, true);
+            $("#supplierDdlView").append(option).trigger('change.select2');
+        });
+        $("#supplierDdlView").val(null).trigger('change.select2');
+    }
+</script>
+}

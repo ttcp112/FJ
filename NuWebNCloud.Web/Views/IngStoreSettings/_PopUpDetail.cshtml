@@ -1,0 +1,63 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StoreSettingModels
+@using NuWebNCloud.Shared.Utilities;
+<div class="row form-horizontal form-label-left">
+    <div class="form-group">
+        <label class="control-label col-md-4 col-sm-4 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) :</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @*@Html.DropDownListFor(model => model.ListStore,
+        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.ListStore), null,
+        new
+        {
+            @class = "form-control select2_multiple",
+            @id = "storeDdl",
+            @style = "width:100%;",
+            @multiple = "multiple"
+        })*@
+            @*<select name="ListStore" id="storeDdls" class="form-control list-stores-groups" style="width:100%;"> </select>*@
+
+            @*Group by company, updated 07172018*@
+            @Html.DropDownListFor(model => model.ListStore, (SelectList)ViewBag.StoresInfoSession, new
+            {
+                @class = "form-control select2_multiple list-stores-groups",
+                @id = "storeDdls",
+                @multiple = "multiple",
+                @style = "width:100%;"
+            })
+
+            @Html.ValidationMessageFor(model => model.ListStore, null, new { @class = "validateLevel label label-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-4 col-sm-4 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reordering Quantity")) :</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextBoxFor(model => model.ReorderingQty, new { @id = "quantity", @class = "form-control", autocomplete = "off", min = "1", @type = "number" })
+            @Html.ValidationMessageFor(model => model.ReorderingQty, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-4 col-sm-4 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Min Alert")):</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextBoxFor(model => model.MinAlert, new { @id = "Minalert", @class = "form-control", autocomplete = "off", min = "1", @type = "number" })
+            @Html.ValidationMessageFor(model => model.MinAlert, null, new { @class = "label" })
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+       @*$('.list-stores-groups').select2({
+            placeholder: _SStore,
+            multiple: true,
+            data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+        });*@
+
+        //////======= Updated 07192018
+        $("#storeDdls").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+            allowClear: true
+        }).val(@Html.Raw(Json.Encode(Model.ListStore))).trigger('change.select2');
+    });
+</script>

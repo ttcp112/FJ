@@ -1,0 +1,147 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientsUsageRequestViewModels
+@using NuWebNCloud.Shared.Utilities;
+
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Usage"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dataTable no-footer" cellspacing="0" style="width:100%;">
+                @*"table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action*@
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Day"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Code"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Open Bal"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock In"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close Bal"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Adjust"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Actual Sold"))</th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sale"))</th>
+                        <th class="text-center">
+                            <a href="javascript:void(0)" class="btn btn-primary  btn-xs" id="btn-Allocation" style="line-height:20px; margin:0;" onclick="LoadAllocation();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allocation"))</a>
+                        </th>
+                        <th class="text-center">
+                            <input type="checkbox" id="check-all" onclick="toggleCheckedAll()" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+
+                                <td class="text-center">
+                                    @item.BusinessDayDisplay
+                                    @*@Html.Hidden(string.Format("ListItem[{0}].Date", i), @item.Date)*@
+                                </td>
+                                <td class="text-center">@item.IngredientCode
+                                    @Html.Hidden(string.Format("ListItem[{0}].Date", i), @item.Date)
+                                </td>
+                                <td class="text-center">@item.IngredientName</td>
+                                @*<td class="text-center">@item.OpenBal</td>
+                                <td class="text-center">@item.StockIn</td>
+                                <td class="text-center">@item.CloseBal</td>*@
+                                @*<td class="text-center">@item.Adjust</td>*@
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.OpenBal)</td>
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.StockIn)</td>
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.CloseBal)</td>
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.Adjust)</td>
+                                @*<td class="text-center">@item.ActualSold</td>*@
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.ActualSold)</td>
+                                <td style="text-align:center;">@string.Format("{0:#,##0.####}", @item.Sales)</td>
+                                @if (@item.IsAllocation)
+                                {
+                                    <td class="text-center">
+                                        <i class="glyphicon glyphicon-warning-sign" style="color:red"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox" id="@item.Id" name="table_records" class="chkChild" onclick="toggleChecked()" />
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [7, 8, 9,10] },
+                  { "width": "17%", "targets": [0] },
+                  { "width": "10%", "targets": [1] },
+                { "width": "8%", "targets": [ 3, 4, 5, 6] },
+                { "width": "7%", "targets": [7,8] },
+                { "width": "2%", "targets": [9] },
+            ],
+            "order": [
+                [0, 'desc'],
+                [2, 'asc']
+            ],
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(0, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="11"><strong style="color:#d9534f;">' + (group === '' ? '|' : group) + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+        TableManageButtons.init();
+    });
+</script>

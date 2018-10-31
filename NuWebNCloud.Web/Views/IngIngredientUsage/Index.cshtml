@@ -1,0 +1,293 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientsUsageRequestViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display:none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px">
+                @Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                         new Dictionary<string, string> { { "A", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management") }, { "B", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory") }, { "C", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management") }, { "D", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Usage - View Data") } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="x_panel">
+                        @using (Html.BeginForm("Search", "IngIngredientUsage", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                        {
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                    </label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @*@Html.DropDownListFor(model => model.StoreId,
+                                                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), "---- Please choose store ----",
+                                                new
+                                                {
+                                                    @class = "form-control select2_multiple",
+                                                    @id = "storeDdlView",
+                                                    @style = "width:100%;"
+                                                })*@
+
+                                        @*Group by company, updated 041420180*@
+                                        @Html.DropDownListFor(model => model.StoreId, (SelectList)ViewBag.StoreID, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "storeDdlView",
+	                                        @style = "width:100%;"
+                                        })
+
+                                        @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger", @id = "StoreMsg" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply From"))</label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @Html.TextBoxFor(model => model.ApplyFrom, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "fromDate",
+                                        @class = "form-control datepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date")
+                                    })
+                                    </div>
+                                    <label class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply To"))</label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @Html.TextBoxFor(model => model.ApplyTo, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "toDate",
+                                        @class = "form-control datepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Date")
+                                    })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 col-sm-2 col-xs-12"></label>
+                                    <div class="col-md-2 col-sm-2 col-xs-12">
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                        <div class="gridview">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-view" style="height:100%;">
+            <!-- detail partial view -->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#storeDdlView").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+            allowClear: true
+        }).val('@Model.StoreId').trigger('change.select2');
+
+        $('.datepicker').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_2",
+            showDropdowns: true,
+            locale: {
+                daysOfWeek: _daysOfWeek,
+                monthNames: _monthNames
+            }
+        }, function (start, end, label) {
+        });
+    });
+    $(".search-form").submit(function (e) {
+        Search();
+        return false;
+    });
+    $(function () {
+        //ready
+        Search();
+    });
+
+    var lstIdSelected = [];
+    var lstSelected = [];
+
+    function toggleCheckedAll() {
+        var isCheckAll = $('#check-all').prop("checked");
+        var listChk = $('.chkChild');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            if (isCheckAll === true) {
+                $(listChk[i]).prop('checked', true);
+                lstIdSelected.push(item);
+                disableButton(true);
+            } else {
+                $(listChk[i]).prop('checked', false);
+                disableButton(false);
+            }
+        }
+    }
+
+    function toggleChecked() {
+        var _count = 0;
+        var listChk = $('.chkChild');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            var isSelect = $(listChk[i]).find('td input[type="checkbox"]').prop('checked');
+            if (listChk[i].checked === true) {
+                lstIdSelected.push(item);
+                _count++;
+            }
+            if (listChk.length !== _count) {
+                $('#check-all').prop("checked", false);
+            }
+            else {
+                $('#check-all').prop("checked", true);
+            }
+            if (_count === 0) {
+                disableButton(true);
+            } else {
+                disableButton(true);
+            }
+        }
+    }
+
+    function disableButton(status) {
+        if (!status) {
+            $('#btn-Allocation').addClass('disabled');
+        } else {
+            $('#btn-Allocation').removeClass('disabled');
+        }
+    }
+
+    function LoadAllocation() {
+        if (typeof lstIdSelected == 'undefined' || lstIdSelected.length == 0) {
+            $('#StoreMsg').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose least one ingredient"))');
+            return;
+        }
+        var values = {};
+        $.each($(".search-form").serializeArray(), function (i, field) {
+            values[field.name] = field.value;
+        });
+        //Value Retrieval Function
+        var getValue = function (valueName) {
+            return values[valueName];
+        }
+        //var a = $("#fromDate").data("datetimepicker").getDate();
+        $.ajax({
+            url: '@Url.Action("CreateAllocate", "IngIngredientUsage")',
+            type: 'POST',
+            dataType: 'html',
+            cache: false,
+            data: { lstId: lstIdSelected, storeId: getValue("StoreId"), dFrom: getValue("ApplyFrom"), dTo: getValue("ApplyTo") },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            success: function (data) {
+                $(".detail-view").html(data);
+                $(".detail-view").show();
+                $(".gridview").css("display", "none");
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            },
+            error: function (e) {
+                $('.se-pre-con').hide();
+            },
+        });
+    };
+    var _allocationData = [];
+    function LoadAllocation2() {
+        if (typeof lstIdSelected == 'undefined' || lstIdSelected.length == 0) {
+            $('#StoreMsg').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose least one ingredient"))');
+            return;
+        }
+        var values = {};
+        $.each($(".search-form").serializeArray(), function (i, field) {
+            values[field.name] = field.value;
+        });
+        //Value Retrieval Function
+        var getValue = function (valueName) {
+            return values[valueName];
+        }
+        var data = [];
+        $.each($('.ng-Ingredient'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+
+                var Damage = $(div).find('#txtDamage').val();
+                var Wast = $(div).find('#txtWast').val();
+                var Others = $(div).find('#txtOthers').val();
+                var varianceQty = $(div).find('#txtVarianceQty').val();
+                var storeId = $(div).find('#txtStoreId').val();
+
+                var IngredientsUsageModels = {
+                    Id: ID,
+                    StoreId: Code,
+                    Date: Name,
+                    DateDisplay: ItemType,
+                    BusinessDayDisplay: ItemType,
+                    StartedOn: ItemType,
+                    ClosedOn: ItemType,
+                    IngredientId: ItemType,
+                    IngredientCode: ItemType,
+                    IngredientName: ItemType,
+                    UnitCost: ItemType,
+                    OpenBal: ItemType,
+                    StockIn: ItemType,
+                    CloseBal: ItemType,
+                    ActualSold: ItemType,
+                    Sales: ItemType,
+                    Damage: ItemType,
+                    Wast: ItemType,
+                    Others: ItemType,
+                    Reasons: ItemType,
+                    IsActive: ItemType,
+                    IsAllocation: ItemType,
+                    IsExistAllocation: ItemType,
+                    VarianceQty: ItemType,
+                    BusinessId: ItemType,
+                    StockOut: ItemType,
+                }
+                data.push(PromotionProductDTO);
+            }
+        });
+
+        //var a = $("#fromDate").data("datetimepicker").getDate();
+        $.ajax({
+            url: '@Url.Action("CreateAllocate", "IngIngredientUsage")',
+            type: 'POST',
+            dataType: 'html',
+            cache: false,
+            data: { lstId: lstIdSelected, storeId: getValue("StoreId"), dFrom: getValue("ApplyFrom"), dTo: getValue("ApplyTo") },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            success: function (data) {
+                $(".detail-view").html(data);
+                $(".detail-view").show();
+                $(".gridview").css("display", "none");
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            },
+            error: function (e) {
+                $('.se-pre-con').hide();
+            },
+        });
+    };
+</script>

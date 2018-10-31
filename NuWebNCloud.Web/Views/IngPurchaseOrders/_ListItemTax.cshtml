@@ -1,0 +1,29 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.PurchaseOrderModels
+@if (Model.ListItemTax != null)
+{
+    for (int i = 0; i < Model.ListItemTax.Count; i++)
+    {
+        var item = Model.ListItemTax[i];
+        <div class="form-group ng-tax-integrate" data-taxid="@item.ID" id="tax_integrate_@item.ID" style="display: @string.Format("{0}",item.IsShow ? "block" : "none")">
+            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-6 borderBottomDot">
+                <div class="col-md-7 col-sm-7 col-xs-12">
+                    <span id="lbl_name_@item.ID">Total [@item.Name] [@item.Percent%] - (@item.sTaxType)</span>
+                </div>
+                <div class="col-md-5 col-sm-5 col-xs-12">
+                    <div>
+                        <span class="symbol">@item.Symbol</span>
+                        <span id="ltrAmoutTaxIntegrate" class="total-tax-integrate">@item.Amount</span>
+
+                        @Html.Hidden(string.Format("ListItemTax[{0}].ID", i), item.ID, new { @id = "hidID" })
+                        @Html.Hidden(string.Format("ListItemTax[{0}].OffSet", i), item.OffSet)
+                        @Html.Hidden(string.Format("ListItemTax[{0}].Name", i), item.Name)
+                        @Html.Hidden(string.Format("ListItemTax[{0}].Percent", i), item.Percent, new { @id = "hidPercent" })
+                        @Html.Hidden(string.Format("ListItemTax[{0}].Amount", i), item.Amount, new { @id = "hidAmount" })
+                        @Html.Hidden(string.Format("ListItemTax[{0}].TaxType", i), item.TaxType, new { @id = "hidTaxType" })
+                        @Html.Hidden(string.Format("ListItemTax[{0}].sTaxType", i), item.sTaxType)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

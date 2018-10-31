@@ -1,0 +1,192 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Transfer - View Data")).ToString();
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Inventory" }, { "C", "Stock Transfer - View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngStockTransfer", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="x_panel">
+                            <div class="row form-horizontal form-label-left">
+                                <div class="form-group">
+                                    <label class="col-md-1 col-sm-1 col-xs-12 text-left">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transfer No."))
+                                    </label>
+                                    <div class="col-md-2 col-sm-2 col-xs-12">
+                                        @Html.TextBoxFor(model => model.StockTransferNo, new { @class = "form-control", autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.StockTransferNo, null, new { @class = "label" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-1 col-sm-1 col-xs-12 text-left lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issuing Store"))
+                                    </label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @*@Html.DropDownListFor(model => model.IssuingStoreId,
+                                        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.IssuingStoreId), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                                        new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "IssuingStoreDdlView",
+                                            @style = "width:100%;"
+                                        })*@
+                                        
+                                        @*Group by company, updated 041420180*@
+                                        @Html.DropDownListFor(model => model.IssuingStoreId, (SelectList)ViewBag.StoreID, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "IssuingStoreDdlView",
+	                                        @style = "width:100%;"
+                                        })
+                                    </div>
+
+                                    <label class="col-md-1 col-sm-1 col-xs-12 text-left lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Store"))
+                                    </label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @*@Html.DropDownListFor(model => model.ReceivingStoreId,
+                                        new SelectList(@ViewBag.ListStoreReceived, "Value", "Text", Model.ReceivingStoreId), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                                        new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "ReceivingStoreDdlView",
+                                            @style = "width:100%;"
+                                        })*@
+
+                                        @*Group by company, updated 041420180*@
+                                        @Html.DropDownListFor(model => model.ReceivingStoreId, (SelectList)ViewBag.ListStoreReceived, new
+                                        {
+	                                        @class = "form-control select2_multiple",
+	                                        @id = "ReceivingStoreDdlView",
+	                                        @style = "width:100%;"
+                                        })
+                                        
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-1 col-sm-1 col-xs-12 text-left lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply Form"))
+                                    </label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @Html.TextBoxFor(model => model.ApplyFrom, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.ApplyFrom, null, new { @class = "label" })
+                                    </div>
+                                    <label class="col-md-1 col-sm-1 col-xs-12 text-left lineHeight">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply To"))
+                                    </label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        @Html.TextBoxFor(model => model.ApplyTo, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.ApplyTo, null, new { @class = "label" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-1 col-xs-12 lineHeight">
+                                        @Html.CheckBoxFor(model => model.IssueDate, new { @id= "chkIssueDate" }) 
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Date"))
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                        @Html.CheckBoxFor(model => model.ReveieDate, new { @id = "chkReveieDate" }) 
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Date"))
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row text-center">
+                                        <ul class="header-buttons pull-center list-inline">
+                                            <li><a href="javascript:void(0)" class="btn btn-success" onclick="Reset();" id="btn-delete"><i class="fa fa-refresh"></i>&nbsp;
+                                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reset"))</a></li>
+                                            <li>
+                                                @*<a href="@Url.Action("Index", "Organization")" class="btn btn-warning" id="btn-delete"><i class="fa fa-check"></i>&nbsp;Search</a>*@
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))
+                                                </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-view" style="height:100%;">
+            <!-- detail partial view -->
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#IssuingStoreDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose issuing store"))',
+                allowClear: true
+            }).val('@Model.IssuingStoreId').trigger('change.select2');
+
+            $("#ReceivingStoreDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose receiving store"))',
+                allowClear: true
+            }).val('@Model.ReceivingStoreId').trigger('change.select2');
+
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                showDropdowns: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            }, function (start, end, label) {
+            });
+        });
+
+        $(".search-form").submit(function (e) {
+            Search();
+            return false;
+        });
+
+        $(function () {
+            Search();
+        });
+
+        function Reset() {
+            $("#IssuingStoreDdlView").val(null).trigger("change");
+            $("#ReceivingStoreDdlView").val(null).trigger("change");
+
+            //$('.datepicker').data('daterangepicker').setStartDate(new Date());
+            $('#chkIssueDate').prop('checked', false);
+            $('#chkReveieDate').prop('checked', false);
+            $("#StockTransferNo").val('');
+        }
+
+        $('#chkIssueDate').bind('change', function () {
+            if ($(this).is(':checked'))
+                $('#chkReveieDate').prop('checked', false);
+        });
+
+        $('#chkReveieDate').bind('change', function () {
+            if ($(this).is(':checked'))
+                $('#chkIssueDate').prop('checked', false);
+        });
+</script>
+}

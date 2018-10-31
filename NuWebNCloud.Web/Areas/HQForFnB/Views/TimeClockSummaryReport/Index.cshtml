@@ -1,0 +1,261 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Clock Summary Report"));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Reports" }, { "B", "Time Clock Summary" }, { "C", "View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    @using (Html.BeginForm("Report", "TimeClockSummaryReport", FormMethod.Post,
+new
+{
+    @id = "formReport",
+    @class = "form-horizontal",
+    enctype = "multipart/form-data"
+}))
+                    {
+                        <div class="form-group">
+                            @Html.ValidationSummary(true, "", new { @style = "color: red;" })
+                        </div>
+
+                        <div class="form-group">
+                            <label for="FromDate" class="col-md-3 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    @Html.TextBoxFor(model => model.FromDate, "{0:MM/dd/yyyy}",
+                                new
+                                {
+                                    @id = "fromDate",
+                                    @class = "form-control datepicker",
+                                    @autocomplete = "off",
+                                    @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date")
+                                })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.FromDate, null, new { @class = "label" })
+                            </div>
+                            <label for="ToDate" class="col-md-1 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Date"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    @Html.TextBoxFor(model => model.ToDate, "{0:MM/dd/yyyy}",
+                                new
+                                {
+                                    @id = "toDate",
+                                    @class = "form-control datepicker",
+                                    @autocomplete = "off",
+                                    @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Date")
+                                })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ToDate, null, new { @class = "label" })
+                            </div>
+                        </div>
+                        //Start Update
+                        //SELECT
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.Type,
+                                    new SelectList(Model.ListType, "Value", "Text", Model.Type), null,
+                                    new
+                                    {
+                                        @class = "select2_single form-control",
+                                        @tabindex = "-1",
+                                        @id = "ddlSeleted"
+                                    })
+                            </div>
+                        </div>
+                        //COMPANY
+                        <div class="form-group" id="divCompany">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.ListCompanys,
+                                    new SelectList(@ViewBag.Companys, "Value", "Text", Model.ListCompanys), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "companyDdl",
+                                        @multiple = "multiple",
+                                        @style = "width:100%;"
+                                    })
+                                @Html.ValidationMessageFor(model => model.ListCompanys, null,
+                               new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+                        //STORE
+                        <div class="form-group" id="divStore">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Stores"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @*@Html.DropDownListFor(model => model.ListStores,
+                                new SelectList(@ViewBag.Stores, "Value", "Text", Model.ListStores), null,
+                                new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdl",
+                                    @multiple = "multiple",
+                                    @style = "width:100%;"
+                                })*@
+                                @*<select name="ListStores" id="storeDdl" class="form-control list-stores-group" style="width:100%;"> </select>*@
+
+                                @*Updated 07202018*@
+                                @Html.DropDownListFor(model => model.ListStores, (SelectList)ViewBag.StoresInfoSession, new
+                                {
+	                                @class = "form-control select2_multiple list-stores-group",
+	                                @id = "storeDdl",
+	                                @multiple = "multiple",
+	                                @style = "width:100%;"
+                                })
+
+                                @Html.ValidationMessageFor(model => model.ListStores, null, new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+                        //End Update
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 ">
+                            </div>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="box-footer">
+                                    <button id="btn-load-data" class="btn btn-primary">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" id="loadingSave"></span>
+                                </div>
+                                <div class="box-body scroll" id="employee-grid">
+                                    @Html.Partial("~/Views/BaseReport/_FilterEmployee.cshtml", Model)
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ListEmployees, null, new { @class = "validateEmp label label-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 ">
+                            </div>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div>
+                                    @Html.RadioButtonFor(m => m.FormatExport, "HTML",
+                                new
+                                {
+                                    @class = "flat",
+                                    @name = "export"
+                                }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Html))
+                                <br />
+                                @Html.RadioButtonFor(m => m.FormatExport, "Excel",
+                                new
+                                {
+                                    @class = "flat",
+                                    @name = "export"
+                                }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Excel))
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3 col-sm-3 col-xs-12 ">
+                        </div>
+                        <div class="col-md-4 col-sm-8 col-xs-12 ">
+                            <button id="btn-Export" class="btn btn-success btn-md">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Export"))</button>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="@Url.Content("~/js/Report/LoadEmployee.js")"></script>
+    <script type="text/javascript">
+        $('#loadingSave').hide();
+        $(document).ready(function () {
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                maxDate: new Date(),
+                //==========
+                showDropdowns: true,
+                //showWeekNumbers: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            }, function (start, end, label) {
+            });
+
+            $(".select2_single").select2({
+                placeholder: _SState,
+                allowClear: true
+            });
+            //$("#storeDdl").select2({
+            //    placeholder: _SStore,
+            //    allowClear: true
+            //});
+            //$("#companyDdl").select2({
+            //    placeholder: _SCompany,
+            //    allowClear: true
+            //});
+            ////===========
+            //$("#ddlSeleted").val(1);
+            //$("#divStore").hide();
+
+            @*$('.list-stores-group').select2({
+                placeholder: _SStore,
+                multiple: true,
+                data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+            });*@
+
+            ///////======= Updated 07202018
+            $("#storeDdl").select2({
+	            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+	            allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.ListStores))).trigger('change.select2');
+
+            //======================
+            $("#ddlSeleted").val(@Model.Type);
+            @if (Model.Type == Commons.TypeCompanySelected)
+            {
+                @:$("#divStore").hide();
+                if (Model.ListCompanys != null && Model.ListCompanys.Count > 0)
+                {
+                    <text>
+                        var model = '@Html.Raw(Json.Encode(Model.ListCompanys))';
+                    var data = JSON.parse(model);
+                    $("#companyDdl").val(data);
+                    </text>
+                }
+            }
+            else{
+                @:$("#divCompany").hide();
+                if (Model.ListStores != null && Model.ListStores.Count > 0)
+                {
+                    <text>
+                        var _listStores = '@Html.Raw(Json.Encode(Model.ListStores))';
+                    var data = JSON.parse(_listStores);
+                    $("#storeDdl").val(data).trigger('change');
+                    </text>
+                }
+            }
+
+            //$("#storeDdl").select2({
+            //    placeholder: _SStore,
+            //    allowClear: true
+            //});
+
+
+            $("#companyDdl").select2({
+                placeholder: _SCompany,
+                allowClear: true
+            });
+
+        });
+    </script>
+}

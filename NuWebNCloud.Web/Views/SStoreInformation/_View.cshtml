@@ -1,0 +1,191 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.SStoreModels
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Settings" }, { "B", "Store Information" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a ></ li >
+                            </ul >
+                        </div >
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12"> </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <img id = "upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Name")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Phone
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Email
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Street
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.City
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ZIP Code")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Zipcode
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Code")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreCode
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Country
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GST Reg No")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.GSTRegNo
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Zone")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.TimeZone
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                      @if (Model.IsActive == true)
+                                      {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("True"))
+                                      }
+                                      else
+                                      {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("False"))
+                                      }
+                                    </div >
+                                </div >
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                       @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Hours"))
+                                    </label >
+
+                                @*<div class="form-group" style="height:30px;font-size:14px">
+                                        <label class="col-xs-offset-2 control-label col-md-1  col-xs-2 text-righ" style="margin-right:50px">Weekdays</label>
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <div class="col-sm-2" style="text-align:center;font-weight:bolder">
+                                                    From Time
+                                                </div>
+                                                <div class="col-sm-1" style="text-align:center;font-weight:bolder">
+                                                    <label class="control-label">--</label>
+                                                </div>
+                                                <div class="col-sm-2" style="text-align:center;font-weight:bolder">
+                                                    ToTime
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                @* @if (Model.ListBusinessHour != null)
+                                    {
+                                        for (int i = 0; i < Model.ListBusinessHour.Count; i++)
+                                        {
+                                            <div class="form-group">
+                                                <label class="col-xs-offset-2 control-label col-md-1  col-xs-2 text-righ" style="margin-right:50px">@Model.ListBusinessHour[i].StrDate</label>
+                                                @Html.HiddenFor(model => model.ListBusinessHour[i].StrDate)
+
+
+                                                <div class="col-sm-5">
+                                                    <div class="row">
+                                                        <div class="col-sm-2" style="text-align:center">
+                                                            @Model.ListBusinessHour[i].From
+                                                        </div>
+                                                        <div class="col-sm-1" style="text-align:center">
+                                                            <label class="control-label">--</label>
+                                                        </div>
+                                                        <div class="col-sm-2" style="text-align:center">
+                                                            @Model.ListBusinessHour[i].To
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }*@
+
+                               
+                                    
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <table class="table table-hover" style="width:50%;text-align:center;border:1px solid white">
+                                            <thead style="background-color:#34495e;color:#fff;">
+                                                <tr role="row" style="background-color:#34495e;color:white">
+                                                    <th style="text-align:center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Weekdays"))</th>
+                                                    <th style="text-align:center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Time"))</th>
+                                                    <th style="text-align:center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Time"))</th>
+                                                </tr>
+                                            </thead>
+                                            @if (Model.ListBusinessHour != null)
+                                            {
+                                                for (int i = 0; i < Model.ListBusinessHour.Count; i++)
+                                                {
+                                                    string styleRow = "row-evenItem";
+                                                    if (i % 2 == 0)
+                                                    {
+                                                        styleRow = "row-oddItem";
+                                                    }
+                                                    <tbody>
+                                                        <tr class="@styleRow">
+                                                            <td style="text-align:center"><label class="col-xs-offset-2 control-label">@Model.ListBusinessHour[i].StrDate</label></td>
+                                                            <td>@Model.ListBusinessHour[i].From</td>
+                                                            <td>@Model.ListBusinessHour[i].To</td>
+                                                        </tr>
+                                                    </tbody>
+
+                                                }
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

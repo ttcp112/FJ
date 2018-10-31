@@ -1,0 +1,107 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+@if (Model.ListItemForSelect != null)
+{
+    <table class="table center-content">
+        <thead>
+            <tr style="background-color:#34495e; color:#fff;">
+                <th style="width:10%;text-align:center;"><input type="checkbox" id="chkAllItem" onchange="ToogleCheckAllItem(this, '#body-dishes0')"  /></th>
+                <th style="width:35%;text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</th>
+                <th style="width:35%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</th>
+                <th style="width:20%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM"))</th>
+            </tr>
+        </thead>
+        <tbody id="body-dishes0">
+            @for (int i = 0; i < Model.ListItemForSelect.Count; i++)
+                {
+                <tr data-id="@Model.ListItemForSelect[i].IngredientId" style="cursor:pointer;" class="SpecificItems">
+                    <td style="text-align:center;">
+                        @Html.CheckBoxFor(model => model.ListItemForSelect[i].IsActived, new { @tabindex = "-1", @onclick = "TickCheckBox(this, '#body-dishes0')" })
+
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IngredientId, new { @id = "hidIngredientId" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IngredientName, new { @id = "hidIngredientName" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IngredientCode, new { @id = "hidIngredientCode" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IngredientName, new { @id = "hidDescription" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].BaseUOM, new { @id = "hidBaseUOM" })
+
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].BaseReceivingQty, new { @id = "hidBaseReceivingQty" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].BaseQty, new { @id = "hidBaseQty" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IsSelfMode, new { @id = "hidIsSelfMode" })
+                        @Html.HiddenFor(model => model.ListItemForSelect[i].IsStockAble, new { @id = "hidIsStockAble" })
+                    </td>
+                    <td id="search" onclick="TickCheckBoxTd(this, '#body-dishes0')">@Model.ListItemForSelect[i].IngredientName</td>
+                    <td style="text-align:center;" onclick="TickCheckBoxTd(this, '#body-dishes0')">@Model.ListItemForSelect[i].IngredientName</td>
+                    <td style="text-align:center;" onclick="TickCheckBoxTd(this, '#body-dishes0')">@Model.ListItemForSelect[i].BaseUOM</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script src="@Url.Content("~/build/js/fnFilterClear.js")"></script>
+    <script>
+        $(document).ready(function () {
+            //update responsive
+            var table = $('#datatable-inpopup').DataTable({
+                dom: "<'row'<'col-sm-6'l><'col-sm-3'f>>",
+                "responsive": true,
+                "columnDefs": [
+                    { "orderable": false, "targets": [0, 2, 3] },
+                    { "width": "2%", "targets": [0] },
+                ],
+                "order": [[1, 'asc']],
+                "displayLength": 25,
+                "drawCallback": function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({ page: 'current' }).nodes();
+                    var last = null;
+
+                }
+            });
+        });
+
+        function abc() {
+            //Away 1
+            var table = $('#datatable-inpopup').DataTable();
+            table
+             .search('')
+             .columns().search('')
+             .draw();
+        }
+
+        function TickCheckBox(check, containElementSelector) {
+            var isCheck = $(check).prop("checked");
+            if (isCheck) {
+                var _trCount = $(containElementSelector).find("tr:visible").length;
+                var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+                if (_trCount === lengthCheck) {
+                    $('#chkAllItem').prop('checked', true);
+                } else {
+                    $('#chkAllItem').prop('checked', false);
+                }
+            } else {
+                $('#chkAllItem').prop('checked', false);
+            }
+        }
+
+        function TickCheckBoxTd(td, containElementSelector) {
+            var tr = $(td).parents('tr:first');
+            $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'));
+
+            var _trCount = $(containElementSelector).find("tr:visible").length;
+            var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+            if (_trCount === lengthCheck) {
+                $('#chkAllItem').prop('checked', true);
+            } else {
+                $('#chkAllItem').prop('checked', false);
+            }
+        }
+
+        function ToogleCheckAllItem(e, containElementSelector) {
+            checkAll = $(e).prop("checked");
+            $(containElementSelector).find("tr:visible").find("input[type='checkbox']").prop("checked", checkAll);
+            if ($(e).prop('id') != 'select-all') {
+                ToggleBtnDelete();
+            }
+        }
+
+    </script>
+}

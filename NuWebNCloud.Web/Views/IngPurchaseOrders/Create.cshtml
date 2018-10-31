@@ -1,0 +1,276 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.PurchaseOrderModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Orders - Create");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Transaction Data" }, { "C", "Purchase Orders - Add new" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                @*<li><a href="#" class="btn btn-info" id="btn-actives" ><i class="fa fa-send"></i>&nbsp;Send</a></li>
+                                    <li><a href="#" class="btn btn-primary" id="btn-actives" ><i class="fa fa-print"></i>&nbsp;Print</a></li>*@
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="@Url.Action("Index","IngPurchaseOrders",new { area = "" })" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "IngPurchaseOrders", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div><!--End <div class="x_content">-->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var _storeId = "";
+        var listItemNew = [];
+        @foreach (var ing in Model.ListItem)
+        {
+            @:var IngredientId = '@ing.IngredientId';
+            @:listItemNew.push(IngredientId);
+        }
+
+        function SubmitForm(form) {
+            var storeId = $('#storeDdl').val();
+            if (storeId == '' || storeId == null) {
+                $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+                return false;
+            }
+            $('#validationStore').text('');
+            var _isIntegrate = $('#hidStoreIntegrate').val();
+            //================
+            var isSubmit = true;
+            $.each($('.ng-IngredientNew'), function () {
+                var div = $(this);
+                if ($(div).css('display') == 'table-row') {
+                    var IngredientId = $(div).find('#hidIngredientId').val();
+                    var Qty = $(div).find('#txtQty').val();
+                    var UnitPrice = $(div).find('#txtUnitPrice').val();
+                    var IngTaxId = $(div).find('#ddlTax option:selected').val();
+                    if (Qty <= 0) {
+                        $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please, can not input negative number"))');
+                        isSubmit = false;
+                    } else {
+                        if (UnitPrice < 0) {
+                            $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please, can not input negative number"))');
+                            isSubmit = false;
+                        } else {
+                            $('#ltrValidate' + IngredientId).html('');
+                            if (_isIntegrate === 'True' || _isIntegrate === 'true') {
+                                if(IngTaxId === '') {
+                                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose tax"))');
+                                    isSubmit = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (listItemNew.length == 0) {
+                $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Ingredient for PO"))');
+                isSubmit = false;
+            }
+            if (isSubmit) {
+                //disableButton('#btn-actives', true);
+                $(form).submit();
+            }
+        }
+
+        function disableButton(btn, status) {
+            if (status) {
+                $(btn).addClass('disabled');
+            } else {
+                $(btn).removeClass('disabled');
+            }
+        }
+
+        $(document).ready(function () {
+            $("#storeDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            });
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                //maxDate: new Date()
+                showDropdowns: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            });
+            $("#TaxDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose tax"))',
+                allowClear: true
+            });
+            $("#SupplierDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))',
+                allowClear: true
+            });
+
+            _storeId = $("#storeDdl").val();
+
+        });
+
+        function SearchIngredient(btn) {
+            var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+            var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+            var arrKeySearch = keySearch.split(' ');
+            if (keySearch != '') {
+                for (var i = 0; i < trs.length; i++) {
+                    var name = $.trim($(trs[i]).find('td#search').text());
+                    for (var j = 0; j < arrKeySearch.length; j++) {
+                        if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                            if ($(trs[i]).css('display') == 'none')
+                                $(trs[i]).css('display', 'table-row');
+                            break;
+                        }
+                        else
+                            if ($(trs[i]).css('display') == 'table-row')
+                                $(trs[i]).css('display', 'none');
+                    }
+                }
+            }
+            else {
+                $(trs).each(function (e) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                });
+            }
+        }
+
+        function TickCheckBox(td) {
+            var tr = $(td).parents('tr:first');
+            $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+        }
+
+        function TickAllCheckBox(chk) {
+            var trs = $('.modal-body:first').find('tbody tr');
+            for (var i = 0; i < trs.length; i++) {
+                $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+            }
+        }
+
+        $("#storeDdl").change(function () {
+            _storeId = this.value;
+            $(".se-pre-con").show();
+
+            // Clear all msg error
+            $('#validationStore').text('');
+
+            // Delete all ingredient selected
+            $('#divListItemNew').html("");
+            Calculator();
+            listItemNew = [];
+
+            $.ajax({
+                url: '@Url.Action("GetSymbolCurrency", "IngPurchaseOrders")',
+                type: 'POST',
+                data: { storeId: _storeId, },
+                dataType: 'json',
+                success: function (data) {
+                    $(".se-pre-con").hide();
+                    $('.symbol').text(data);
+                    $('#hidSymbol').val(data);
+
+                    LoadSuppliers(_storeId);
+                },
+                complete: function () {  }
+            });
+        });
+
+        function LoadSuppliers(_storeId) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: '@Url.Action("LoadSuppliers", "IngPurchaseOrders")',
+                type: "POST",
+                traditional: true,
+                data: { storeId: _storeId },
+                dataType: 'json',
+                success: function (lstSupplier) {
+                    ReLoadOptionSupplier(lstSupplier);
+                    $(".se-pre-con").hide();
+                    CheckStoreIntegrate(_storeId);
+                }
+            });
+        }
+
+        function ReLoadOptionSupplier(lstSupplier) {
+            $("#SupplierDdl").empty();
+            lstSupplier.forEach(function (el) {
+                var option = new Option(el.Name, el.Id, true, true);
+                $("#SupplierDdl").append(option).trigger('change.select2');
+            });
+            $("#SupplierDdl").val(null).trigger('change.select2');
+        }
+
+        function CheckStoreIntegrate(_storeId) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: '@Url.Action("checkStoreIntegrate", "IngPurchaseOrders")',
+                type: "POST",
+                traditional: true,
+                data: { storeId: _storeId },
+                dataType: 'json',
+                success: function (IsIntegrate) {
+                    $(".se-pre-con").hide();
+                    var IsIntegrate = IsIntegrate;
+                    $('#hidStoreIntegrate').val(IsIntegrate);
+                    if(IsIntegrate){
+                        $('.div_tax_not_integrate').hide();
+                        $('#colTax').show();
+                        $('#listItemTaxIntegrate').show();
+                        //-----call list Tax
+                        GetListTaxStoreIntegrate('#listItemTaxIntegrate', _storeId);
+                    }else{
+                        $('.div_tax_not_integrate').show();
+                        $('#colTax').hide();
+                        $('#listItemTaxIntegrate').hide();
+                    }
+                }
+            });
+        }
+
+        function GetListTaxStoreIntegrate(container, _storeId) {
+            $(container).html('');
+            $(".se-pre-con").show();
+            $.ajax({
+                url: '@Url.Action("GetListTaxStoreIntegrate", "IngPurchaseOrders")',
+                type: "POST",
+                traditional: true,
+                data: { storeId: _storeId },
+                dataType: 'html',
+                success: function (data) {
+                    $(".se-pre-con").hide();
+                    $(container).html(data);
+                }
+            });
+        }
+
+    </script>
+}

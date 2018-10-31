@@ -1,0 +1,178 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockCountModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = "Stock Count - Edit";
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display:none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @*@Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                     new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Inventory" }, { "C", "Usage Management" }, { "D", "Stock Count - Edit" } })*@
+
+                @Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                new Dictionary<string, string> { { "A", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management") }, { "B", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory") }, { "C", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management") }, { "D", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Count - Edit") } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-edit-save" onclick="SubmitForm('#form-edit')"><i class="fa fa-save"></i>&nbsp;Save</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Edit", "IngStockCount", FormMethod.Post, new { @id = "form-edit", @class = "form-horizontal" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var listItemNew = [];
+    function SubmitForm(form) {
+        listItemNew = [];
+        $(".se-pre-con").show();
+        $('#StoreIdMsg').text('');
+        $('#ApplyDateMsg').text('');
+
+        //var StoreId = $('#ddlStore').val();
+        //var ApplyDate = $('#txtApplyDate').val();
+        //if (StoreId == '') {
+        //    $('#StoreIdMsg').text('Please choose store');
+        //    return false;
+        //}
+        //if (ApplyDate == '') {
+        //    $('#ApplyDateMsg').text('Please choose apply date');
+        //    return false;
+        //}
+        //================
+        var isSubmit = true;
+        var closeBalQty = 0;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') != 'none') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var CloseBal = $(div).find('#txtCloseBal').val();
+                closeBalQty = parseFloat(CloseBal)
+                if (closeBalQty === '') {
+                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close Bal is required"))');
+                    isSubmit = false;
+                }
+                else if (isNaN(closeBalQty)) {
+                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close Bal is invalid"))');
+                    isSubmit = false;
+                }
+                else if (closeBalQty < 0) {
+                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please input value equal or larger than 0"))');
+                    isSubmit = false;
+                }
+                else {
+                    $('#ltrValidate' + IngredientId).html('');
+                    listItemNew.push(IngredientId);
+                }
+            }
+        });
+
+        if (isSubmit && listItemNew.length == 0) {
+            $('#StoreIdMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Ingredient for Data Entry"))');
+            isSubmit = false;
+        }
+
+        if (isSubmit) {
+            $(form).submit();
+
+            //handle the form submit event
+            //$(form).on("submit", function (event) {
+            //    event.preventDefault();
+
+
+            //});
+        }
+
+        $(".se-pre-con").hide();
+    }
+
+    //$("#form-edit").submit(function (e) {
+    //    $.ajax({
+    //        url: $(this).attr('action'),
+    //        type: "post",
+    //        data: new FormData(this),
+    //        processData: false,
+    //        contentType: false,
+    //        success: function () {
+    //            CloseDetail();
+    //            Search();
+    //        },
+    //        error: function (jqXHR, textStatus, errorThrown) {
+    //            $(".detail-view").html(jqXHR.responseText);
+    //        }
+    //    });
+    //    e.preventDefault();
+    //});
+
+    $(document).ready(function () {
+        $("#ddlStore").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+            allowClear: true
+        });
+
+        $("#ddlApplyDate").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose apply date"))',
+            allowClear: true
+        });
+    });
+
+    //$("#ddlStore").change(function () {
+    //    $('#StoreIdMsg').text('');
+    //    $('#ApplyDateMsg').text('');
+    //    StoreID = this.value;
+    //    if (StoreID != '') {
+    //        LoadBusinessDate();
+    //    }
+    //});
+
+    //function LoadBusinessDate() {
+    //    $(".se-pre-con").show();
+    //    $.ajax({
+    //        url: CreateAbsoluteUrl("LoadBusinessDate"),
+    //        type: "post",
+    //        traditional: true,
+    //        data: { StoreID: StoreID },
+    //        dataType: 'json',
+    //        success: function (lstEmp) {
+    //            $(".se-pre-con").hide();
+    //            $(".ddl-business-date").each(function (e) {
+    //                AddOptionForDDLBusinessDate(this, lstEmp);
+    //            });
+    //        }
+    //    });
+    //}
+    //function AddOptionForDDLBusinessDate(ddl, lstEmp) {
+    //    $(ddl).empty();
+    //    $(ddl).append($('<option/>', {
+    //        value: "",
+    //        text: "Please choose apply date",
+    //    }));
+
+    //    for (var i = 0; i < lstEmp.length; i++) {
+
+    //        var StartedOn = eval(lstEmp[i].StartedOn.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))
+    //        var ClosedOn = eval(lstEmp[i].ClosedOn.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))
+    //        $(ddl).append($('<option/>', {
+    //            value: lstEmp[i].Id,
+    //            text: '' + formatDate(StartedOn) + ' - ' + formatDate(ClosedOn)
+    //        }));
+    //    }
+    //}
+</script>

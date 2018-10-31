@@ -1,0 +1,108 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+
+@if (Model.ListSeasonKiosk != null)
+{
+    for (int i = 0; i < Model.ListSeasonKiosk.Count; i++)
+    {
+        <tr data-id="@Model.ListSeasonKiosk[i].ID" class="NameSeason_@Model.StoreID" style="cursor:pointer;"
+            data-value="@Model.ListSeasonKiosk[i].Name" onclick="ToggleSeason(this, '@Model.StoreID'); return false;">
+            <td width="20%">
+                @Model.ListSeasonKiosk[i].Name
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].Name", Model.OffSet, i), Model.ListSeasonKiosk[i].Name)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].ID", Model.OffSet, i), Model.ListSeasonKiosk[i].ID)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].RepeatType", Model.OffSet, i), Model.ListSeasonKiosk[i].RepeatType)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].StartDate", Model.OffSet, i), Model.ListSeasonKiosk[i].StartDate)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].EndDate", Model.OffSet, i), Model.ListSeasonKiosk[i].EndDate)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].StartTime", Model.OffSet, i), Model.ListSeasonKiosk[i].StartTime)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].EndTime", Model.OffSet, i), Model.ListSeasonKiosk[i].EndTime)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].IsPOS", Model.OffSet, i), Model.ListSeasonKiosk[i].IsPOS)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].StoreID", Model.OffSet, i), Model.ListSeasonKiosk[i].StoreID)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListSeasonKiosk[{1}].Status", Model.OffSet, i), Model.ListSeasonKiosk[i].Status, new { @class = "SeasonStatus" })
+            </td>
+            <td width="40%">
+                @if (Model.ListSeasonKiosk[i].RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                {
+                    Model.ListSeasonKiosk[i].ListWeekDayV2 = Model.ListSeasonKiosk[i].ListWeekDayV2.Where(x => x.IsActive == true).ToList();
+                    if (Model.ListSeasonKiosk[i].ListWeekDayV2.Count == 7)
+                    {
+                        @:Every day of week
+                    }
+                    else if (Model.ListSeasonKiosk[i].ListWeekDayV2.Count == 0)
+                    {
+                        @:None
+                    }
+                    else
+                    {
+                        for (int d = 1; d <= Model.ListSeasonKiosk[i].ListWeekDayV2.Count; d++)
+                        {
+                            int day = Model.ListSeasonKiosk[i].ListWeekDayV2[d - 1].Index;
+                            @:@Model.ListSeasonKiosk[i].ListWeekDayV2[d - 1].Name
+                            if (d % 4 == 0)
+                            {
+                                @Html.Raw("<br/>")
+                            }
+                            else
+                            {
+                                if (!(d == Model.ListSeasonKiosk[i].ListWeekDayV2.Count))
+                                {
+                                    @:-
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (Model.ListSeasonKiosk[i].RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                {
+                    Model.ListSeasonKiosk[i].ListMonthDayV2 = Model.ListSeasonKiosk[i].ListMonthDayV2.Where(x => x.IsActive == true).ToList();
+                    if (Model.ListSeasonKiosk[i].ListMonthDayV2.Count == 31)
+                    {
+                        @:Every day of month
+                    }
+                    else if (Model.ListSeasonKiosk[i].ListMonthDayV2.Count == 0)
+                    {
+                        @:None
+                    }
+                    else
+                    {
+                        for (int d = 1; d <= Model.ListSeasonKiosk[i].ListMonthDayV2.Count; d++)
+                        {
+                            int day = Model.ListSeasonKiosk[i].ListMonthDayV2[d - 1].Index;
+                            @:@day
+                            if (d % 10 == 0)
+                            {
+                                @Html.Raw("<br/>")
+                            }
+                            else
+                            {
+                                if (!(d == Model.ListSeasonKiosk[i].ListMonthDayV2.Count))
+                                {
+                                    @:-
+                                }
+                            }
+                        }
+                    }
+                }
+            </td>
+            <td width="10%">
+                @Model.ListSeasonKiosk[i].StartDate.ToString("dd/MM/yyyy")
+            </td>
+            <td width="10%">
+                @Model.ListSeasonKiosk[i].EndDate.ToString("dd/MM/yyyy")
+            </td>
+            <td width="18%" style="text-align:center;">
+                @if (Model.ListSeasonKiosk[i].Unlimited)
+                {
+                    @:Unlimited - Unlimited
+                }
+                else
+                {
+                    @Model.ListSeasonKiosk[i].StartTime.Value.ToString("HH:mm") @:- @Model.ListSeasonKiosk[i].EndTime.Value.ToString("HH:mm")
+                }
+            </td>
+            <td style="text-align: center;" width="2%">
+                <i class="fa  @string.Format("{0}", Model.ListSeasonKiosk[i].Status != 9 ?"fa-check":"")" id="chkActive"></i>
+            </td>
+        </tr>
+    }
+}

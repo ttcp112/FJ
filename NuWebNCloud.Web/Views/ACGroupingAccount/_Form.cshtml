@@ -1,0 +1,434 @@
+﻿@model NuWebNCloud.Shared.Models.AccessControl.RoleOrganizationModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@Html.Hidden("OrganizationId", Model.OrganizationId)
+
+<!-- Switchery -->
+<link rel="stylesheet" href='@Url.Content("~/vendors/switchery/dist/switchery.min.css")'>
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Organization"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.OrganizationId,
+                                          new SelectList(@ViewBag.ListOrganization, "Value", "Text", Model.OrganizationId), "---- Please choose Organization ----",
+                                          !string.IsNullOrEmpty(_ID) ? (object)new
+                                          {
+                                              @class = "form-control select2_multiple",
+                                              @disabled = "disabled",
+                                              @id = "OrganizationDdl",
+                                              @style = "width:100%;"
+                                          } : new
+                                          {
+                                              @class = "form-control select2_multiple",
+                                              @id = "OrganizationDdl",
+                                              @style = "width:100%;",
+                                              //@disabled = "disabled",
+                                          })
+            @Html.ValidationMessageFor(model => model.OrganizationId, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Role Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Role Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Role Name").ToString(), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>
+
+    @* List Stores *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stores"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (Model.ListStore != null)
+            {
+                <table class="table table-bordered role-table">
+                    <tr style="background-color:#34495e; color:#fff;">
+                        <th style="width:2%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).</th>
+                        <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</th>
+                        <th style="width:2%;"><input type="checkbox" onchange="ToogleCheckAll(this, '#list-stores')" id="chkStoreAll"></th>
+                    </tr>
+                    <tbody id="list-stores">
+                        @*@for (int i = 0; i < Model.ListStore.Count; i++)
+                            {
+                                string styleRow = "row-evenItem";
+                                if (i % 2 == 0)
+                                {
+                                    styleRow = "row-oddItem";
+                                }
+                                <tr class="@styleRow">
+                                    <td style="text-align:center;">
+                                        @(i + 1)
+                                        @Html.HiddenFor(model => model.ListStore[i].Id)
+                                        @Html.HiddenFor(model => model.ListStore[i].StoreId)
+                                        @Html.HiddenFor(model => model.ListStore[i].StoreName)
+                                    </td>
+                                    <td onclick="TickCheckBox(this)"
+                                        style="color:#34495e; font-weight:bold;">
+                                        @Model.ListStore[i].StoreName
+                                    </td>
+                                    <td style="text-align:center;">
+                                        @Html.CheckBoxFor(model => model.ListStore[i].Checked,
+                                     new { @class = "chkRole", @style = "cursor:pointer;", @onclick = "TickItemCheckBox()" })
+                                    </td>
+                                </tr>
+                            }*@
+                        @*//=============*@
+                        @if (Model.ListCompany != null && Model.ListCompany.Count > 0)
+                        {
+                            for (int i = 0; i < Model.ListCompany.Count; i++)
+                            {
+                                string styleRow = "row-evenItem";
+                                if (i % 2 == 0)
+                                {
+                                    styleRow = "row-oddItem";
+                                }
+                                <tr class="@styleRow">
+                                    <td style="text-align:center; color:#d9534f; font-weight:bold;" onclick="TickCheckBox(this)">
+                                        @(i + 1)
+                                        @Html.HiddenFor(model => model.ListCompany[i].Id)
+                                        @Html.HiddenFor(model => model.ListCompany[i].CompanyId)
+                                        @Html.HiddenFor(model => model.ListCompany[i].CompanyName)
+                                    </td>
+                                    <td onclick="TickCheckBox(this)"
+                                        style="color:#d9534f; font-weight:bold;">
+                                        @Model.ListCompany[i].CompanyName
+                                    </td>
+                                    <td style="text-align:center;">
+                                        @Html.CheckBoxFor(model => model.ListCompany[i].Checked,
+                                                    new
+                                                    {
+                                                        @id = "chkCompany" + Model.ListCompany[i].CompanyId + "",
+                                                        @class = "chkRole chkCom",
+                                                        @style = "cursor:pointer;",
+                                                        @onclick = "TickItemCheckBox('" + Model.ListCompany[i].CompanyId + "', true)"
+                                                    })
+                                    </td>
+                                </tr>
+
+                                if (Model.ListCompany[i].ListStore != null && Model.ListCompany[i].ListStore.Count > 0)
+                                {
+                                    for (int j = 0; j < Model.ListCompany[i].ListStore.Count; j++)
+                                    {
+                                        styleRow = "row-evenItem";
+                                        if (j % 2 == 0)
+                                        {
+                                            styleRow = "row-oddItem";
+                                        }
+                                        <tr class="@styleRow">
+                                            <td style="text-align:center;">
+
+                                                @Html.HiddenFor(model => model.ListCompany[i].ListStore[j].Id)
+                                                @Html.HiddenFor(model => model.ListCompany[i].ListStore[j].StoreId)
+                                                @Html.HiddenFor(model => model.ListCompany[i].ListStore[j].StoreName)
+                                            </td>
+                                            <td onclick="TickCheckBox(this)"
+                                                style="color:#34495e; font-weight:bold; margin-left:20px;">
+                                                @Model.ListCompany[i].ListStore[j].StoreName
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @Html.CheckBoxFor(model => model.ListCompany[i].ListStore[j].Checked,
+                                                            new
+                                                            {
+                                                                @class = "chkRole chk" + Model.ListCompany[i].CompanyId + "",
+                                                                @style = "cursor:pointer;",
+                                                                @onclick = "TickItemCheckBox('" + Model.ListCompany[i].CompanyId + "', false)"
+                                                            })
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            @Html.ValidationMessageFor(model => model.ListStore, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @* List Modules *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modules"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (Model.ListModule != null)
+            {
+                @Html.Partial("_ListModules", Model)
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Switchery -->
+<script src="@Url.Content("~/vendors/switchery/dist/switchery.min.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        _CountAll = $('.chkRole').length;
+        _Count = $('#list-stores').find('input[type="checkbox"]:checked').length;
+        if (_CountAll === _Count)
+            $('#chkStoreAll').prop('checked', true);
+        else
+            $('#chkStoreAll').prop('checked', false);
+    });
+
+
+    ////ToogleChild
+    //function ToogleChild(e, type) {
+    //    console.log('ToogleChild');
+    //    var checked = $(e).prop('checked');
+    //    var id = $(e).attr('id');
+    //    var parentClass = $(e).attr('data-parent');
+    //    if (parentClass != null) {
+    //        var Parentlength = $("input[data-parent=" + parentClass + "]").length;
+    //        var ChildLength = $("input[data-parent=" + parentClass + "]:checkbox:checked").length;
+    //        var level = parentClass.substring(0, 1);
+    //        var dataId = parentClass.substring(2, parentClass.length).replace(type, '');
+    //        var ParentcheckAll = $("input[data-id=" + ((level - 1) + '' + dataId + type) + "]");
+    //        if (Parentlength == ChildLength) {
+    //            $(ParentcheckAll).prop('checked', true);
+    //            ToogleChild(ParentcheckAll, type);
+    //        } else {
+    //            $(ParentcheckAll).prop('checked', false);
+    //            ToogleChild(ParentcheckAll, type);
+    //        }
+    //        //=====
+    //        var substr = id.slice(0, id.length - type.length);
+    //        if (type == "IsAction") {
+    //            var chkIsView = $('.table-actions').find('#' + substr + 'IsView');
+    //            $(chkIsView).prop('checked', checked);
+    //            var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+    //            $(chkIsActive).prop('checked', checked);
+    //            //========
+    //            var ParentcheckAllIsView = $("input[data-id=" + (level + '' + dataId + 'IsView') + "]");
+    //            var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + dataId + 'IsActive') + "]");
+    //            CheckAll(ParentcheckAllIsView, 'IsView');
+    //            CheckAll(ParentcheckAllIsActive, 'IsActive');
+    //        }
+    //        else if (type == "IsView") {
+    //            var chkIsIsAction = $('.table-actions').find('#' + substr + 'IsAction');
+    //            var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+
+    //            var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + dataId + 'IsActive') + "]");
+
+    //            if ($(e).prop('checked') && $(chkIsIsAction).prop('checked')) {
+    //                $(chkIsActive).prop('checked', true);
+    //                $(ParentcheckAllIsActive).prop('checked', true);
+    //            }
+    //            else {
+    //                $(chkIsActive).prop('checked', false);
+    //                $(ParentcheckAllIsActive).prop('checked', false);
+    //            }
+    //        }
+    //    }
+    //}
+
+    function ToogleChild(e, type) {
+        console.log('ToogleChild');
+        var checked = $(e).prop('checked');
+        var id = $(e).attr('id');
+        var parentClass = $(e).attr('data-parent');
+        if (parentClass != null) {
+            var Parentlength = $("input[data-parent=" + parentClass + "]").length;
+            var ChildLength = $("input[data-parent=" + parentClass + "]:checkbox:checked").length;
+            var level = parentClass.substring(0, 1);
+            var dataId = parentClass.substring(2, parentClass.length).replace(type, '');
+            var ParentcheckAll = $("input[data-id=" + ((level - 1) + '' + dataId + type) + "]");
+            if (Parentlength == ChildLength) {
+                $(ParentcheckAll).prop('checked', true);
+                ToogleChild(ParentcheckAll, type);
+            } else {
+                $(ParentcheckAll).prop('checked', false);
+                ToogleChild(ParentcheckAll, type);
+            }
+            //=====
+            var substr = id.slice(0, id.length - type.length);
+            if (type == "IsAction") {
+                //Uncheck Action -> Uncheck View
+                if (checked == true) {
+                    var chkIsView = $('.table-actions').find('#' + substr + 'IsView');
+                    $(chkIsView).prop('checked', checked);
+                }
+                //var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+                //$(chkIsActive).prop('checked', checked);
+            }
+            else if (type == "IsView") {
+                //var chkIsIsAction = $('.table-actions').find('#' + substr + 'IsAction');
+                //var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+                //var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + dataId + 'IsActive') + "]");
+                //if ($(e).prop('checked') && $(chkIsIsAction).prop('checked')) {
+                //    $(chkIsActive).prop('checked', true);
+                //    $(ParentcheckAllIsActive).prop('checked', true);
+                //}
+                //else {
+                //    $(chkIsActive).prop('checked', false);
+                //    $(ParentcheckAllIsActive).prop('checked', false);
+                //}
+
+                //Trongntn update code 06-06-2017
+                if (!checked) {
+                    var chkIsAction = $('.table-actions').find('#' + substr + 'IsAction');
+                    $(chkIsAction).prop('checked', checked);
+                }
+            }
+        }
+    }
+
+    //ToogleParent
+    function ToogleParent(e, type) {
+        console.log('ToogleParent');
+        var checked = $(e).prop('checked');
+        var id = $(e).attr('id');
+        var parentClass = $(e).attr('data-parent');
+        if (parentClass != null) {
+            var substr = id.slice(0, id.length - type.length);
+            var Parentlength = $("input[data-parent=" + parentClass + "]").length;
+            var ChildLength = $("input[data-parent=" + parentClass + "]:checkbox:checked").length;
+            var level = parentClass.substring(0, 1);
+            var dataId = parentClass.substring(2, parentClass.length).replace(type, '');
+            var ParentcheckAll = $("input[data-id=" + ((level - 1) + '' + dataId + type) + "]");
+            if (Parentlength == ChildLength) {
+                $(ParentcheckAll).prop('checked', true);
+            } else {
+                $(ParentcheckAll).prop('checked', false);
+            }
+            CheckAll(e, type);
+            if (type == "IsAction") {
+                //Uncheck Action -> Uncheck View
+                if (checked == true) {
+                    var chkIsView = $('.table-actions').find('#' + substr + 'IsView');
+                    $(chkIsView).prop('checked', checked);
+                    //var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+                    //$(chkIsActive).prop('checked', checked);
+                    //========
+
+                    if (level != "0") {
+                        var _dataId = chkIsView.attr('data-id').substring(1, chkIsView.attr('data-id').length);
+                        var ParentcheckAllIsView = $("input[data-id=" + (level + '' + _dataId) + "]");
+                        CheckAll(ParentcheckAllIsView, 'IsView');
+
+                        //var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + _dataId) + "]");
+                        //CheckAll(ParentcheckAllIsActive, 'IsActive');
+                    }
+                    else {
+                        var ParentcheckAllIsView = $("input[data-id=" + (level + '' + dataId + 'IsView') + "]");
+                        CheckAll(ParentcheckAllIsView, 'IsView');
+
+                        //var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + dataId + 'IsActive') + "]");
+                        //CheckAll(ParentcheckAllIsActive, 'IsActive');
+                    }
+                }
+            }
+            else if (type == "IsView") {
+                //var chkIsIsAction = $('.table-actions').find('#' + substr + 'IsAction');
+                //var chkIsActive = $('.table-actions').find('#' + substr + 'IsActive');
+                //var ParentcheckAllIsActive = $("input[data-id=" + (level + '' + dataId + 'IsActive') + "]");
+                //console.log(ParentcheckAllIsActive);
+                //if ($(e).prop('checked') && $(chkIsIsAction).prop('checked')) {
+                //    $(chkIsActive).prop('checked', true);
+                //    $(ParentcheckAllIsActive).prop('checked', true);
+                //}
+                //else {
+                //    $(chkIsActive).prop('checked', false);
+                //    $(ParentcheckAllIsActive).prop('checked', false);
+                //}
+                //CheckAll(ParentcheckAllIsActive, 'IsActive');
+
+                //Trongntn update code 06-06-2017
+                if (!checked) {
+                    var chkIsAction = $('.table-actions').find('#' + substr + 'IsAction');
+                    $(chkIsAction).prop('checked', checked);
+                    if (level != "0") {
+                        var _dataId = chkIsAction.attr('data-id').substring(1, chkIsAction.attr('data-id').length);
+                        var ParentcheckAllchkIsAction = $("input[data-id=" + (level + '' + _dataId) + "]");
+                        CheckAll(ParentcheckAllchkIsAction, 'IsAction');
+                    }
+                    else {
+                        var ParentcheckAllchkIsAction = $("input[data-id=" + (level + '' + dataId + 'IsView') + "]");
+                        CheckAll(ParentcheckAllchkIsAction, 'IsAction');
+                    }
+                }
+            }
+        }
+    }
+
+    function CheckAll(e, type) {
+        var checked = $(e).prop('checked');
+        var id = $(e).attr('id');
+        if (id != undefined) {
+            var substr = id.slice(0, id.length - type.length);
+            $("input[id^=" + substr + "]").each(function () {
+                var childID = $(this).attr('id');
+                if (childID != id && childID.indexOf(type) >= 0) {
+                    $(this).prop('checked', checked);
+                }
+            });
+        }
+    }
+
+    //function TickCheckBox(td) {
+    //    var tr = $(td).parents('tr:first');;
+    //    $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    //    var length = $('.chkRole').length;
+    //    var countSelected = $('.chkRole:checkbox:checked').length;
+    //    if (length == countSelected) {
+    //        $('#chkStoreAll').prop('checked', true);
+    //    } else {
+    //        $('#chkStoreAll').prop('checked', false);
+    //    }
+    //}
+
+    //function TickItemCheckBox() {
+    //    var length = $('.chkRole').length;
+    //    var countSelected = $('.chkRole:checkbox:checked').length;
+    //    if (length == countSelected) {
+    //        $('#chkStoreAll').prop('checked', true);
+    //    } else {
+    //        $('#chkStoreAll').prop('checked', false);
+    //    }
+    //}
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');;
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+        var length = $('.chkRole').length;
+        var countSelected = $('.chkRole:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkStoreAll').prop('checked', true);
+        } else {
+            $('#chkStoreAll').prop('checked', false);
+        }
+    }
+
+    function TickItemCheckBox(CompanyId, isParent) {
+        if (isParent) {//Parent
+            $('.chk' + CompanyId).prop('checked', $('#chkCompany' + CompanyId).prop('checked'));
+        } else {//Child
+            var lengthCompany = $('.chk' + CompanyId).length;
+            var countCompanySelected = $('.chk' + CompanyId + ':checkbox:checked').length;
+            $('#chkCompany' + CompanyId).prop('checked', (lengthCompany == countCompanySelected));
+        }
+        //===========
+        var length = $('.chkRole').length;
+        var countSelected = $('.chkRole:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkStoreAll').prop('checked', true);
+        } else {
+            $('#chkStoreAll').prop('checked', false);
+        }
+    }
+
+</script>

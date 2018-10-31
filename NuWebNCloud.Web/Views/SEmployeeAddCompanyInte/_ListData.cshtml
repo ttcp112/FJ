@@ -1,0 +1,101 @@
+﻿@model  NuWebNCloud.Shared.Integration.Models.Sandbox.InteEmployeeViewModels
+@using NuWebNCloud.Shared.Utilities;
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Employee Add Company"))</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style="background-color:#34495e; color:#fff;">
+                    <tr>
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>                        
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))</th>                       
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListItem != null)
+                    {
+                        for (int i = 0; i < Model.ListItem.Count; i++)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            var item = Model.ListItem[i];
+                            <tr class="@styleRow">
+                                <td style="color:#34495e; font-weight:bold;">&nbsp;&nbsp;&nbsp;@item.Name</td>                                
+                                <td style="text-align:center;">
+                                    <img src="@item.ImageURL" height="30" width="30" class="img-circle" />
+                                </td>                                
+                                <td style="text-align:center;">                                    
+                                    <a href="#"
+                                       onclick="ShowView('@Url.Action("EmpAddComp", "SEmployeeAddCompanyInte", new { id = item.ID, StoreId = item.StoreID })')"
+                                       class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Company"))</a>
+                                    
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [1, 2] },
+                { "width": "15%", "targets": 1 },
+                { "width": "20%", "targets": 2 },                
+                
+            ],
+            "order": [[1, 'asc']],
+            "displayLength": 50,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                
+            }
+        });        
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

@@ -1,0 +1,249 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+
+<div class="product-item-on-store cls_@Model.StoreID" style='@string.Format("display:{0}", Model.Status==9?"none":"block")' data-id="@Model.StoreID"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID-@Model.OffSet" data-offset="@Model.OffSet">
+
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].OffSet", Model.OffSet), Model.OffSet)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus", @value = Model.Status })
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].StoreID", Model.OffSet), Model.StoreID)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].StoreName", Model.OffSet), Model.StoreName)
+    @Html.Hidden(string.Format("ListProductOnStore[{0}].IsDeleteTemplate", Model.OffSet), Model.IsDeleteTemplate)
+
+    @*Store Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            @if (!Model.IsDeleteTemplate)
+            {
+                <a href="javascript:void(0)" onclick="DeleteTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:red;">
+                    <i class="fa fa-remove"></i>
+                </a>
+            }
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): @Model.StoreName
+            <a href="javascript:void(0)" onclick="CloneDataTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:#337ab7;">&nbsp; &nbsp;&nbsp;Clone Data To</a>
+        </label>
+       
+    </div>
+
+    @*Sequence*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Sequence", Model.OffSet), Model.Sequence,
+            new
+            {
+                @class = "form-control ",
+                @type = "number",
+                @min = 0,
+                @id = "Sequence_" + Model.OffSet,
+                placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order"))
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Sequence", Model.OffSet), new { @class = "label" })
+        </div>
+    </div>
+
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsActive", Model.OffSet), Model.IsActive, new { @id = "IsActive_" + Model.OffSet, })</label>
+        </div>
+    </div>
+
+    @*Kitchen Display Name*@
+    <div class="form-group">
+        <label for="" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Kitchen Display Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].KitchenDisplayName", Model.OffSet), Model.KitchenDisplayName,
+            new { @class = "form-control ",
+                placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be shown")),
+                @id = "Kitchen_" + Model.OffSet
+            })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].KitchenDisplayName", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Print out Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print out Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].PrintOutName", Model.OffSet), Model.PrintOutName,
+           new { @class = "form-control ",
+               placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be printed")),
+               @id = "PrintOutName_"+ Model.OffSet,
+           })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].PrintOutName", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Prices*@
+    <div class="prices-div">
+        @Html.Partial("~/Views/SBInventoryBase/_ProPrice.cshtml", Model)
+    </div>
+
+    @*Quantity*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Quantity", Model.OffSet), Model.Quantity,
+           new { @class = "form-control " ,
+               placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("0")),
+               type = "number",
+               @id = "Quantity_" + Model.OffSet,
+               min = 0,
+           })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Quantity", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Check Stock*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Stock"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsCheckStock", Model.OffSet), Model.IsCheckStock, new { @id = "IsCheckStock_" + Model.OffSet, })</label>
+        </div>
+    </div>
+
+    @*Limit*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Limit"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListProductOnStore[{0}].Limit", Model.OffSet), Model.Limit,
+           new { @class = "form-control ",
+               placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("0")),
+               type = "number",
+               @id = "Limit_"+Model.OffSet,
+               min = 0,
+           })
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].Limit", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Category*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownList(string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet),
+            new SelectList(Model.ListCategories, "Value", "Text", Model.CategoryID),
+                        " Please choose Category ", new
+                                                    {
+                                                        @class = "form-control select2_multiple ddlCategoryAuto ",
+                                                        //@onchange = "ChangeCategory(this)",
+                                                        //@id = "ddlCategory",
+                                                        @id = "Category_"+ Model.OffSet,
+                                                        @style = "width:100%;"
+                                                    })*@
+            @*Updated 08282017*@
+            <select class="form-control select2_multiple ddlCategoryAuto" style="width: 100%" id="Category_@Model.OffSet" name="@string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet)">
+                <option></option>
+                @foreach (var cate in Model.lstCateGroup)
+                {
+                    <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected")  }>@cate.Name</option>
+                }
+            </select>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].CategoryID", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Open Price*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Open Price"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsAllowOpenPrice", Model.OffSet), Model.IsAllowOpenPrice, new { @id = "IsAllowOpenPriceP_"+ Model.OffSet })</label>
+        </div>
+    </div>
+
+    @*Print on check*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print On Check"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsPrintOnCheck", Model.OffSet), Model.IsPrintOnCheck, new { @id = "IsPrintOnCheck_" + Model.OffSet })</label>
+        </div>
+    </div>
+
+    @*Print on check*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Apply Discount/Promotion"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListProductOnStore[{0}].IsAllowDiscount", Model.OffSet), Model.IsAllowDiscount, new { @id = "IsAllowDiscount_" + Model.OffSet })</label>
+        </div>
+    </div>
+
+    @*Service Charge*@
+    @*<div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">Service Charge</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    @Html.CheckBox(string.Format("ListProductOnStore[{0}].HasServiceCharge", Model.OffSet), Model.HasServiceCharge,
+                       (Model.ServiceChargeDisabled) ? (object)new
+                       {
+                           @disabled = "disabled",
+                           @class = "chb-ServiceCharge_" + Model.StoreID,
+                           onchange = "ToggleComponent(this, '.txt-ServiceCharge_" + Model.StoreID + "')",
+                           id = "chbServiceCharge_" + Model.StoreID + ""
+                       } :
+                       new
+                       {
+                           @class = "chb-ServiceCharge_" + Model.StoreID,
+                           onchange = "ToggleComponent(this, '.txt-ServiceCharge_" + Model.StoreID + "')",
+                           id = "chbServiceCharge_" + Model.StoreID + ""
+                       })
+                </span>
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].sServiceCharge", Model.OffSet), Model.sServiceCharge,
+                   new
+                   {
+                       @class = "form-control txt-ServiceCharge_" + Model.StoreID + "",
+                       type = "number",
+                       id = "txtServiceCharge_" + Model.StoreID + ""
+                   })
+                <div class="input-group-addon">%</div>
+            </div>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].sServiceCharge", Model.OffSet), null, new { @class = "label" })
+        </div>
+    </div>*@
+
+    @*Msg Error*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.ValidationMessage("ProductItemOnStoreAlert_" + Model.StoreID, new { @class = "label label-danger", @id = "ltrError_" + Model.StoreID })
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    $(document).ready(function (e) {
+        if ($(".chb-ServiceCharge_@Model.StoreID").prop('checked')) {
+            $(".txt-ServiceCharge_@Model.StoreID").attr('readonly', false);
+        } else {
+            $(".txt-ServiceCharge_@Model.StoreID").attr('readonly', true);
+        }
+
+        $(".ddlCategoryAuto").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose category"))',
+            allowClear: true,
+            // Updated 08282017
+            templateResult: function (data) {
+                if (!data.element) {
+                    return data.text;
+                }
+                var $element = $(data.element);
+                var $wrapper = $('<span></span>');
+                $wrapper.addClass($element[0].className);
+                $wrapper.text(data.text);
+                // Set format
+                var className = $element[0].className;
+                var level = className.substr(5) * 1.8;
+                $wrapper.css("padding-left", level + "em");
+                return $wrapper;
+            }
+        });
+    });
+
+</script>

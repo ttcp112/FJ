@@ -1,0 +1,177 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Register Account"));
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Settings" }, { "C", "Register Account" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_content">
+                    <div class="gridview">
+                        <div class="table-responsive">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Register Account</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="form-horizontal">
+                                        <div class="row">
+                                            <div class="col-md-8 col-sm-8 col-xs-12">
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12 lineHeight">
+                                                            <strong>
+                                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter registration code for user"))
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <input class="form-control" id="txtContent"
+                                                                   placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Registration code"))" />
+                                                        </div>
+                                                    </div>
+                                                    </div>
+
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <button type="button" class="btn btn-primary" onclick="GenQRCode()">
+                                                                <i class="fa fa-barcode"></i>
+                                                                &nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Create QR code"))
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                </div><!--End left column-->
+                                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                                <div class="row barcode">
+                                                    <div class="form-group">
+                                                        <div class="col-md-offset-3 col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                                            <img src="https://chart.apis.google.com/chart?cht=qr&amp;chs=100x100&amp;chl=" id="imgQRCode" alt="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row barcode">
+                                                    <div class="form-group">
+                                                        <div class="col-md-offset-4 col-md-4 col-sm-3 col-xs-12">
+                                                            <select class="form-control select2_multiple" id="sizeDdl">
+                                                                <option value="100x100">100x100</option>
+                                                                <option value="200x200" selected="selected">200x200</option>
+                                                                <option value="300x300">300x300</option>
+                                                                <option value="400x400">400x400</option>
+                                                                <option value="500x500">500x500</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-1 col-sm-2 col-xs-12 text-right" style="line-height:50px">
+                                                            <a href="javascript:void(0);" id="imgInp" onclick="dlBinAjax()">
+                                                                <i class="fa fa-download" style="font-size:25px;"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                           
+                                        </div>
+                                      
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="@Url.Content("~/build/js/download.js?v3.1")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var _text = '@ViewBag.QRCodeText';
+            if (_text.length > 0) {
+                document.getElementById("txtContent").value = _text;
+                GetValueBarcode('200x200');
+            }
+            else {
+                $('.barcode').hide();
+            }
+            $("#sizeDdl").select2({
+            });
+        });
+
+        function GenQRCode() {
+            var _content = $('#txtContent').val();
+            if (_content === '') {
+                alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter registration code"))');
+                $('#txtContent').focus();
+                return false;
+            }
+            var DeviceName = _content;
+            $.ajax({
+                url: CreateAbsoluteUrl("CreateQRCode"),
+                type: 'GET',
+                data: {
+                    DeviceName: DeviceName
+                },
+                //dataType: 'json',
+                //contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+                beforeSend: function (xhr) {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                    alert(e.responseText);
+                },
+                success: function (data) {
+                    $('.barcode').show();
+                    GetValueBarcode('200x200');
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+
+        $("#sizeDdl").change(function () {
+            GetValueBarcode(this.value);
+        });
+
+        function GetValueBarcode(_value) {
+            var _content = $('#txtContent').val();
+            var _size = _value;
+            var _link = 'https://chart.apis.google.com/chart?cht=qr&chs=' + _size + '&chl=' + _content;
+            //console.log(_link);
+            $('#imgQRCode').attr('src', _link);
+        }
+
+        function dlBinAjax() {
+            var _content = $('#txtContent').val();
+            var _size = $("#sizeDdl").val();
+            var _link = 'https://chart.apis.google.com/chart?cht=qr&chs=' + _size + '&chl=' + _content;
+            var imgSrc = _link;
+            var _ID = _size + '-' + _content;
+            //console.log(imgSrc + '|' + _ID);
+            var x = new XMLHttpRequest();
+            x.open("GET", imgSrc, true);
+            x.responseType = 'blob';
+            x.onload = function (e) { download(x.response, "imgQRCode" + _ID + ".png", "image/png"); }
+            x.send();
+        }
+    </script>
+}

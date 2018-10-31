@@ -1,0 +1,118 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Product.ProductModels
+
+@if (Model.ListSeason != null)
+{
+    for (int i = 0; i < Model.ListSeason.Count; i++)
+    {
+        <tr data-id="@Model.ListSeason[i].ID" class="NameSeason" style="cursor:pointer;"
+            data-value="@Model.ListSeason[i].Name" onclick="ToggleSeason(this); return false;">
+            <td width="20%">
+                @Model.ListSeason[i].Name
+
+                @Html.Hidden(string.Format("ListSeason[{0}].Name",
+                   i), Model.ListSeason[i].Name)
+                @Html.Hidden(string.Format("ListSeason[{0}].ID",
+                   i), Model.ListSeason[i].ID)
+                @Html.Hidden(string.Format("ListSeason[{0}].RepeatType",
+                   i), Model.ListSeason[i].RepeatType)
+                @Html.Hidden(string.Format("ListSeason[{0}].StartDate",
+                   i), Model.ListSeason[i].StartDate)
+                @Html.Hidden(string.Format("ListSeason[{0}].EndDate",
+                   i), Model.ListSeason[i].EndDate)
+                @Html.Hidden(string.Format("ListSeason[{0}].StartTime",
+                   i), Model.ListSeason[i].StartTime)
+                @Html.Hidden(string.Format("ListSeason[{0}].EndTime",
+                   i), Model.ListSeason[i].EndTime)
+                @Html.Hidden(string.Format("ListSeason[{0}].Status",
+                   i), Model.ListSeason[i].Status,
+                   new { @class = "SeasonStatus" })
+            </td>
+            <td width="40%">
+                @if (Model.ListSeason[i].RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                {
+                    Model.ListSeason[i].ListWeekDayV2 = Model.ListSeason[i].ListWeekDayV2.Where(x => x.IsActive == true).ToList();
+
+                    if (Model.ListSeason[i].ListWeekDayV2.Count == 7)
+                    {
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of week"))
+                    }
+                    else if (Model.ListSeason[i].ListWeekDayV2.Count == 0)
+                    {
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                    }
+                    else
+                    {
+                        for (int d = 1; d <= Model.ListSeason[i].ListWeekDayV2.Count; d++)
+                        {
+                            int day = Model.ListSeason[i].ListWeekDayV2[d - 1].Index;
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Model.ListSeason[i].ListWeekDayV2[d - 1].Name))
+                            if (d % 4 == 0)
+                            {
+                                @Html.Raw("<br/>")
+                            }
+                            else
+                            {
+                                if (!(d == Model.ListSeason[i].ListWeekDayV2.Count))
+                                {
+                                    @:-
+                                                }
+                            }
+                        }
+                    }
+                }
+                else if (Model.ListSeason[i].RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                {
+                    Model.ListSeason[i].ListMonthDayV2 = Model.ListSeason[i].ListMonthDayV2.Where(x => x.IsActive == true).ToList();
+                    if (Model.ListSeason[i].ListMonthDayV2.Count == 31)
+                    {
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of month"))
+                                        }
+                    else if (Model.ListSeason[i].ListMonthDayV2.Count == 0)
+                    {
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                    }
+                        else
+                        {
+                            for (int d = 1; d <= Model.ListSeason[i].ListMonthDayV2.Count; d++)
+                            {
+                                int day = Model.ListSeason[i].ListMonthDayV2[d - 1].Index;
+                            @:@day
+                                                if (d % 10 == 0)
+                            {
+                                @Html.Raw("<br/>")
+                            }
+                            else
+                            {
+                                if (!(d == Model.ListSeason[i].ListMonthDayV2.Count))
+                                {
+                                    @:-
+                                                }
+                            }
+                        }
+                    }
+                }
+            </td>
+            <td width="10%">
+                @Model.ListSeason[i].StartDate.ToString("dd/MM/yyyy")
+            </td>
+            <td width="10%">
+                @Model.ListSeason[i].EndDate.ToString("dd/MM/yyyy")
+            </td>
+            <td width="18%" style="text-align:center;">
+                @if (Model.ListSeason[i].Unlimited)
+                {
+                    @:@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited")) - @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+                }
+                else
+                {
+                    @Model.ListSeason[i].StartTime.Value.ToString("HH:mm") @:- @Model.ListSeason[i].EndTime.Value.ToString("HH:mm")
+                }
+            </td>
+            <td style="text-align: center;" width="2%">
+                <i class="fa  @string.Format("{0}", Model.ListSeason[i].Status != 9 ?"fa-check":"")" id="chkActive"></i>
+            </td>
+        </tr>
+    }
+}

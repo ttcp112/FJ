@@ -1,0 +1,22 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductViewModels
+@using NuWebNCloud.Shared.Utilities;
+@if(Model.ListItem != null)
+{
+    for(var i = 0; i < Model.ListItem.Count; i ++)
+    {
+        <tr>
+            <td class="text-center">
+                @Html.CheckBox(string.Format("ListItem[{0}].IsSelected", i), new { @class = "child_chkStore", @onClick= "chkItemClick(this)" })
+                <input type="hidden" name="@string.Format("ListItem[{0}].ID",i)" value="@Model.ListItem[i].ID" />
+                <input type="hidden" name="@string.Format("ListItem[{0}].ImageURL",i)" value="@Model.ListItem[i].ImageURL" />
+                <input type="hidden" name="@string.Format("ListItem[{0}].Name",i)" value="@Model.ListItem[i].Name" />
+                <input type="hidden" name="@string.Format("ListItem[{0}].CategoryName",i)" value="@Model.ListItem[i].CategoryName" />
+            </td>
+            <td class="text-center"><img src="@Model.ListItem[i].ImageURL" width="50" height="50" style="border-radius:100%" /></td>
+            <td>@Model.ListItem[i].Name</td>
+            <td>@Model.ListItem[i].ProductCode</td>
+            <td>@Model.ListItem[i].CategoryName</td>
+           
+        </tr>
+    }
+}

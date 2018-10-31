@@ -1,0 +1,127 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.SettingSchedulerTaskModels
+@{
+    ViewBag.Title = "Schedule Report - Edit";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Settings" }, { "B", "Scheduled Reports" }, { "C", "Edit" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="#" class="btn btn-success" id="btn-edit-save"><i class="fa fa-save"></i>&nbsp;Save</a></li>
+                                <li><a href="#" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Edit", "SettingSchedulerReport", FormMethod.Post, new { @id = "form-edit", @class = "form-horizontal" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="@Url.Content("~/js/moment/moment.min.js")"></script>
+<script src="@Url.Content("~/js/datepicker/daterangepicker.js")"></script>
+<script src="@Url.Content("~/vendors/select2/dist/js/select2.full.min.js")"></script>
+<script>
+    $("#btn-edit-save").click(function (e) {
+        $("#form-edit").submit();
+        e.preventDefault();
+    });
+
+    $("#form-edit").submit(function (e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            beforeSend: function () {
+                $(".se-pre-con").show();
+            },
+            success: function () {
+                $(".se-pre-con").hide();
+                CloseDetail();
+                //Search();
+                console.log(BaseUrl + 'SettingSchedulerReport');
+                window.location.href = BaseUrl + 'SettingSchedulerReport';
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $(".se-pre-con").hide();
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+
+    $(document).ready(function () {
+        $("#storeDdl").select2({
+            placeholder: "Please choose store",
+            allowClear: true
+        });
+        $("#ReportNameDdl").select2({
+            placeholder: "Please choose report name",
+            allowClear: true
+        });
+        @*$("#DayOfWeekDdl").select2({
+            placeholder: "Please choose day of week",
+            allowClear: true,
+
+
+            minimumInputLength: 0,
+            cache: true,
+
+            initSelection: function (element, callback) {
+                var id = $('#DoW').val();//'@Model.DayOfWeeks';
+                if (id !== null && id.length > 0) {
+                    $.ajax(BaseUrl + 'SettingSchedulerReport/GetMake/' + id, {
+                        dataType: "json"
+                    }).done(function (data) {
+                        callback(data);
+                    }).fail(function (jqxhr, textStatus, error) {
+                        var err = textStatus + ", " + error;
+                        console.log("Request Failed: " + err);
+                    });
+                }
+            },
+
+            formatResult: function (item) {
+                console.log(item.text);
+                return ('<div>' + item.id + ' - ' + item.text + '</div>');
+            },
+            formatSelection: function (item) {
+                console.log(item.text);
+                return (item.text);
+            },
+            escapeMarkup: function (m) { return m; },
+            dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+        }).on("change", function (e) {
+            var str = $("#select2-DayOfWeekDdl-results .select2-results__option").text();
+            //DOSelectAjaxProd(e.val, str);
+            console.log(str + '-' + e);
+        }).on("select2:opening", function () {
+            $("li").each(function () {
+                console.log($(this).text());
+            });
+
+        }).on("select2:open", function () {
+            console.log('open')
+        });*@
+        //$("#DayOfWeekDdl").select2().trigger("change");
+    });
+</script>

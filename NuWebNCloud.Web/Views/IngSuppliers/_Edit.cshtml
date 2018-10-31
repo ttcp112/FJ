@@ -1,0 +1,91 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.SupplierModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Suppliers - Edit").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Purchasing" }, { "C", "Suppliers - Edit" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.edit-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display:block;">
+                            @using (@Html.BeginForm("Edit", "IngSuppliers", FormMethod.Post, new { @class = "form-horizontal edit-form" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function SubmitForm(form) {
+        $(form).submit();
+    }
+
+    var _SupplierId = "";
+    var _CompnanyId = "";
+    $(document).ready(function () {
+
+        $("#CountryDll").select2({
+            placeholder: "Please choose Country",
+            allowClear: true
+        });
+
+        // Updated 08292017
+        $("#countryDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Country"))",
+            allowClear: true
+        });
+
+        $("#Companydll").select2({
+            placeholder: "Please choose Company",
+            allowClear: true
+        });
+
+        _SupplierId = '@Model.Id';
+        _CompnanyId = '@Model.CompanyId';
+
+        var heightDivIngredient = $('.cls_Ingredient_Supplier').length;
+        if (heightDivIngredient > 10) {
+            $("#tab_SelectedIngredient").css({ "overflow": "auto", "height": "500px" })
+        }
+    });
+
+    $(".edit-form").submit(function (e) {
+        $('.se-pre-con').show();
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function () {
+                $('.se-pre-con').hide();
+                CloseDetail();
+                Search();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('.se-pre-con').hide();
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+</script>

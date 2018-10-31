@@ -1,0 +1,138 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.Location.LocationModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = "0"/*Model.StoreID*/;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.StoreID,
+                                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID),
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                                !string.IsNullOrEmpty(_ID) ? (object)new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @disabled = "disabled",
+                                    @id = "storeDdl",
+                                    @style = "width:100%;"
+                                } : new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdl",
+                                    @style = "width:100%;"
+                                })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Region"))
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.Region,
+                                     new SelectList(Model.ListCountry, "Value", "Text", Model.Region),
+                                     @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose region")).ToString(),
+                                     new
+                                     {
+                                         @class = "form-control select2_multiple",
+                                         @id = "regionDdl",
+                                         @style = "width:100%;"
+                                     })
+            @Html.ValidationMessageFor(model => model.Region, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group isCheckRegion">
+        <label for="" class="col-sm-2 control-label">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Printing Rounding on Receipt"))
+        </label>
+        <div class="col-sm-1">
+            <label>
+                @Html.CheckBoxFor(model => model.IsPrintRoundingAmount, new { @class = "js-switch" })
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group isCheckRegion">
+        <label for="" class="col-sm-2 control-label">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Printing Tax Code on Receipt"))
+        </label>
+        <div class="col-sm-1">
+            <label>
+                @Html.CheckBoxFor(model => model.IsPrintTaxCode, new { @class = "js-switch" })
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group isCheckRegion">
+        <label for="" class="col-sm-2 control-label">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Printing Summary Tax on Receipt"))
+        </label>
+        <div class="col-sm-1">
+            <label>
+                @Html.CheckBoxFor(model => model.IsPrintSummaryTax, new { @class = "js-switch" })
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group isCheckRegion">
+        <label for="" class="col-sm-2 control-label">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Printing Customer Claim Tax"))
+        </label>
+        <div class="col-sm-1">
+            <label>
+                @Html.CheckBoxFor(model => model.IsPrintCustomerClaimTax, new { @class = "js-switch" })
+            </label>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#storeDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+        });
+
+        $("#regionDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose region"))",
+        });
+
+        if ($(".js-switch")[0]) {
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+            elems.forEach(function (html) {
+                var switchery = new Switchery(html, {
+                    color: '#26B99A'
+                });
+            });
+        }
+        //=========
+        IsShowHidden('@Model.Region');
+    });
+
+    $("#regionDdl").change(function () {
+        var region = this.value;
+        IsShowHidden(region);
+    });
+
+    function IsShowHidden(region) {
+        if (region === 'MY') {
+            $('.isCheckRegion').show();
+        } else {
+            $('.isCheckRegion').hide();
+        }
+    }
+</script>

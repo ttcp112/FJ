@@ -1,0 +1,49 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.SBInventoryBaseModel
+
+@for (int i = 0; i < Model.ListPrices.Count; i++)
+{
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Model.ListPrices[i].PriceName</label>
+        <div class="col-md-4">
+            <div class="input-group">
+                @if (Model.ListPrices[i].IsDefault)
+                {
+                    @Html.TextBoxFor(model => model.ListPrices[i].Price, new { @class = "form-control", placeholder = "S$0.00", type = "number", min = 0 })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => model.ListPrices[i].Price, new { @class = "form-control", placeholder = "S$0.00", type = "number", min = 0 })
+                }
+                @Html.HiddenFor(model => model.ListPrices[i].ID)
+                @Html.HiddenFor(model => model.ListPrices[i].PriceName)
+                @Html.Hidden("SelectingSeason", Model.ListPrices[i].SeasonID)
+                <div class="input-group-addon">@Model.CurrencySymbol</div>
+            </div>
+            @Html.ValidationMessageFor(model => model.ListPrices[i].Price, null, new { @class = "label" })
+        </div>
+        <div class="col-md-2">
+            @if (Model.ListPrices[i].IsDefault)
+            {
+                <input type="text" class="form-control readonly" readonly value="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Default Price"))" />
+                @Html.HiddenFor(model => model.ListPrices[i].IsDefault)
+            }
+            else
+            {
+                @Html.DropDownListFor(model => model.ListPrices[i].SeasonID, new SelectList(Model.ListPrices[i].ListSeasons, "Value", "Text", Model.ListPrices[i].SeasonID),
+               Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose price")).ToString(),
+               new { @class = "form-control ddl-prices", onchange = "ChangeSeason(this)", @id= "ddlPrice", @style="width:100%;" })
+            }
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlPrice").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose seasonal price"))',
+            allowClear: true
+        });
+    });
+</script>

@@ -1,0 +1,35 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.TaxModels
+@using NuWebNCloud.Shared.Utilities;
+@if (Model != null && Model.ListProductOfTaxSel != null && Model.ListProductOfTaxSel.Count > 0)
+{
+    for (int i = 0; i < Model.ListProductOfTaxSel.Count; i++)
+    {
+        <tr data-id="@Model.ListProductOfTaxSel[i].ProductID"
+            class="productName"
+            data-value="@Model.ListProductOfTaxSel[i].ProductName">
+            <td>
+                @Model.ListProductOfTaxSel[i].ProductCode
+            </td>
+            <td>
+                @Model.ListProductOfTaxSel[i].ProductName
+                @*=========*@
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].ProductName", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].ProductName, new { @id = "hidNameSpecificItems", @Value = Model.ListProductOfTaxSel[i].ProductName })
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].OffSet", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].OffSet,
+        new { @id = "hidOffSetSpecificItems", @Value = Model.ListProductOfTaxSel[i].OffSet })
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].ProductCode", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].ProductCode, new { @id = "hidCodeSpecificItems", @Value = Model.ListProductOfTaxSel[i].ProductCode })
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].ProductID", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].ProductID,
+        new { @id = "hidIdSpecificItems", @Value = Model.ListProductOfTaxSel[i].ProductID })
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].ProductTypeCode", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].ProductTypeCode, new { @id = "hidItemTypeSpecificItems", @Value = Model.ListProductOfTaxSel[i].ProductTypeCode })
+                @Html.Hidden(string.Format("ListProductOfTaxSel[{0}].Status", Model.ListProductOfTaxSel[i].OffSet), Model.ListProductOfTaxSel[i].Status,
+        new { @class = "DishStatus", @Value = Model.ListProductOfTaxSel[i].Status })
+                @Html.HiddenFor(model => model.StoreID, new { @id = "hidStoreIDTax" })
+            </td>
+            <!--Button Delete Item-->
+            <td width="50px">
+                <a href="#" onclick="DeleteItems(this); return false;">
+                    <i class="glyphicon glyphicon-minus-sign" style="font-size: 25px; color: red; padding: 5px 0px; "></i>
+                </a>
+            </td>
+        </tr>
+    }
+}

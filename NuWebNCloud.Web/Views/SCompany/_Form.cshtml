@@ -1,0 +1,63 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.Company.CompanyModels
+
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+  
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*@*OrganizationName
+        <div class="form-group">
+            <label for="CustomerEmail" class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Organization"))</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.OrganizationName, null, new { @class = "label" })
+            </div>
+        </div>*@
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Address*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Address"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Address, new { @class = "form-control", placeholder = "" + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Address")) + "" })
+            @Html.ValidationMessageFor(model => model.Address, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Zipcode*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Zipcode, new { @class = "form-control", placeholder = "" + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip code")) + "" })
+            @Html.ValidationMessageFor(model => model.Zipcode, null, new { @class = "label" })
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+    });
+
+
+</script>

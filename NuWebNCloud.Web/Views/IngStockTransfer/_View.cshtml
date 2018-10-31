@@ -1,0 +1,143 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferModels
+@using NuWebNCloud.Shared.Utilities;
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Transaction Data" }, { "C", "Stock Transfer - View" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left" style="line-height:40px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transfer No."))</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12" style="font-size:25px;">
+                                        @Model.StockTransferNo
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issuing Warehouse")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.IssueStoreName
+                                    </div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Warehouse")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.ReceiveStoreName
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Request Date Time")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.RequestDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Request By")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.RequestBy
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Date Time")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.IssueDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue By")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.IssueBy
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Date Time")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.ReceiveDate.ToString("MM/dd/yyyy")
+                                    </div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12 text-left">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive By")) :</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        @Model.ReceiveBy
+                                    </div>
+                                </div>
+
+
+                                <div class="box-body form-group" style="text-align:center;">
+                                    <table class="tbCustom">
+                                        <thead>
+                                            <tr>
+                                                <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Code"))</td>
+                                                <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</td>
+                                                <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Request Qty"))</td>
+                                                <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Qty"))</td>
+                                                <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Qty"))</td>
+                                                <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Units UOM"))</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="divListItemNew">
+                                            @if (Model.ListItem != null)
+                                            {
+                                                for (int i = 0; i < Model.ListItem.Count; i++)
+                                                {
+                                                    var item = Model.ListItem[i];
+                                                    <tr>
+                                                        <td>@item.IngredientCode</td>
+                                                        <td>@item.IngredientName</td>
+                                                        <td>@item.RequestQty</td>
+                                                        <td>@item.IssueQty</td>
+                                                        <td>@item.ReceiveQty</td>
+                                                        <td>@item.BaseUOM</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+    });
+
+</script>

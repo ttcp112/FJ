@@ -1,0 +1,364 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Promotion.PromotionModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Inventory" }, { "C", "Promotions - View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12"> </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Short Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.ShortName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Code"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.PromoteCode
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Priority"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Priority
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.isActive.Value ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes")).ToString() :@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Maximum Amount"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.IsLimited.Value ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited")).ToString()  : Model.MaximumEarnAmount.Value.ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Description
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Period"))</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply From"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.FromDate.Value.ToString("dd/MM/yyyy")
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply To"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.ToDate.Value.ToString("dd/MM/yyyy")
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Time"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.IsLimitedTime)
+                                        {
+                                           @*@:Unlimited*@
+                                           @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+                                        }
+                                        else
+                                        {
+                                            <text>
+                                                From @Model.FromTime.Value.ToString("HH:mm") - To @Model.ToTime.Value.ToString("HH:mm")
+                                            </text> 
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Repeat Type"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfWeek.ToString()));
+                                        }
+                                        else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfMonth.ToString()));
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Day Range"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+
+                                        @if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                                        {
+                                            Model.ListWeekDayV2 = Model.ListWeekDayV2.Where(x => x.IsActive == true).ToList();
+                                            foreach (var item in Model.ListWeekDayV2)
+                                            {
+                                              @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@item.Name)) @:- 
+                                            }
+                                        }
+                                        else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                        {
+                                            Model.ListMonthDayV2 = Model.ListMonthDayV2.Where(x => x.IsActive == true).ToList();
+                                            for (int d = 1; d <= Model.ListMonthDayV2.Count; d++)
+                                            {
+                                                int day = Model.ListMonthDayV2[d - 1].Index;
+                                                @:@day
+                                                if (d % 15 == 0)
+                                                    {
+                                                        @Html.Raw("<br/>")
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!(d == Model.ListMonthDayV2.Count))
+                                                        {
+                                                            @:-
+                                                        }
+                                                    }
+                                                }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Type"))</label>
+                                </div>
+
+                                @*Spending*@
+                                @if (Model.ListSpendingRule != null)
+                                {
+                                    if (Model.ListSpendingRule.Count != 0)
+                                    {
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Spending"))</label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div>
+                                                    <ul class="nav nav-tabs" role="tablist">
+                                                        @for (int i = 0; i < Model.ListSpendingRule.Count; i++)
+                                                        {
+                                                            if (Model.ListSpendingRule[i].Condition ==  null)
+                                                            {
+                                                                Model.ListSpendingRule[i].Condition = "-";
+                                                            }
+                                                            <li role="presentation" class='@string.Format("{0}", i == 0 ? "active" : "")'>
+                                                                <a href="@string.Format("#{0}", @Model.ListSpendingRule[i].ID)" 
+                                                                   aria-controls="@Model.ListSpendingRule[i].ID" role="tab" data-toggle="tab">@Model.ListSpendingRule[i].Condition</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                    <div class="tab-content" style="margin-top:5px">
+                                                        @for (int i = 0; i < Model.ListSpendingRule.Count; i++)
+                                                        {
+                                                            <div role="tabpanel" class='@string.Format("tab-pane fade {0}", i == 0 ? "in active" : "")' id="@Model.ListSpendingRule[i].ID">
+
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Spend Type")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @if (Model.ListSpendingRule[i].SpendType == (byte)Commons.ESpendType.BuyItem)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.SpendTypeBuyItem.ToString()));
+                                                                        }
+                                                                        else if (Model.ListSpendingRule[i].SpendType == (byte)Commons.ESpendType.SpendMoney)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.SpendTypeSpendMoney.ToString()));
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Qty/Amount")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @Html.DisplayFor(model => Model.ListSpendingRule[i].Amount)
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @if (Model.ListSpendingRule[i].SpendOnType == (byte)Commons.ESpendOnType.AnyItem)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.SpendOnTypeAnyItem.ToString()));
+                                                                            }
+                                                                            else if (Model.ListSpendingRule[i].SpendOnType == (byte)Commons.ESpendOnType.SpecificItem)
+                                                                            {
+                                                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.SpendOnTypeSpecificItem.ToString()));
+                                                                            }
+                                                                    </div>
+                                                                </div>
+                                                                @if (!Model.ListSpendingRule[i].ItemDetail.Equals(""))
+                                                                {
+                                                                    <div class="form-group">
+                                                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Detail")): </label>
+                                                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                            @Html.DisplayFor(model => Model.ListSpendingRule[i].ItemDetail)
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                               @if (Model.ListSpendingRule[i].ListProduct != null && Model.ListSpendingRule[i].ListProduct.Count>0)
+                                                               {
+                                                                    <div class="form-group">
+                                                                        <table class="table">
+                                                                            <thead style="background-color:#73879c; color:#fff;">
+                                                                                <tr>
+                                                                                    <th style="width:25%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</th>
+                                                                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach (var dish in Model.ListSpendingRule[i].ListProduct)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td>@dish.ProductCode</td>
+                                                                                        <td>@dish.Name</td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                               }
+
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                
+                                @*Earning*@
+                                @if (Model.ListEarningRule != null)
+                                {
+                                    if (Model.ListEarningRule.Count != 0)
+                                    {
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Earning")) </label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div>
+                                                    <ul class="nav nav-tabs" role="tablist">
+                                                        @for (int i = 0; i < Model.ListEarningRule.Count; i++)
+                                                        {
+                                                            if (Model.ListEarningRule[i].Condition == null)
+                                                            {
+                                                                Model.ListEarningRule[i].Condition = "-";
+                                                            }
+                                                            <li role="presentation" class='@string.Format("{0}", i == 0 ? "active" : "")'>
+                                                                <a href="@string.Format("#{0}", @Model.ListEarningRule[i].ID)"
+                                                                   aria-controls="@Model.ListEarningRule[i].ID" role="tab" data-toggle="tab">@Model.ListEarningRule[i].Condition</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                    <div class="tab-content" style="margin-top:5px">
+                                                        @for (int i = 0; i < Model.ListEarningRule.Count; i++)
+                                                        {
+                                                            <div role="tabpanel" class='@string.Format("tab-pane fade {0}", i == 0 ? "in active" : "")' id="@Model.ListEarningRule[i].ID">
+
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Earn Type")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @if (Model.ListEarningRule[i].bDiscountType == (byte)Commons.EValueType.Percent)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.DiscountPercent.ToString()));
+                                                                        }
+                                                                        else if (Model.ListEarningRule[i].bDiscountType == (byte)Commons.EValueType.Currency)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.DiscountValue.ToString()));
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Percent/Value")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @Html.DisplayFor(model => Model.ListEarningRule[i].DiscountValue)
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @if (Model.ListEarningRule[i].EarnType == (byte)Commons.EEarnType.SpentItem)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EarnTypeSpentItem.ToString()));
+                                                                        }
+                                                                        else if (Model.ListEarningRule[i].EarnType == (byte)Commons.EEarnType.SpecificItem)
+                                                                        {
+                                                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EarnTypeSpecificItem.ToString()));
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Qty")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @Html.DisplayFor(model => Model.ListEarningRule[i].Quantity)
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Detail")): </label>
+                                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                        @Html.DisplayFor(model => Model.ListEarningRule[i].ItemDetail)
+                                                                    </div>
+                                                                </div>
+
+                                                                @if (Model.ListEarningRule[i].ListProduct != null && Model.ListEarningRule[i].ListProduct.Count > 0)
+                                                                {
+                                                                    <div class="form-group">
+                                                                        <table class="table">
+                                                                            <thead style="background-color:#73879c; color:#fff;">
+                                                                                <tr>
+                                                                                    <th style="width:25%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</th>
+                                                                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach (var dish in Model.ListEarningRule[i].ListProduct)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td>@dish.ProductCode</td>
+                                                                                        <td>@dish.Name</td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                }
+
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

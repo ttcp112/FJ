@@ -1,0 +1,600 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.IsPurchaseOrder, new { @id = "hidIsPurchaseOrder" })
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreId", Model.StoreId)
+    @Html.Hidden("SupplierId", Model.SupplierId)
+    @Html.Hidden("ReceiptNo", Model.ReceiptNo)
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreId,
+                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+                new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreId, (SelectList)ViewBag.StoreID, new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })
+
+            @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger", @id = "validationStore" })
+        </div>
+    </div>
+
+    @*Choose Supplier*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Supplier"))</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            @Html.DropDownListFor(model => model.SupplierId,
+            new SelectList(Model.ListSupplier, "Value", "Text", Model.SupplierId), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier")).ToString(),
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "SupplierDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "SupplierDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.SupplierId, null, new { @class = "label label-danger", @id = "validationSupplier" })
+        </div>
+    </div>
+
+    @*PO No*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">PO @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            @Html.TextBoxFor(model => model.PONo, new
+       {
+           @class = "form-control",
+           @id = "txtPONo",
+           @autocomplete = "off"
+       })
+            @Html.ValidationMessageFor(model => model.PONo, null, new { @class = "label label-danger", @id = "validationPONo" })
+        </div>
+        @*<label class="control-label col-md-1 col-sm-1 col-xs-12" style="line-height:30px;">Supplier</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+            </div>*@
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-2">
+            <a class="btn btn-primary" onclick="return LoadPurchaseOrder();">
+                <i class="fa fa-search"></i> &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Purchase Order"))
+            </a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose PO"))</label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <table class="tbCustom">
+                <thead>
+                    <tr>
+                        <td class="text-center"><input type="checkbox" onchange="ToogleCheckAll(this, '#divListPO')" id="chkPOAll" /></td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Order"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier Name"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Date"))</td>
+                    </tr>
+                </thead>
+                <tbody id="divListPO">
+                    @Html.Partial("_ListPO", Model)
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*Add to Receipt Note && Date*@
+    <div class="form-group">
+        <div class="col-md-8 col-sm-8 col-xs-12 col-md-offset-2">
+            <a class="btn btn-primary" data-toggle="modal" onclick="AddToReceiptNote();">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add to Receipt Note"))
+            </a>
+            <br />
+            <span class="label label-danger" id="ltrMsgAddRN"></span>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.ReceiptDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.ReceiptDate, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group chooseItem"> 
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:30px;">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Item"))
+        </label>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <table class="tbCustom tbIngredient">
+                <thead>
+                    <tr>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                        <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Quantity"))</td>
+                        <td class="text-center"></td>
+                    </tr>
+                </thead>
+                <tbody id="divListItem">
+                    @Html.Partial("_ListItem", Model)
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*Add more item*@
+    <div class="form-group chooseItem">
+        <div class="col-md-8 col-sm-8 col-xs-12 col-md-offset-2">
+            <a class="btn btn-primary" href="javascript:void(0);" onclick="ShowModalAddIngredient()">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more item"))
+            </a>
+            <br />
+            <span class="label label-danger" id="ltrMsgAddMoreItem"></span>
+        </div>
+    </div>
+
+    <div class="box-body form-group" style="text-align:center; padding-bottom:30px;" id="divPODetail">
+        <table class="tbCustom">
+            <thead>
+                <tr>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Quantity"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Quantity"))</td>
+                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remaining Quantity"))</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody id="divListPODetail">
+                @Html.Partial("_ListPODetail", Model)
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal Add Ingredient-->
+<div class="modal fade" id="modalIngredient" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closedPopupIngredient()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" style="color:#34495e; font-weight:bold;">
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Ingredients Received Notes"))
+                </h4>
+            </div>
+            <div class="modal-body scroll" style="padding:0; margin-top:3px;">
+                <div class="form-group" style="padding:10px 5px 0 5px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control col-md-10"
+                               placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Name"))"
+                               onkeypress="HandleKeyPress(event)" />
+                        <div class="input-group-btn">
+                            <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="tbl-add-ingredient" class="form-group">
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center;">
+                <div class="col-md-12">
+                    <h5><span class="label label-danger" id="ltrMsg"></span></h5>
+                </div>
+                <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient('#divListItem',this)">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                <button class="btn btn-default" data-dismiss="modal" onclick="closedPopupIngredient()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#divPODetail').hide();
+        //=== Select Store
+        $("#storeDdl").select2().val('@Model.StoreId').trigger('change.select2');
+        //resetValue(@Model.IsPurchaseOrder);
+    });
+
+    function resetValue(IsPurchaseOrder) {
+        if (IsPurchaseOrder) {
+            $('#divListItem').html('');
+            $('#ltrMsgAddMoreItem').text('');
+        } else {
+            $('#txtPONo').val();
+            $('#chkPOAll').prop('checked', false);
+            $('#divListPO').html('');
+            $('#divListPODetail').html('');
+            $('#validationStore').html('');
+            $('#validationSupplier').html('');
+            $('#ltrMsgAddRN').html('');
+        }
+        $('#hidIsPurchaseOrder').val(IsPurchaseOrder)
+    }
+
+    //# Create Receipt Notes choose PO
+    function TickItemCheckBox() {
+        var length = $('.chkPO').length;
+        var countSelected = $('.chkPO:checkbox:checked').length;
+        if (length == countSelected) {
+            $('#chkPOAll').prop('checked', true);
+        } else {
+            $('#chkPOAll').prop('checked', false);
+        }
+    }
+
+    /**/
+    function LoadPurchaseOrder() {
+        $('#validationStore').html('');
+        $('#validationPONo').html('');
+        $('#validationSupplier').html('');
+
+        $('#divListPO').html('');
+        $('#divListPODetail').html('');
+
+        var StoreId = $("#storeDdl").val();
+        var PONo = $("#txtPONo").val();
+        var SupplierId = $("#SupplierDdl").val();
+        if (StoreId === '' || StoreId == null) {
+
+            $('#validationStore').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        } else if (SupplierId === '' || SupplierId === null) {
+            $('#validationSupplier').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))');
+            return false;
+        //} else if (PONo === '') {
+        //    $('#validationPONo').html('please enter purchase order number');
+        //    return false;
+        }
+        
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LoadPurchaseOrder", "IngReceiptNote")',
+            traditional: true,
+            data: {
+                StoreId: StoreId,
+                SupplierId: SupplierId,
+                PONo: PONo
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+
+                // Updated 07182018
+                var isLogin = BackToLoginWhenSessionEnd(data);
+                if (isLogin === true) {
+                    window.location = "/Login/Index";
+                }
+                else {
+                    $('#divListPO').html(data);
+                }
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function AddToReceiptNote() {
+        $("#ltrMsgAddRN").html("");
+        var countPO = $('.PurchaseOrder').length;
+        if (countPO == 0) {
+            $("#ltrMsgAddRN").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("List Purchase Order is empty !!!"))');
+            return false;
+        }
+        //select
+        countPO = $("input.chkPO:checkbox:checked").length;
+        if (countPO == 0) {
+            $("#ltrMsgAddRN").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose at least purchase order !!!"))');
+            return false;
+        }
+        //====
+        var data = [];
+        $.each($("input.chkPO:checkbox:checked"), function () {
+            var chk = $(this);
+            var id = $(chk).attr("data-id");
+            var ponumber = $(chk).attr("data-ponumber");
+            var PurchaseOrderModels = {
+                Id: id,
+                PONumber: ponumber
+            };
+            data.push(PurchaseOrderModels);
+        });
+        var ReceiptNoteModels = {
+            ListPurchaseOrder: data
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddReceiptNote", "IngReceiptNote")',
+                traditional: true,
+                data: JSON.stringify(ReceiptNoteModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                    $('#ltrMsgAddRN').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Have a error when you add a purchase order"))');
+                },
+                success: function (data) {
+                    // Updated 07182018
+                    var isLogin = BackToLoginWhenSessionEnd(data);
+                    if (isLogin === true) {
+                        window.location = "/Login/Index";
+                    }
+                    else {
+                        $('#divPODetail').show();
+                        $('#divListPODetail').html(data);
+                        $('.chooseItem').hide();
+                        //===================
+                        resetValue(true)
+                    }
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function DeleteTabPanel(id) {
+        var div = $(".tbCustom").find("[data-poId='" + id + "']");
+        $(div).find('input.POStatus').val(9);
+        //$(div).remove();
+        $(div).css('display', 'none');
+        $.each($('.ng-PurchaseOrder'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var IngredientId = $(div).find('#POId').val();
+            }
+        });
+    }
+    //# End Create Receipt Notes choose PO
+
+
+    //# Create Receipt Notes choose Item
+
+    function closedPopupIngredient() {
+        $('#tbl-add-ingredient').html('');
+    }
+
+    //====Add More Item (Ingredients)
+    function ShowModalAddIngredient() {
+
+        // Validate Store
+        $('#validationStore').html('');
+        var StoreId = $("#storeDdl").val();
+        if (StoreId === '' || StoreId === null) {
+            $('#validationStore').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        }
+
+        $('#modalIngredient').modal('show');
+        $('#ltrMsg').text('');
+
+        var modal = $("#modalIngredient");
+        $(modal).modal({
+            keyboard: false,
+            show: true,
+            backdrop: false
+        });
+        LoadIngredient('#tbl-add-ingredient');
+    }
+
+    function LoadIngredient(container) {
+        $(container).html('');
+        $('.se-pre-con').show();
+        //==============================
+        var trs = $('.ingredient_item:visible');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var IngredientId = $(tr).find('td #hidIngredientId').val();
+            var IngredientCode = $(tr).find('td #hidIngredientCode').val();
+            var IngredientName = $(tr).find('td #hidIngredientName').val();
+            var IngredientDescription = $(tr).find('td #hidIngredientDescription').val();
+            var BaseUOM = $(tr).find('td #ddlUOM').val();
+            var ReceivingQuantity = $(tr).find('td #hidReceivingQuantity').val();
+            var Ingredient = {
+                IngredientId: IngredientId,
+                IngredientCode: IngredientCode,
+                IngredientName: IngredientName,
+                Description: IngredientDescription,
+                BaseUOM: BaseUOM,
+                BaseUOMId: BaseUOM,
+                Qty: ReceivingQuantity
+            };
+            data.push(Ingredient);
+        }
+        var ReceiptNoteModels = {
+            ListItem: data,
+            StoreId: $("#storeDdl").val()
+        }
+        //=============================
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LoadIngredient", "IngReceiptNote")',
+            traditional: true,
+            data: JSON.stringify(ReceiptNoteModels),
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+                ResizeModal(container, 250);
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function AddIngredient(container, btn) {
+        var trs = $('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var isSelect = $(tr).find('td input[type="checkbox"]').prop('checked');
+            var IngredientName = $(tr).find('td #hidIngredientName').val();
+
+            var BaseUOM = $(tr).find('td #BaseUOMddl').val();
+            if (isSelect) {
+                if (BaseUOM === '') {
+                    $(tr).addClass('row-error');
+                    $('#ltrMsg').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM for ingredient")) [' + IngredientName + ']');
+                    return;
+                } else {
+                    $(tr).removeClass('row-error');
+                    $('#ltrMsg').text('');
+                }
+            }
+            /*======*/
+            if (isSelect) {
+                var IngredientId = $(tr).find('td #hidIngredientId').val();
+                var IngredientCode = $(tr).find('td #hidIngredientCode').val();
+                var IngredientDescription = $(tr).find('td #hidIngredientDescription').val();
+                var BaseUsage = $(tr).find('td #hidBaseUsage').val();
+                var ReceivingQuantity = $(tr).find('td #hidReceivingQuantity').val();
+                var Ingredient = {
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    Description: IngredientDescription,
+                    BaseUOM: BaseUOM,
+                    BaseUOMId: BaseUOM,
+                    BaseUsage: BaseUsage,
+                    Usage: 0,
+                    IsSelect: isSelect,
+                    Qty: ReceivingQuantity
+                };
+                data.push(Ingredient);
+            }
+        }
+
+        var ReceiptNoteModels = {
+            ListItem: data
+        }
+
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddIngredient", "IngReceiptNote")',
+                traditional: true,
+                data: JSON.stringify(ReceiptNoteModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $('#tbl-add-ingredient').html('');
+                    $('#modalIngredient').modal('hide');
+                    $(container).html(data);
+                    //===================
+                    resetValue(false)
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function DeleteIngredient(id, _offset) {
+        var tr = $(".tbIngredient").find("[data-ingredientid='" + id + "']");
+        $(tr).find('#hidIngredientDelete_'+_offset).val(9);
+        $(tr).hide();
+    }
+
+    function SearchIngredient(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td#search').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+    function TickCheckBox(td, containElementSelector) {
+        var tr = $(td).parents('tr:first');
+        var isChecked = $(tr).find('input[type=checkbox]').prop('checked');
+        $(tr).find('input[type=checkbox]').prop('checked', isChecked)
+            var _trCount = $(containElementSelector).find("tr:visible").length;
+            var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+            if (_trCount === lengthCheck) {
+                $('#chkAllItem').prop('checked', true);
+            } else {
+                $('#chkAllItem').prop('checked', false);
+            }
+
+    }
+
+    function TickAllCheckBox(chk) {
+        var trs = $('.modal-body:first').find('tbody tr');
+        for (var i = 0; i < trs.length; i++) {
+            $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+        }
+    }
+    //# End Create Receipt Notes choose Item
+</script>

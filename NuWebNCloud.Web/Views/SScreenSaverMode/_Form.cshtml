@@ -1,0 +1,189 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.ScreenSaverMode.ScreenSaverModeModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID, new { @id = "hidId" })
+@Html.HiddenFor(model => model.StoreID, new { @id="hidStoreID"})
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <!--IMAGE-->
+    <div class="form-group" >
+        @*<label class="col-md-2">Hình ảnh </label>*@
+        <div class="col-md-3">
+            <button class="btn btn-default btnFile" type="button" onclick="showPictureUpload();" >Add Image</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @accept = "*.jpg", @multiple = "multiple", @id = "upload_file", @class = "hidden inputFile" })
+            <div id="divupload"></div>
+                @*@Html.TextBoxFor(model => model.PictureUpload, new { @type = "file",  @accept = "*.jpg", @multiple = "multiple", @id = "upload_file", @class = "hidden inputFile" })*@
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label-danger" })
+        </div>
+    </div>
+
+    <div class="form-group list-image">
+        @if (Model.ListProduct != null && Model.ListProduct.Any())
+        {
+             @Html.Partial("_ListItem",Model.ListProduct)
+        }
+      
+    </div>
+    @*Active*@
+    @*<div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>*@
+</div>
+<style>
+    input[type="file"] {
+        display: block;
+    }
+
+    .imageThumb {
+        max-height: 120px;
+        border: 2px solid;
+        margin: 10px 10px 0 0;
+        padding: 1px;
+        margin-bottom:15px;
+    }
+
+    .img-wrap {
+        position: relative;
+       
+        font-size: 0;
+    }
+
+        .img-wrap .close {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            z-index: 100;
+            background-color: #FFF;
+            padding: 5px 2px 2px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: .2;
+            text-align: center;
+            font-size: 22px;
+            line-height: 10px;
+            border-radius: 50%;
+        }
+
+        .img-wrap:hover .close {
+            opacity: 1;
+        }
+</style>
+<script>
+    var ListImage = [];
+    var ListName = [];
+    var upc = 0;
+    var inputLocalFont = document.getElementById("upload_file");
+    inputLocalFont.addEventListener("change", preview_image, false);
+
+    //var oFReader = new FileReader();
+    $(document).ready(function () {
+    });
+    function showPictureUpload() {
+        //$('[id=upload_file]').click();
+        $(inputLocalFont).click();
+    }
+
+    function preview_image() {
+        debugger;
+        var _Files = this.files;//document.getElementById("upload_file").files;
+        var filesLength = _Files.length;
+        var _OffSet = $('.ng-image-product').length;
+        var tmpLength = ListImage.length;
+
+        //var ListImage = [];
+        //var ListName = [];
+        for (var i = 0; i < filesLength; i++) {
+            var _file = _Files[i];
+            ListName.push(_file.name);
+            var oFReader = new FileReader();
+            oFReader.onload = function (oFREvent) {
+                ListImage.push(oFREvent.target.result)
+            };
+            oFReader.readAsDataURL(_Files[i]);
+        }
+        setTimeout(function () {
+            $.ajax({
+                url: '@Url.Action("AddImageItem", "SScreenSaverMode")',
+                type: 'POST',
+                data: {
+                    OffSet: _OffSet,
+                    Length: filesLength
+                },
+                dataType: 'html',
+                traditional: true,
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $(".list-image").append(data);
+                    var index = _OffSet;
+                    for (var i = 0; i < filesLength; i++) {
+                        $('#upload-preview-1-' + index + '').attr('src', ListImage[tmpLength+i]);
+                        $('#image-name-1-' + index + '').val(ListName[tmpLength+i]);
+                        index = index + 1;
+                    }                    
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }, 300);
+
+        $(inputLocalFont).hide();
+        inputLocalFont = $('<input>').attr({
+            type: 'file',
+            multiple: 'multiple',
+            id: 'upload_file' + upc,
+            class: 'hidden inputFile',
+            name: 'PictureUpload',
+            value: ''
+        }).appendTo('#divupload').get(0);
+
+        inputLocalFont.addEventListener("change", preview_image, false);
+        upc++;
+    }
+
+
+    function DeleteImage(offset) {
+        $("#image-" + offset + "").find('input#image-name-1-' + offset + '').val(true);
+        $("#image-" + offset + "").hide();
+    }
+
+    function DeleteImageById(Id, StoreID)
+    {
+        var r = confirm("Are you sure you want to delete!");
+        if (r)
+        {
+            $.ajax({
+                url: '@Url.Action("DeleteImage", "SScreenSaverMode")',
+                type: 'POST',
+                data: {
+                    Id: Id,
+                    StoreID: StoreID
+                },
+                dataType: 'html',
+                traditional: true,
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $(".list-image").html(data);
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+</script>

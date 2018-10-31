@@ -1,0 +1,91 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.InteEmployeeModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Employee Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Model.Name
+        </div>
+       
+    </div>
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@if (!string.IsNullOrEmpty(_ID))
+                {*@
+            <table class="table table-hover">
+                <thead>
+                    <tr style="background-color: #337ab7; color: #fff;">
+                        <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Company Name"))</label></td>
+                        <td class="align-right" style="width:2%;"><label></label></td>
+                    </tr>
+                </thead>
+                <tbody class="store-items">
+                    @for (int i = 0; i < Model.LstCompany.Count; i++)
+                    {
+                        <tr>
+                            <td class="align-left">@Model.LstCompany[i].Text</td>
+                            <td class="align-right">
+                                <label>
+                                    @Html.CheckBox(string.Format("LstCompany[{0}].Selected", i), Model.LstCompany[i].Selected,
+
+                                                       new
+                                                       {
+                                                           @onClick = "chkItemClick(this,'" + @Model.LstCompany[i].Value
+                                                           + "','" + @Model.LstCompany[i].Text + "')",
+                                                           @id = "chkStore_" + @Model.LstCompany[i].Value,
+                                                           @class = "child_chkStore",
+                                                           @data_disabled = "" + Model.LstCompany[i].Disabled + ""
+                                                       })
+                                    @Html.Hidden(string.Format("LstCompany[{0}].Value", i), Model.LstCompany[i].Value)
+                                    @Html.Hidden(string.Format("LstCompany[{0}].Text", i), Model.LstCompany[i].Text)
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.ValidationMessageFor(model => model.LstCompany, null, new { @class = "label" })
+        </div>
+    </div>
+
+
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#CompDdl").select2({
+        placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Company"))",
+        allowClear: true
+    });
+    });    
+</script>

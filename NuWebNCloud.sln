@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuWebNCloud.Web", "NuWebNCloud.Web\NuWebNCloud.Web.csproj", "{03BE4123-A613-4C3B-BBD5-6BCB17FF2F85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuWebNCloud.Data", "NuWebNCloud.Data\NuWebNCloud.Data.csproj", "{0604DB2F-C83A-41EB-8E41-BD2B35CC0CD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuWebNCloud.Shared", "NuWebNCloud.Shared\NuWebNCloud.Shared.csproj", "{28543391-6A77-44DA-B1E0-D68318A8B860}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03BE4123-A613-4C3B-BBD5-6BCB17FF2F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03BE4123-A613-4C3B-BBD5-6BCB17FF2F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03BE4123-A613-4C3B-BBD5-6BCB17FF2F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03BE4123-A613-4C3B-BBD5-6BCB17FF2F85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0604DB2F-C83A-41EB-8E41-BD2B35CC0CD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0604DB2F-C83A-41EB-8E41-BD2B35CC0CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0604DB2F-C83A-41EB-8E41-BD2B35CC0CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0604DB2F-C83A-41EB-8E41-BD2B35CC0CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28543391-6A77-44DA-B1E0-D68318A8B860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28543391-6A77-44DA-B1E0-D68318A8B860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28543391-6A77-44DA-B1E0-D68318A8B860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28543391-6A77-44DA-B1E0-D68318A8B860}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

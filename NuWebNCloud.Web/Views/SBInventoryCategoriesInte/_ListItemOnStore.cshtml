@@ -1,0 +1,100 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.ItemOnStore
+
+<div class="lst-category cls_@Model.StoreID" style='@string.Format("display:{0}", Model.State == 9 ? "none" : "block")' data-id="@Model.StoreID"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID" data-offset="@Model.OffSet">
+
+    @Html.Hidden(string.Format("ListItemOnStores[{0}].OffSet", Model.OffSet), Model.OffSet)
+    @Html.Hidden(string.Format("ListItemOnStores[{0}].State", Model.OffSet), Model.State, new { @class = "GroupStatus", @value = Model.State })
+    @Html.Hidden(string.Format("ListItemOnStores[{0}].StoreID", Model.OffSet), Model.StoreID)
+    @Html.Hidden(string.Format("ListItemOnStores[{0}].StoreName", Model.OffSet), Model.StoreName)
+    @Html.Hidden(string.Format("ListItemOnStores[{0}].IsCheckDisabled", Model.OffSet), Model.IsCheckDisabled)
+
+    <div class="form-group">
+        <label class="control-label col-md-1 col-sm-1 col-xs-12">
+            @{if (Model.IsCheckDisabled == 0)
+                {
+                    <a href="javascript:void(0)" onclick="DeleteItemChild('@Model.StoreID'); return false;" style="color:red;">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                }
+                else
+                {
+                    <a style="color:red;">
+                    </a>
+                }
+            }
+
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303; display: inline-block">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): @Model.StoreName
+            <a href="javascript:void(0)" onclick="CopyItem('@Model.StoreID', '@Model.OffSet'); return false;" class="CopyItemOnStore" style="display:inline">&nbsp; &nbsp;&nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Clone Data To"))</a>
+        </label>
+    </div>
+
+    @*Is Show In Kiosk*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show In Kiosk")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBox(string.Format("ListItemOnStores[{0}].IsShowInKiosk",
+                                            Model.OffSet), Model.IsShowInKiosk,
+                                            new { @class = "text-left", @id = "_IsShowInKiosk" + Model.OffSet })
+        </div>
+    </div>
+
+    @*Show in Reservation & Queue*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show in Reservation & Queue")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBox(string.Format("ListItemOnStores[{0}].IsShowInReservation",
+                                            Model.OffSet), Model.IsShowInReservation,
+                                            new { @class = "text-left", @id = "_IsShowInReservation" + Model.OffSet })
+        </div>
+    </div>
+
+    @*Sequence*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence")):</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBox(string.Format("ListItemOnStores[{0}].Sequence",
+                                            Model.OffSet), Model.Sequence,
+                                            new { @class = "form-control", @type = "number", @min = 0, placeholder = (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence")), @id = "_Sequence" + Model.OffSet })
+            @Html.ValidationMessage(string.Format("ListItemOnStores[{0}].Sequence", Model.OffSet), new { @class = "label-danger" })
+        </div>
+    </div>
+
+    @*Category*@
+    @*<div class="form-group">
+            <label for="Role" class="col-sm-2 control-label lineHeight">Parent Category </label>
+            <div class="col-md-6 col-sm-6 col-xs-12" id="CategoryId">
+                @Html.DropDownList(string.Format("ListCategoriesModels[{0}].CategoryID", Model.OffSet),
+                        new SelectList(Model.ListCategories, "Value", "Text", Model.CategoryID),
+                       "---- Please choose parent category ----", new
+                       {
+                           @class = "form-control select2_multiple ddlCategoryAuto",
+                           @style = "width:100%;",
+                           @id = "ddlCategoryAuto_" + Model.StoreID
+                       })
+            </div>
+        </div>*@
+
+    @*<div>
+            @Html.DropDownList("ParentID", Model.ListCategories,
+                       "---- Please choose parent category ----", new
+                       {
+                           @class = "form-control select2_multiple",
+                           //@onchange = "ChangeCategory(this)",
+                           @id = "ddlCategory",
+                           @style = "width:100%;"
+                       })
+        </div>*@
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ItemLength = $(".CopyItemOnStore").length;
+            $(".ddlCategoryAuto").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose parent category"))',
+                //allowClear: true
+            });
+    })
+</script>

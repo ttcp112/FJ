@@ -1,0 +1,1226 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Promotion.PromotionModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))  </label>
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+            (SelectList)ViewBag.StoreID,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })
+
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Promotion Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Name")).ToString(), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Promotion Short Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Short Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.ShortName, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Short Name")).ToString(), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.ShortName, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Promotion Code*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.PromoteCode, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Code")).ToString(), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.PromoteCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Priority*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Priority"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control", autocomplete = "off", type = "number", min = "1" })
+            @Html.ValidationMessageFor(model => model.Priority, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBox("isActive", Model.isActive.HasValue ? Model.isActive.Value : false, new { @class = " text-left" })
+        </div>
+    </div>
+
+    @*Maximun Amount*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Maximum Amount"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                @Html.TextBox("MaximumEarnAmount", Model.MaximumEarnAmount.HasValue ? Model.MaximumEarnAmount.Value : 0,
+                                new { @class = "form-control txtMaximumEarnAmount", type = "number", min = "0" })
+                <span class="input-group-addon">
+                    @Html.CheckBox("IsLimited", Model.IsLimited.HasValue ? Model.IsLimited.Value : false,
+                    new { @class = "chbMaximumEarnAmount", onchange = "ToggleAmount(this)", @checked = "checked" })@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.MaximumEarnAmount, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Description*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")).ToString() })
+        </div>
+    </div>
+
+    @*Promotion Period*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Period"))</label>
+    </div>
+
+    @*Apply*@
+    <div class="form-group">
+        @*Apply From*@
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight: lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply From"))</label>
+        <div class="control-label col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBox("FromDate", Model.FromDate.Value.ToString("MM/dd/yyyy"), new { @class = "form-control datepicker", @placeholder = "Apply From", @id = "fromDate" })
+            @Html.ValidationMessageFor(model => model.FromDate, null, new { @class = "label" })
+        </div>
+        @*Apply To*@
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight: lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply To"))</label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBox("ToDate", Model.ToDate.Value.ToString("MM/dd/yyyy"), new { @class = "form-control datepicker", placeholder = "Apply To", id = "toDate" })
+            @Html.ValidationMessageFor(model => model.ToDate, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Promotion Time*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Time"))</label>
+    </div>
+    @*Unlimited*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsLimitedTime, new { @class = "chbTime", onchange = "TogglePromotionTime(this)" })@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+            @Html.ValidationMessageFor(model => model.IsLimitedTime, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        @*From*@
+        <label for="StartTime" class="control-label col-md-2 col-sm-2 col-xs-2" style="font-weight: lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From"))</label>
+        <div class="control-label col-md-2 col-sm-2 col-xs-12">
+            <div class="bootstrap-timepicker">
+                <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                    @Html.TextBoxFor(model => model.TStartTime,
+                            new
+                            {
+                                @class = "form-control timepicker FromTime",
+                                @placeholder = "From"
+                            })
+                </div>
+                @Html.ValidationMessageFor(model => model.TStartTime, null, new { @class = "label" })
+            </div>
+        </div>
+        @*To*@
+        <label for="EndTime" class="control-label col-md-2 col-sm-2 col-xs-2" style="font-weight: lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To"))</label>
+        <div class="control-label col-md-2 col-sm-2 col-xs-12">
+            <div class="bootstrap-timepicker">
+                <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                    @Html.TextBoxFor(model => model.TEndTime,
+                            new
+                            {
+                                @class = "form-control timepicker ToTime",
+                                @placeholder = "To"
+                            })
+                </div>
+                @Html.ValidationMessageFor(model => model.TEndTime, null, new { @class = "label" })
+            </div>
+        </div>
+    </div>
+
+    @* Promotion Date Type *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight: lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Date Type"))</label>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div>
+                @Html.DropDownListFor(model => model.RepeatType,
+                new SelectList(Model.ListRepeatType, "Value", "Text", Model.RepeatType), /*"---- Please choose repeat type ----"*/ null,
+                new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "ddlRepeatType",
+                    @style = "width:100%;"
+                })
+            </div>
+            @Html.ValidationMessageFor(model => model.RepeatType, null, new { @class = "label" })
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12" style="line-height:35px;">
+            <a href="#" data-toggle="modal" data-target="#myModalWeek" style="font-size:16px;" id="divDayOfWeek"><i class="fa fa-calendar-check-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"))</a>
+            <a href="#" data-toggle="modal" data-target="#myModalMonth" style="font-size:16px;" id="divDayOfMonth"><i class="fa fa-calendar"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"))</a>
+        </div>
+    </div>
+
+    <!-- Specific Days Week -->
+    <div class="modal fade" id="myModalWeek" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Specific days in a week"))</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Configure specific promotion days in a week"))</div>
+                    <br />
+                    <div class="form-group">
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfWeek('true');"><i class="fa fa-check"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select All"))</a>&nbsp;
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfWeek('false');"><i class="fa fa-ban"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deselect All"))</a>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons">
+                        @for (int i = 0; i < Model.ListWeekDayV2.Count; i++)
+                        {
+                            var item = Model.ListWeekDayV2[i];
+                            <label class="btn btn-dayofweek wWeek @string.Format("{0}", Model.ListWeekDayV2[i].IsActive ?"active":"")" onclick="ActiveDayWeek(this)">
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Index)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Name)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].IsActive)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Status, new { @class = "GroupStatusDay" })
+                                <input type="checkbox" autocomplete="off"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@item.Name))
+                            </label>
+                        }
+                    </div>
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specific Days Month -->
+    <div class="modal fade" id="myModalMonth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Specific Days In A Month"))</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Configure specific promotion days in a month"))</div>
+                    <br />
+                    <div class="form-group">
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfMonth('true');"><i class="fa fa-check"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select All"))</a>&nbsp;
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfMonth('false');"><i class="fa fa-ban"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deselect All"))</a>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons">
+                        @for (int i = 0; i < Model.ListMonthDayV2.Count; i++)
+                        {
+                            var item = Model.ListMonthDayV2[i];
+                            <label class="btn btn-calender wCalender @string.Format("{0}", Model.ListMonthDayV2[i].IsActive ?"active":"")" onclick="ActiveDayMonth(this)">
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Index)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Name)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].IsActive)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Status, new { @class = "GroupStatusMonth" })
+                                <input type="checkbox" autocomplete="off"> @item.Name
+                            </label>
+                        }
+                    </div>
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Promotion Type*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Promotion Type"))</label>
+    </div>
+
+    @*Spending*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Spending"))</label>
+        <div class="col-md-10 text-right" style="border-bottom: 2px solid #ddd;">
+            <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreTab01(this); return false;" style="font-size:16px; color:#34495e;">
+                <i class="fa fa-plus"></i>
+                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+            </a>
+            <span style="color:red; display:none" id="storeSpending">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please apply to store first"))</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-xs-12"></label>
+        <div id="div-spending" class="col-md-offset-2 col-md-10" style="float:none;">
+            <table class="table center-content">
+                <thead>
+                    <tr>
+                        <th width="2%" style="font-weight:lighter;"></th>
+                        <th width="15%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Spend Type"))</th>
+                        <th width="25%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Qty/Amount"))</th>
+                        <th width="15%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item"))</th>
+                        <th width="43%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Detail"))</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                    @if (Model.ListSpendingRule != null && Model.ListSpendingRule.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListSpendingRule.Count; i++)
+                        {
+                            @Html.Partial("_TabSpending", Model.ListSpendingRule[i])
+                        }
+                    }
+                    <tr id="tr-add-more-tab-spending">
+                        <td style="padding-top:12px; text-align:left" colspan="6"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @Html.ValidationMessage("Spending", new { @class = "col-md-offset-2 col-md-10 label" })
+    </div>
+
+    @*Earning*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Earning"))</label>
+        <div class="col-md-10 text-right" style="border-bottom: 2px solid #ddd;">
+            <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreTab02(this); return false;" style="font-size:16px; color:#34495e;">
+                <i class="fa fa-plus"></i>
+                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+            </a>
+            <span style="color:red; display:none" id="storeEarning">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please apply to store first"))</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-xs-12"></label>
+        <div id="div-earning" class="col-md-offset-2 col-md-10" style="float:none;">
+            <table class="table center-content">
+                <thead>
+                    <tr>
+                        <th width="2%" style="font-weight:lighter;"></th>
+                        <th width="15%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Earn Type"))</th>
+                        <th width="25%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Percent/Value"))</th>
+                        <th width="15%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item"))</th>
+                        <th width="10%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Qty"))</th>
+                        <th width="33%" style="font-weight:lighter;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Detail"))</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                    @if (Model.ListEarningRule != null && Model.ListEarningRule.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListEarningRule.Count; i++)
+                        {
+                            @Html.Partial("_TabEarning", Model.ListEarningRule[i])
+                        }
+                    }
+                    <tr id="tr-add-more-tab-earning">
+                        <td style="padding-top:12px; text-align:left" colspan="7"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @Html.ValidationMessage("Earning", new { @class = "col-md-offset-2 col-md-10 label" })
+    </div>
+
+    @*Modal Condition AND - OR - SPENDING*@
+    <div class="modal fade bs-example-modal-sm" id="modal-choose-condition-spending" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Additional Spend Rules"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12" style="text-align:center;">
+                            <p style="font-size:15px;">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose condition type to connect Spend Rules. Please not that there is only one condition type used through all Spend Rules")) .
+                            </p>
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-primary active" style="width:100px;">
+                                    <input type="radio" name="optionsSpending" id="radSpendingAND" autocomplete="off" checked> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))
+                                </label>
+                                <label class="btn btn-primary" style="width:100px;">
+                                    <input type="radio" name="optionsSpending" id="radSpendingOR" autocomplete="off">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OR"))
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align:center;">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button onclick="SaveSpending(this)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Modal Condition AND - OR - EARNING*@
+    <div class="modal fade bs-example-modal-sm" id="modal-choose-condition-earning" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Additional Earn Rules"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12" style="text-align:center;">
+                            <p style="font-size:15px;">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose condition type to connect Earn Rules. Please not that there is only one condition type used through all Spend Rules"))
+                                .
+                            </p>
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-primary active" style="width:100px;">
+                                    <input type="radio" name="optionsEarning" id="radEarningAND" autocomplete="off" checked> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))
+                                </label>
+                                <label class="btn btn-primary" style="width:100px;">
+                                    <input type="radio" name="optionsEarning" id="radEarningOR" autocomplete="off">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OR"))
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align:center;">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button onclick="SaveEarning(this)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*choose Item*@
+    <div class="modal fade second" id="modal-choose-items" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Specific Items"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn bg-fnb" id="btnItemType">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish")) </button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Toggle Dropdown"))</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.Dish.ToString("d"),'')">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</a></li>
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.SetMenu.ToString("d"),'')">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set"))</a></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control col-md-10" placeholder=@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Search Name")) onkeypress="HandleKeyPress(event)" id="txtSearchSpending" />
+                                <div class="input-group-btn">
+                                    <button type="button" onclick="SearchItem(this); return false;" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tbl-choose-items" class="form-group-sm" style="overflow: auto; height: 500px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button onclick="AddItems(this)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*choose Item Earn*@
+    <div class="modal fade second" id="modal-choose-items-earning" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Specific Items"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn bg-fnb" id="btnItemTypeearn">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Toggle Dropdown"))</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.Dish.ToString("d"),'earn')">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))</a></li>
+                                        <li><a href="javascript:void(0)" onclick="FilterProduct(@Commons.EProductType.SetMenu.ToString("d"),'earn')">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set"))</a></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control col-md-10" placeholder="Search Name" onkeypress="HandleKeyPress(event)" id="txtSearchEarning" />
+                                <div class="input-group-btn">
+                                    <button type="button" onclick="SearchItem(this); return false;" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tbl-choose-items-earning" class="form-group-sm" style="overflow: auto; height: 500px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                    <button onclick="AddItemsEarn(this)" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*show message isallowdiscount*@
+    <div class="modal fade second" id="modal-show-allowdiscount" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @*<h4 class="modal-title" style="font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Specific Items"))</h4>*@
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <span class="sr-only" id="mssShowAllowDiscount"></span>
+                        </div>
+                    </div>
+
+                    <div id="tbl-choose-items-earning" class="form-group-sm" style="overflow: auto; height: 500px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="AgreeAllowDiscount('')" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No"))</button>
+                    <button onclick="AgreeAllowDiscount('YES')" type="button" class="btn btn-beauty bg-fnb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    var btnGlobal;
+    var listItem;
+    var listItemEarn;
+
+    $("#ddlRepeatType").change(function () {
+        var val = this.value;
+        if (val == 2) {                 //Week
+            $("#divDayOfWeek").show();
+            $("#divDayOfMonth").hide();
+        } else if (val == 3) {          //Month
+            $("#divDayOfWeek").hide();
+            $("#divDayOfMonth").show();
+        }
+    });
+
+    function ToggleAmount(chb) {
+
+        $(".txtMaximumEarnAmount").attr('disabled', $(chb).prop('checked'));
+    }
+    function TogglePromotionTime(chb) {
+        $(".FromTime").attr('disabled', $(chb).prop('checked'));
+        $(".ToTime").attr('disabled', $(chb).prop('checked'));
+    }
+
+    $(document).ready(function () {
+
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        @if (string.IsNullOrEmpty(_ID))
+        {
+            <text>
+        $("#ddlRepeatType").val(2);
+        $("#divDayOfMonth").hide();
+        //AddMoreSpending("");
+        //AddMoreEarning("");
+        var currentOffsetSpending = $("#div-spending > table > tbody > tr").length - 1;
+        if (currentOffsetSpending == 0) {
+            AddMoreSpending("");
+        }
+
+        var currentOffsetEarning = $("#div-earning > table > tbody > tr").length - 1;
+        if (currentOffsetEarning == 0) {
+            AddMoreEarning("");
+        }
+        </text>
+        }
+        else
+        {
+            @:$("#divDayOfMonth").hide();
+                                                                                                    if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+            {
+                @:$("#divDayOfWeek").show();
+                                                                                                        @:$("#divDayOfMonth").hide();
+                                                                                                    }
+            else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+            {
+                @: $("#divDayOfWeek").hide();
+                                                                                                        @: $("#divDayOfMonth").show();
+                                                                                                    }
+            else
+            {
+                @:$("#divDayOfMonth").hide();
+                                                                                                    }
+        }
+        //==========
+
+        @if (!Model.MaximumEarnAmount.HasValue)
+        {
+            @:ToggleAmount($(".chbMaximumEarnAmount")[0]);
+                                                                                                }
+
+        @if (Model.IsLimitedTime)
+         {
+            <text>
+        $(".chbTime").prop('checked', 'true');
+        TogglePromotionTime($(".chbTime")[0]);
+        </text>
+        }
+
+        /*===============*/
+        $("#modal-choose-items").on('show.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            //=========
+            var OffSet = btnGlobal.data('whatever');
+            listItem = [];
+            $('.productName_' + OffSet + ':visible').each(function (index, value) {
+                listItem.push($(this).attr('data-id'));
+            });
+            //==========
+            $('#txtSearchSpending').val('');
+            $("#tbl-choose-items").html('');
+        });
+
+        $("#modal-choose-items").on('shown.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            FilterProduct(1, "");
+        });
+
+        /*===============*/
+        $("#modal-choose-items-earning").on('show.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            //=========
+            var OffSet = btnGlobal.data('whatever');
+            listItem = [];
+            $('.productNameEarn_' + OffSet + ':visible').each(function (index, value) {
+                listItem.push($(this).attr('data-id'));
+            });
+            //==========
+            $('#txtSearchEarning').val('');
+            $("#tbl-choose-items-earning").html('');
+        });
+
+        $("#modal-choose-items-earning").on('shown.bs.modal', function (event) {
+            btnGlobal = $(event.relatedTarget); // Button that triggered the modal
+            FilterProduct(1, "earn");
+        });
+    });
+
+    /*SPENDING*/
+    function OnChangeSpendOnType(obj) {
+        var index = obj.value;
+        var offSet = $(obj).attr('data-offSet');
+        if (index == 3) {// AnyItem
+            $("#txtSpending_" + offSet).attr("disabled", true);
+        } else if (index == 6) {//TotalBill
+            $("#txtSpending_" + offSet).attr("disabled", true);
+        }
+        else {
+            $("#txtSpending_" + offSet).removeAttr("disabled");
+        }
+    }
+
+    var listItemSpend = [];
+    function SetProductNameSpending(offSet) {
+        var productName = "";
+        $('.productName_' + offSet + ':visible').each(function (index, value) {
+            productName += $(this).attr('data-value') + ","
+
+            var _isAllowDiscount = $(this).attr('data-spy')
+            if (_isAllowDiscount == 'True' || _isAllowDiscount == 'true' || _isAllowDiscount == 'TRUE') {
+                var name = $(this).attr('data-value')
+                var itemSpend = {
+                    Name: name,
+                    IsAllowDiscount: _isAllowDiscount
+                }
+                listItemSpend.push(itemSpend);
+            }
+
+        });
+        $("#txtSpending_" + offSet).val(productName);
+    }
+
+    /*Add More Spending*/
+    var conditionSpending = "";
+
+    @if (Model.ListSpendingRule != null)
+    {
+        if (Model.ListSpendingRule.Count > 1)
+        {
+            if (Model.isSpendOperatorAnd)
+            {
+                @:conditionSpending = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND")) ";
+                                                }
+            else
+            {
+                @:conditionSpending = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OR")) ";
+                                                }
+        }
+    }
+
+    function AddMoreTab01(e) {
+        if (StoreID == '') {
+            $(e).next().css('display', 'block');
+            return false;
+        }
+        $(e).next().css('display', 'none');
+        if (conditionSpending === "") {
+            $("#modal-choose-condition-spending").modal({
+                keyboard: false,
+                show: true,
+            });
+        }
+        else {
+            AddMoreSpending(e)
+        }
+    }
+
+    function SaveSpending(e) {
+        $("#modal-choose-condition-spending").modal('hide');
+        if ($("#radSpendingAND").is(":checked")) {
+            conditionSpending = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))"
+            //conditionSpending = "AND";
+        } else {
+            conditionSpending =  "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OR"))"
+            //conditionSpending = "OR";
+        }
+        AddMoreSpending(e);
+    }
+
+    function AddMoreSpending(e) {
+        $('.se-pre-con').show();
+        var currentOffset = $("#div-spending > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddSpending", "SBInventoryPromotion")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+                Condition: conditionSpending
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab-spending").before(data);
+            }
+        });
+    }
+
+    function DeleteTabPanelSpending(btn) {
+        var count = $(".spendingRow:visible").length;
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.GroupStatus').val(9);
+        $(tr).css('display', 'none');
+        if (count == 1) {
+            //alert("The Promotion must have at least one spending rule, so unable to delete it.");
+            conditionSpending = "";
+        }
+    }
+
+    function ShowModalAddItem(btn, index, store) {
+        if (StoreID == '') {
+            $('#' + store).css('display', 'block');
+            return false;
+        }
+        $('#' + store).css('display', 'none');
+        var tr = $(btn).parents('tr:first');
+        var modal = $(tr).find(".modal");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        $(modal).modal({
+            keyboard: false,
+            show: true,
+        });
+        CopyHtml($(btn).parents('tr:first').find('table > tbody > tr'));
+    }
+
+    var HtmlCloned = '';
+    function CopyHtml(container) {
+        HtmlCloned = $(container).clone();
+    }
+
+    function PasteHtml(container) {
+        $(container).html(HtmlCloned);
+    }
+
+    function DeleteItems(btn) {
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.DishStatus').val(9);
+        $(tr).css('display', 'none');
+    }
+
+    function LoadItemsChoose(container) {
+        $('.se-pre-con').show();
+        $.ajax({
+            url: '@Url.Action("LoadItems", "SBInventoryPromotion")',
+            type: 'get',
+            data: {
+                StoreID: StoreID,
+                ItemType: ItemType
+            },
+            dataType: 'html',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+                $('.SpecificItems').each(function (index, value) {
+                    var dataId = $(this).attr('data-id');
+                    if (listItem.indexOf(dataId) != -1) {
+                        $(this).addClass('hide');//.hide();
+                    }
+                });
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function LoadItemsChooseEarn(container) {
+        $('.se-pre-con').show();
+        $.ajax({
+            url: '@Url.Action("LoadItemsEarn", "SBInventoryPromotion")',
+            type: 'get',
+            data: {
+                StoreID: StoreID,
+                ItemType: ItemType
+            },
+            dataType: 'html',
+            traditional: true,
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+
+                $('.SpecificItems').each(function (index, value) {
+                    var dataId = $(this).attr('data-id');
+                    if (listItem.indexOf(dataId) != -1) {
+                        $(this).addClass('hide');//.hide();
+                    }
+                });
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function FilterProduct(val, type) {
+        if (val === 1) {
+            ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString("d")';
+            //$("#btnItemType" + type + "").text("Dish");
+            $("#btnItemType" + type + "").text("@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish"))");
+        } else {
+            ItemType = '@NuWebNCloud.Shared.Commons.EProductType.SetMenu.ToString("d")';
+            $("#btnItemType" + type + "").text("@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set"))");
+        }
+        if (type === "earn") {
+            LoadItemsChooseEarn("#tbl-choose-items-earning");
+        } else
+            LoadItemsChoose("#tbl-choose-items");
+    }
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function SearchItem(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        //var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                if (!$(trs[i]).hasClass('hide')) {
+                    var name = $.trim($(trs[i]).find('td:last').text().toLowerCase());
+                    //for (var j = 0; j < arrKeySearch.length; j++) {
+                    //if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                    if (keySearch === name) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        //break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                    //}
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if (!$(this).hasClass('hide')) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                }
+            });
+        }
+    }
+
+    function AddItems(btn) {
+        var groupOffSet = $(btnGlobal).parents('tr:last').find('input[name*="OffSet"]').val();
+        var currentItemOffset = $(btnGlobal).parents('table:first > tbody').find('tr').length - 1;
+        var trs = $(btn).parents('.modal').find('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            if ($(tr).find('td input[type="checkbox"]').prop('checked')) {
+                var ID = $(tr).attr('data-id');
+                var Code = $(tr).find('td #hidCode').val();
+                var Name = $(tr).find('td #hidName').val();
+                var ItemType = parseInt($(tr).find('td #hidItemType').val());
+                var IsAllowPromotionDiscount = $(tr).find('td #hidItemIsAllowDiscount').val()
+
+                var PromotionProductDTO = {
+                    ProductID: ID,
+                    ProductCode: Code,
+                    Name: Name,
+                    ItemType: ItemType,
+                    IsAllowDiscount: IsAllowPromotionDiscount
+                }
+                data.push(PromotionProductDTO);
+            }
+        }
+        var SpendingRuleDTO = {
+            ListProduct: data,
+            currentgroupOffSet: groupOffSet,
+            currentItemOffset: currentItemOffset
+        }
+
+        $('.se-pre-con').show();
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddItems", "SBInventoryPromotion")',
+                traditional: true,
+
+                //data: {
+                //    productIDs: ids,
+                //    currentgroupOffSet: groupOffSet,
+                //    currentItemOffset: currentItemOffset
+                //},
+                //dataType: 'html',
+
+                data: JSON.stringify(SpendingRuleDTO),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+
+                success: function (data) {
+                    $('.se-pre-con').hide();
+                    $(btnGlobal).parents('tr:first').before(data);
+                    $(btn).parents('.modal:first').modal('hide');
+                    //========
+                    $('#popupSpending').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" })
+                }
+            });
+        }
+    }
+
+    /*EARNING*/
+    function OnChangeEarnType(obj) {
+        debugger;
+        var index = obj.value;
+        var offSet = $(obj).attr('data-offSet');
+        if (index == 2 || index == 1) {
+            $("#txtEarning_" + offSet).attr("disabled", true);
+        }
+        else {
+            $("#txtEarning_" + offSet).removeAttr("disabled");
+        }
+    }
+
+
+
+    function SetProductNameEarning(offSet) {
+        var productName = "";
+        $('.productNameEarn_' + offSet + ':visible').each(function (index, value) {
+            productName += $(this).attr('data-value') + ","
+        });
+        $("#txtEarning_" + offSet).val(productName);
+    }
+
+    /*Add More Earning*/
+    var conditionEarning = "";
+    @if (Model.ListEarningRule != null)
+    {
+        if (Model.ListEarningRule.Count > 1)
+        {
+            if (Model.isSpendOperatorAnd)
+            {
+                @*@:conditionEarning = "AND";*@
+                @:conditionEarning = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))"
+                                            }
+            else
+            {
+                @*@:conditionEarning = "OR";*@
+                @:conditionEarning = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OR"))"
+                                            }
+        }
+    }
+    function AddMoreTab02(e) {
+        if (StoreID == '') {
+            $(e).next().css('display', 'block');
+            return false;
+        }
+        $(e).next().css('display', 'none');
+        if (conditionEarning === "") {
+            $("#modal-choose-condition-earning").modal({
+                keyboard: false,
+                show: true,
+            });
+        }
+        else {
+            AddMoreEarning(e)
+        }
+    }
+
+    function SaveEarning(e) {
+        $("#modal-choose-condition-earning").modal('hide');
+        if ($("#radEarningAND").is(":checked")) {
+            //conditionEarning = "AND";
+            conditionEarning = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))"
+        } else {
+            //conditionEarning = "OR";
+            conditionEarning = "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("AND"))"
+        }
+        AddMoreEarning(e);
+    }
+
+    function AddMoreEarning(e) {
+        $('.se-pre-con').show();
+        var currentOffset = $("#div-earning > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddEarning", "SBInventoryPromotion")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+                Condition: conditionEarning
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab-earning").before(data);
+            }
+        });
+    }
+
+    function DeleteTabPanelEarning(btn) {
+        var count = $(".earningRow:visible").length;
+        var tr = $(btn).parents('tr:first');
+        $(tr).find('input.GroupStatus').val(9);
+        $(tr).css('display', 'none');
+
+        if (count == 1) {
+            //alert("The Promotion must have at least one earning rule, so unable to delete it.");
+            conditionEarning = "";
+        }
+    }
+
+    function AddItemsEarn(btn) {
+        var groupOffSet = $(btnGlobal).parents('tr:last').find('input[name*="OffSet"]').val();
+        var currentItemOffset = $(btnGlobal).parents('table:first > tbody').find('tr').length - 1;
+        var trs = $(btn).parents('.modal').find('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            if ($(tr).find('td input[type="checkbox"]').prop('checked')) {
+                var ID = $(tr).attr('data-id');
+                var Code = $(tr).find('td #hidCode').val();
+                var Name = $(tr).find('td #hidName').val();
+                var ItemType = parseInt($(tr).find('td #hidItemType').val());
+                var PromotionProductDTO = {
+                    ProductID: ID,
+                    ProductCode: Code,
+                    Name: Name,
+                    ItemType: ItemType,
+                }
+                data.push(PromotionProductDTO);
+            }
+        }
+        var EarningRuleDTO = {
+            ListProduct: data,
+            currentgroupOffSet: groupOffSet,
+            currentItemOffset: currentItemOffset
+        }
+        $('.se-pre-con').show();
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddItemsEarn", "SBInventoryPromotion")',
+                traditional: true,
+                //data: {
+                //    productIDs: ids,
+                //    currentgroupOffSet: groupOffSet,
+                //    currentItemOffset: currentItemOffset
+                //},
+                //dataType: 'html',
+                data: JSON.stringify(EarningRuleDTO),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (data) {
+                    $('.se-pre-con').hide();
+                    $(btnGlobal).parents('tr:first').before(data);
+                    $(btn).parents('.modal:first').modal('hide');
+                    //========
+                    $('#popupEarning').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" })
+                }
+            });
+        }
+    }
+
+    //==============
+    function SelectAllDateOfWeek(val) {
+        $('.wWeek').each(function (index, value) {
+            if (val === 'true') {
+                $(this).addClass('active');
+                $(this).find('input.GroupStatusDay').val(1);
+            }
+            else {
+                $(this).removeClass('active');
+                $(this).find('input.GroupStatusDay').val(9);
+            }
+        })
+    }
+    function ActiveDayWeek(day) {
+        if ($(day).hasClass('active')) {
+            $(day).find('input.GroupStatusDay').val(9);
+            $(day).removeClass('active');
+        } else {
+            $(day).addClass('active');
+            $(day).find('input.GroupStatusDay').val(1);
+        }
+    }
+    //==============
+    function SelectAllDateOfMonth(val) {
+        $('.wCalender').each(function (index, value) {
+            if (val === 'true') {
+                $(this).addClass('active');
+                $(this).find('input.GroupStatusMonth').val(1);
+            }
+            else {
+                $(this).removeClass('active');
+                $(this).find('input.GroupStatusMonth').val(9);
+            }
+        })
+    }
+    function ActiveDayMonth(day) {
+        if ($(day).hasClass('active')) {
+            $(day).find('input.GroupStatusMonth').val(9);
+            $(day).removeClass('active');
+        } else {
+            $(day).addClass('active');
+            $(day).find('input.GroupStatusMonth').val(1);
+        }
+    }
+
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+</script>

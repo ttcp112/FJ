@@ -1,0 +1,257 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.PurchaseOrderModels
+@using NuWebNCloud.Shared.Utilities;
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Master Data" }, { "C", "Purchase Orders - View detail" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    <div class="row text-right">
+                        <ul class="header-buttons pull-right list-inline">
+                            @*<li><a href="javascript:void(0)" class="btn btn-info" id="btn-delete"><i class="fa fa-send"></i>&nbsp;Send</a></li>
+                                <li><a href="javascript:void(0)"class="btn btn-primary" id="btn-delete"><i class="fa fa-print"></i>&nbsp;Print</a></li>*@
+                            <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                        </ul>
+                    </div>
+                    <div class="row form-horizontal form-label-left">
+                        <div class="form-group" style="font-size:30px;">
+                            <div class="col-md-8 col-sm-8 col-xs-12">@Model.Store.Name</div>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Order"))
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-8 col-sm-8 col-xs-12">@Model.Store.Street</div>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Order Number")): <strong>@Model.PONumber</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">@Model.Store.City, @Model.Store.Zipcode </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")): @Model.Store.Phone </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1 col-sm-1 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To")):</label>
+                            <div class="col-md-11 col-sm-11 col-xs-12" style="font-size:18px;">@Model.Supplier.Name.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-11 col-sm-11 col-xs-12 col-md-offset-1">@Model.Supplier.Address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-11 col-sm-11 col-xs-12 col-md-offset-1">@Model.Supplier.City, @Model.Supplier.ZipCode</div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-11 col-sm-11 col-xs-12 col-md-offset-1">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")): @Model.Supplier.Phone1 - @Model.Supplier.Phone2</div>
+                        </div>
+
+                        <div class="box-body form-group" style="text-align:center; padding-bottom:30px;">
+                            <table class="tbCustom">
+                                <thead>
+                                    <tr>
+                                        <td style="width:15%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO Number"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO Date"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Date"))</td>
+                                        <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount"))</td>
+                                        <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Note"))</td>
+                                        <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Status"))</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight:bold;">@Model.PONumber</td>
+                                        <td>@Model.PODate.ToString("MM-dd-yyyy")</td>
+                                        <td>@Model.DeliveryDate.ToString("MM-dd-yyyy")</td>
+                                        <td>@string.Format("{0} {1:N2}", Model.Symbol, Model.Total)</td>
+                                        <td>@Model.Note</td>
+                                        <td>
+                                            @if (Model.POStatus == (int)Commons.EPOStatus.Open)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EPOStatus.Open.ToString()))
+                                            }
+                                            else if (Model.POStatus == (int)Commons.EPOStatus.Approved)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EPOStatus.Approved.ToString()))
+                                            }
+                                            else if (Model.POStatus == (int)Commons.EPOStatus.InProgress)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EPOStatus.InProgress.ToString()))
+                                            }
+                                            else if (Model.POStatus == (int)Commons.EPOStatus.Closed)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.EPOStatus.Closed.ToString()))
+
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if (Model.ListItem != null && Model.ListItem.Count > 0)
+                        {
+                            <div class="box-body form-group" style="text-align:center;">
+                                <table class="tbCustom">
+                                    <thead>
+                                        <tr>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("#"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</td>
+                                            <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                                            <!--Tax-->
+                                            <td style="width:10%; display:none;" id="colTax">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax"))</td>
+                                            <!--End Tax-->
+                                            <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unit Price"))</td>
+                                            <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Subtotal"))</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.ListItem.Count; i++)
+                                        {
+                                            var item = Model.ListItem[i];
+
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>@item.IngredientCode</td>
+                                                <td>@item.IngredientName</td>
+                                                <td>@item.Description</td>
+                                                <td>@item.Qty</td>
+                                                <td>@item.BaseUOM</td>
+                                                <td class="row-tax">@item.TaxName</td>
+                                                <td>@string.Format("{0:N2}", item.UnitPrice)</td>
+                                                <td>@string.Format("{0:N2}", item.Amount)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        @*Add More Item && Subtotal*@
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-9 borderBottomDot">
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Subtotal"))
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    @string.Format("{0} {1:N2}", Model.Symbol, Model.SubTotal)
+                                </div>
+                            </div>
+                        </div>
+
+                        @*TAX Old*@
+                        <div class="form-group div_tax_not_integrate" id="div_tax_info_not_integrate">
+                            <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-9 borderBottomDot">
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax")) (
+                                    @if (Model.TaxType == (int)Commons.ETax.AddOn)
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.AddOn.ToString()))
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.Inclusive.ToString()))
+                                    })
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    @if (Model.TaxType == (int)Commons.ETax.AddOn)
+                                    {
+                                        @Html.Raw(string.Format("{0} {1:N2}", Model.Symbol, Model.TaxAmount))
+                                    }
+                                    else
+                                    {
+                                        @Model.TaxAmountInclusive
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAX Integrate  update Tax -->
+                        <div class="row" id="listItemTaxIntegrate" style="display:none;">
+                            @if (Model.ListItemTax != null)
+                            {
+                                foreach (var item in Model.ListItemTax)
+                                {
+                                    <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-9 borderBottomDot" style="display: @string.Format("{0}", item.IsShow ? "block" : "none")">
+                                        <div class="col-md-4 col-sm-4 col-xs-12">Total [@item.Name] - (@item.sTaxType)</div>
+                                        <div class="col-md-8 col-sm-8 col-xs-12">@Model.Symbol @item.Amount</div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <!-- End TAX Integrate  update Tax -->
+                        @*Additional*@
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-9" style="padding-bottom:5px;">
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Additional")):
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    @*<input type="number" class="form-control text-center" value="@Model.Additional" />*@
+                                    @string.Format("{0} {1:N2}", Model.Symbol, Model.Additional)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-9 borderBottomDot" style="padding-bottom:5px;">
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Additional Reason"))
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    @Model.AdditionalReason
+                                </div>
+                            </div>
+                        </div>
+
+                        @*TOTAL*@
+                        <div class="form-group" style="font-size:20px;">
+                            <div class="col-md-1 col-sm-1 col-md-offset-9">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TOTAL"))
+                            </div>
+                            <div class="col-md-2 col-sm-2">
+                                @string.Format("{0} {1:N2}", Model.Symbol, Model.Total)
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:30px;">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+     $(document).ready(function () {
+        var IsIntegrate = '@Model.StoreIntegrate';
+        if (IsIntegrate === 'True' || IsIntegrate === 'true'){
+            $('.div_tax_not_integrate').hide();
+            $('#colTax').show();
+            $('.row-tax').show();
+            $('#listItemTaxIntegrate').show();
+        }else{
+            $('.div_tax_not_integrate').show();
+            $('#colTax').hide();
+            $('.row-tax').hide();
+            $('#listItemTaxIntegrate').hide();
+        }
+    });
+</script>

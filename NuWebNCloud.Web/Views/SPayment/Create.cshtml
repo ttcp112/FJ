@@ -1,0 +1,91 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.PaymentMethodModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment Methods - Add New");
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Settings" }, { "B", "Payment Methods" }, { "C", "Add New" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('#create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                @*<li><a href="@Url.Action("Index", "SPayment")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;Cancel</a></li>*@
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "SPayment", FormMethod.Post, new { @class = "form-horizontal", @id = "create-form", @enctype = "multipart/form-data" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@section Scripts{*@
+<script type="text/javascript">
+        //function SubmitForm(form) {
+        //    $(form).submit();
+        //}
+
+
+        $('#create-form').submit(function () {
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                //data: $(this).serialize(),
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
+
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                },
+                success: function () {
+                    CloseDetail();
+                    Search();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $('.se-pre-con').hide();
+                    $(".detail-view").html(jqXHR.responseText);
+                }
+            });
+            return false;
+        });
+
+        //$("#storeDdl").change(function () {
+        //    StoreID = this.value;
+        //    LoadZone(".zone");
+        //});
+
+        $(document).ready(function () {
+            $("#storeDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                //allowClear: true
+            });
+        });
+</script>
+@*}*@

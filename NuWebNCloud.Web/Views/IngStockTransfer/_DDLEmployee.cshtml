@@ -1,0 +1,18 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferModels
+@using NuWebNCloud.Shared.Utilities;
+
+@Html.DropDownList("IssueBy", Model.ListEmployee,
+    "Please choose employee", new
+    {
+        @class = "form-control select2_multiple ddlEmployee",
+        @style = "width:100%;"
+    })
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ddlEmployee").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose employee"))',
+            allowClear: true
+        });
+    });
+</script>

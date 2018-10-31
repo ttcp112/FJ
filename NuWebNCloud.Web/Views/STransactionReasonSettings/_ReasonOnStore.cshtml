@@ -1,0 +1,38 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.TransactionReasonSetting.StoreReasonDTO
+
+<div class="reason-item-on-store cls_@Model.StoreID" style='@string.Format("display:{0}", Model.Status == 9 ? "none" : "block")' data-id="@Model.StoreName"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID-@Model.OffSet" data-offset="@Model.OffSet">
+
+    @Html.Hidden(string.Format("ListStore[{0}].OffSet", Model.OffSet), Model.OffSet, new { @Value = Model.OffSet })
+    @Html.Hidden(string.Format("ListStore[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus", @Value = Model.Status })
+    @Html.Hidden(string.Format("ListStore[{0}].ReasonID", Model.OffSet), Model.ReasonID, new { @Value = Model.ReasonID })
+    @Html.Hidden(string.Format("ListStore[{0}].StoreID", Model.OffSet), Model.StoreID, new { @Value = Model.StoreID })
+    @Html.Hidden(string.Format("ListStore[{0}].StoreName", Model.OffSet), Model.StoreName, new { @Value = Model.StoreName })
+
+    @*Store Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+            @if (!Model.IsDelete)
+            {
+                <a href="javascript:void(0)" onclick="DeleteTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:red;">
+
+
+                    <i class="fa fa-remove"></i>
+                </a>
+            }
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")): @Model.StoreName
+        </label>
+
+    </div>
+
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBox(string.Format("ListStore[{0}].IsActive", Model.OffSet), Model.IsActive, new { @id = "IsActive_" + Model.OffSet, @Value = Model.IsActive })</label>
+        </div>
+    </div>
+</div>

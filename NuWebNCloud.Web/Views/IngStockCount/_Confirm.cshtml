@@ -1,0 +1,75 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockCountModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Count - Confirm");
+}
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                new Dictionary<string, string> { { "A", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management") }, { "B", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory") }, { "C", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management") }, { "D", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock Count - Confirm") } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-confirm"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Confirm"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-cancel" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Confirm", "IngStockCount", FormMethod.Post, new { @id = "form-confirm", @class = "form-horizontal" }))
+                            {
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label"></label>
+                                    <div class="col-md-6" style="font-size: 20px; width: 100%;">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Do you want to confirm this")) <strong>[ @Model.Code ]</strong>?
+                                        <br />
+                                        @Html.HiddenFor(model => model.Id)
+                                        @Html.HiddenFor(model => model.Code)
+                                        @Html.ValidationMessageFor(model => model.StockCountDate, null, new { @class = "label label-danger" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#btn-confirm").click(function (e) {
+        $("#form-confirm").submit();
+        e.preventDefault();
+    });
+
+    $("#form-confirm").submit(function (e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            beforeSend: function () {
+                $(".se-pre-con").show();
+            },
+            success: function () {
+                $(".se-pre-con").hide();
+                CloseDetail();
+                Search();
+            },
+            error: function (jqXHR) {
+                $(".se-pre-con").hide();
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+
+</script>

@@ -1,0 +1,139 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.RecipeProductIngredientViewModels
+@using NuWebNCloud.Shared.Utilities;
+@if (Model.ListItem != null)
+{
+    @*<div class="table-responsive">*@
+    @*<table id="datatable-inpopup" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">*@
+        <table class="table center-content">
+        <thead>
+            <tr style="background-color:#34495e; color:#fff;">
+                <th style="width:10%;text-align:center;"><input type="checkbox" onclick="TickAllCheckBox(this)" /></th>
+                <th style="width:50%;text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name")) </th>
+                <th style="width:20%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Base UOM"))</th>
+                <th style="width:20%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage"))</th>
+            </tr>
+        </thead>
+        <tbody id="body-dishes0">
+            @for (int i = 0; i < Model.ListItem.Count; i++)
+            {
+                //string styleRow = "row-even";
+                //if (i % 2 == 0)
+                //{
+                //    styleRow = "row-odd";
+                //}
+                @*<tr class="mediate-dish @styleRow">*@
+                <tr>
+                    <td style="text-align:center;" onclick="TickCheckBox(this)">
+                        @Html.CheckBoxFor(model => model.ListItem[i].IsSelect, new { @tabindex = "-1" })
+                        @Html.HiddenFor(model => model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                        @Html.HiddenFor(model => model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+                        @Html.HiddenFor(model => model.ListItem[i].BaseUOMId, new { @id = "hidBaseUOM" })
+                        @Html.HiddenFor(model => model.ListItem[i].BaseUsage, new { @id = "hidBaseUsage" })
+
+                    </td>
+                    <td id="search" style="cursor:pointer;" >@Model.ListItem[i].IngredientName</td>
+                    <td style="text-align:center;">
+                        @*@Model.ListItem[i].BaseUOM*@
+                        @Html.DropDownListFor(model => model.ListItem[i].BaseUOMId,
+                                new SelectList(Model.ListItem[i].ListUOM, "Value", "Text", Model.ListItem[i].BaseUOMId), "please choose UOM",
+                                new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "BaseUOMddl",
+                                    @style = "width:100%;"
+                                })
+                    </td>
+                    <td style="text-align:center;">
+                        @Html.TextBoxFor(model => model.ListItem[i].Usage, new
+                       {
+                           @class = "form-control text-center number",
+                           @id = "hidUsage",
+                           @required = "required "
+                       })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+        @*</div>*@
+
+        <script src="@Url.Content("~/build/js/fnFilterClear.js")"></script>
+        <script>
+
+            // mini jQuery plugin that formats to two decimal places
+            (function ($) {
+                $.fn.numberFormat = function () {
+                    this.each(function (i) {
+                        $(this).change(function (e) {
+                            if (isNaN(parseFloat(this.value))) return;
+                            this.value = parseFloat(this.value).toFixed(4);
+                        });
+                    });
+                    return this; //for chaining
+                }
+            })(jQuery);
+
+            $(document).ready(function () {
+                // apply the numberFormat behaviour to elements with 'number' as their class
+                $(function () {
+                    $('.number').numberFormat();
+                });
+                //===============
+                $(".number").each(function (i) {
+                    if (isNaN(parseFloat(this.value)))
+                        return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+
+                $('.number').on('focus', function () {
+                    var qty = parseFloat(this.value)
+                    if (qty == 0) {
+                        this.value = '';
+                    }
+                });
+
+                ////update responsive
+                //var table = $('#datatable-inpopup').DataTable({
+                //    dom: "<'row'<'col-sm-6'l><'col-sm-3'f>>",
+                //    "responsive": true,
+                //    "columnDefs": [
+                //        { "orderable": false, "targets": [0, 2, 3] },
+                //        { "width": "2%", "targets": [0] },
+                //    ],
+                //    "order": [[1, 'asc']],
+                //    "displayLength": 25,
+                //    "drawCallback": function (settings) {
+                //        var api = this.api();
+                //        var rows = api.rows({ page: 'current' }).nodes();
+                //        var last = null;
+
+                //    }
+                //});
+                ////new $.fn.dataTable.FixedHeader(table);
+
+                $(".select2_multiple").select2({
+                    placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM")) ",
+                    allowClear: true
+                });
+
+            });
+
+            function abc() {
+                //Away 1
+                var table = $('#datatable-inpopup').DataTable();
+                table
+                 .search('')
+                 .columns().search('')
+                 .draw();
+
+                //Away 2
+                //var table = $('#datatable-inpopup').dataTable();
+                //// Perform a filter
+                //table.fnFilter('');
+                //table.fnFilter('Trident', 0);
+                //// Remove all filtering
+                //table.fnFilterClear();
+            }
+
+        </script>
+}

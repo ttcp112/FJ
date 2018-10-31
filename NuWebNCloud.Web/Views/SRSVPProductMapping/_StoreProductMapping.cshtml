@@ -1,0 +1,270 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.RSVPStoreProducMappingModels
+@using NuWebNCloud.Shared.Utilities;
+
+<div class="product-item-on-store cls_@Model.StoreID" style='@string.Format("display:{0}", Model.Status==9?"none":"block")' data-id="@Model.StoreID"
+     data-name="@Model.StoreName" id="divStore_@Model.StoreID-@Model.OffSet" data-offset="@Model.OffSet">
+
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].StoreName", Model.ID), Model.ID)
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].OffSet", Model.OffSet), Model.OffSet)
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].StoreID", Model.OffSet), Model.StoreID)
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].StoreName", Model.OffSet), Model.StoreName)
+    @Html.Hidden(string.Format("ListRSVPStoreProductMapping[{0}].IsDeleteTemplate", Model.OffSet), Model.IsDeleteTemplate)
+
+    @*Store Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+
+        </label>
+        <label class="col-md-6 col-sm-6 col-xs-12" style="color:#970303;">
+            @if (!Model.IsDeleteTemplate)
+            {
+                <a href="javascript:void(0)" onclick="DeleteTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:red; font-size:20px;">
+                    <i class="fa fa-remove"></i>
+                </a>
+            }
+
+            Store: @Model.StoreName
+            <a href="javascript:void(0)" onclick="CloneDataTabPanelProItem('@Model.StoreID','@Model.OffSet'); return false;" style="color:#337ab7;">&nbsp; &nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Clone Data To")) </a>
+        </label>
+    </div>
+
+    <!-- List Item -->
+    <div class="form-group" id="divDish_@Model.StoreID">
+        <label class="control-label col-md-2 col-xs-12"></label>
+        <div id="div-mediate_@Model.StoreID" class="col-md-offset-2 col-md-6" style="float:none;">
+            <table class="table center-content">
+                <thead>
+                    <tr style="background-color:#134F5C; color:#fff;">
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish/Set Menu Code")) </th>
+                        <th width="10%"></th>
+                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("RSVP Item Code"))</th>
+                        <th width="1%"></th>
+                    </tr>
+                </thead>
+                <tbody style="max-height:500px; overflow-y:auto; overflow-x:hidden !important;">
+                    <tr id="tr-add-more-tab_@Model.StoreID">
+                        <td style="padding-top:12px; text-align:right" colspan="4">
+                            <a id="btn-add-more-tab" href="#" class="a-fnb" onclick="AddMoreItemRSVP(this,'@Model.StoreID', @Model.OffSet); return false;"
+                               style="font-size:16px; color:#337ab7; font-weight:bold;">
+                                <i class="fa fa-plus"></i>
+                                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add More")) </span>
+                            </a>
+                        </td>
+                    </tr>
+                    @if (Model.ListRSVPProductMapping != null && Model.ListRSVPProductMapping.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListRSVPProductMapping.Count; i++)
+                        {
+                            @Html.Partial("_ItemRSVP", Model.ListRSVPProductMapping[i])
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        @Html.ValidationMessage("MsgDish_" + Model.StoreID, new { @class = "col-md-offset-2 col-md-10 label" })
+    </div>
+
+    <!-- List Product -->
+    <div class="modal fade second" id="modal-choose-items_@Model.StoreID" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select Item"))</h4>
+                </div>
+                <div class="modal-body scroll">
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control col-md-10" placeholder='@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter Item Name to search"))'
+                                       onkeypress="HandleKeyPress(event)" id="txtSearchDish_@Model.StoreID" />
+                                <div class="input-group-btn">
+                                    <button type="button" onclick="SearchDish(this); return false;" class="btn bg-fnb">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-sm">
+                        <table class="table table-striped table-hover marginbottomTable">
+                            <thead>
+                                <tr style="background-color:#34495e; color:#fff;">
+                                    <th style="width:1%;">@*<input type="checkbox" id="chkAll_@Model.OffSet" onchange="ToogleCheckAllItem(this, '#list-dishes-@Model.OffSet')" />*@</th>
+                                    <th style="width:20%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</th>
+                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="tbl-choose-dishes_@Model.StoreID" class="form-group-sm">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel")) </button>
+                    <button onclick="ConfirmChooseItem(this)" type="button" class="btn btn-beauty bg-fnb">
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Confirm"))
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Msg Error*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.ValidationMessage(@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ProductItemOnStoreAlert")) + "_" + Model.StoreID,
+           new { @class = "label label-danger", @id = "ltrError_" + Model.StoreID })
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var btnGlobal;
+    //var listItem = [];
+    var _OffSet = 0;
+    var _StoreOffSet = 0;
+
+    var _ProductID = '';
+    var _ProductCode = '';
+    var _ProductName = '';
+
+    $(document).ready(function (e) {
+        $("#modal-choose-items_@Model.StoreID").on('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            btnGlobal = $(event.relatedTarget);
+
+            var OffSet = btnGlobal.data('offset');
+            var StoreOffSet = btnGlobal.data('storeoffset');
+
+            _OffSet = OffSet;
+            _StoreOffSet = StoreOffSet;
+            //alert(_OffSet + '|' + _StoreOffSet);
+            $('#txtSearchDish_@Model.StoreID').val('');
+            $("#tbl-choose-dishes_@Model.StoreID").html('');
+
+            LoadItemProduct("#tbl-choose-dishes_@Model.StoreID", '@Model.StoreID');
+        });
+    });
+
+    /*Item RSVP*/
+    function AddMoreItemRSVP(e, _StoreID, _StoreOffSet) {
+        AddItemRSVP(e, _StoreID, _StoreOffSet);
+    }
+
+    function AddItemRSVP(btn, _StoreID, _StoreOffSet) {
+        var currentOffset = $("#div-mediate_" + _StoreID + " > table > tbody > tr").length - 1;
+        $.ajax({
+            url: '@Url.Action("AddItemRSVP", "SRSVPProductMapping")',
+            type: 'GET',
+            data: { currentOffset: currentOffset, StoreID: _StoreID, StoreOffSet: _StoreOffSet },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#tr-add-more-tab_" + _StoreID + "").after(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function DeleteItemRSVP(e) {
+        var tr = $(e).parents('tr:first');
+        $(tr).find('input.GroupStatus').val(9);
+        $(tr).css('display', 'none');
+    }
+    /*End Item RSVP*/
+
+    /*Choose Product Item*/
+    function ConfirmChooseItem(e) {
+        $(e).parents('.modal:first').modal('hide');
+        var _id = _ProductID;
+        var _code = _ProductCode;
+        var _name = _ProductName;
+        //==========Back-End
+        $('#hidProductID_' + _StoreOffSet + '_' + _OffSet + '').val(_id);
+        $('#hidProductName_' + _StoreOffSet + '_' + _OffSet + '').val(_name);
+        $('#hidProductCode_' + _StoreOffSet + '_' + _OffSet + '').val(_code);
+        //==========Front-End
+        $('#btnChooseItem-' + _StoreOffSet + '-' + _OffSet + '').val(_code);
+        $('#btnChooseItem-' + _StoreOffSet + '-' + _OffSet + '').html(_code);
+        $('#btnChooseItem-' + _StoreOffSet + '-' + _OffSet + '').removeClass('fontColorRSVP');
+
+        //listItem = [];
+        //listItem.push(_id);
+
+        //=======Reset Value
+        _ProductCode = '';
+        _ProductName = '';
+        _ProductID = '';
+    }
+
+    function LoadItemProduct(container, _StoreID) {
+        $.ajax({
+            url: '@Url.Action("LoadItemProduct", "SRSVPProductMapping")',
+            type: 'GET',
+            data: { StoreID: _StoreID },
+            dataType: 'html',
+            traditional: true,
+            error: function (e) {
+            },
+            success: function (data) {
+                $(container).html(data);
+                ResizeModal(container, 300);
+                ////==============
+                //$('.SpecificItems').each(function (index, value) {
+                //    var dataId = $(this).attr('data-id');
+                //    if (listItem.indexOf(dataId) != -1) {
+                //        $(this).find("input[type='checkbox']").prop("checked", true);
+                //    }
+                //});
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+    /*End Choose Product Item*/
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function SearchDish(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td:last').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+</script>

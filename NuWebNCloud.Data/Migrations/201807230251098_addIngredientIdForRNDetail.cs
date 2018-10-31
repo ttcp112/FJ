@@ -1,0 +1,22 @@
+namespace NuWebNCloud.Data.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class addIngredientIdForRNDetail : DbMigration
+    {
+        public override void Up()
+        {
+            AddColumn("dbo.I_ReceiptNoteDetail", "IngredientId", c => c.String(maxLength: 50));
+            AddColumn("dbo.I_ReceiptNoteDetail", "UOMId", c => c.String(maxLength: 50));
+            AlterColumn("dbo.I_ReceiptNoteDetail", "PurchaseOrderDetailId", c => c.String(maxLength: 50));
+        }
+        
+        public override void Down()
+        {
+            AlterColumn("dbo.I_ReceiptNoteDetail", "PurchaseOrderDetailId", c => c.String(nullable: false, maxLength: 50));
+            DropColumn("dbo.I_ReceiptNoteDetail", "UOMId");
+            DropColumn("dbo.I_ReceiptNoteDetail", "IngredientId");
+        }
+    }
+}

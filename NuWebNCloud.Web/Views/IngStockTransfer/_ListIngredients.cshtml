@@ -1,0 +1,121 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferModels
+@using NuWebNCloud.Shared.Utilities;
+@if (Model.ListItem != null)
+{
+    int index = 0;
+    for (int i = 0; i < Model.ListItem.Count; i++)
+    {
+        index = i;
+        <tr class="ng-IngredientNew" data-ingreId="@Model.ListItem[i].IngredientId">
+            <td>
+                <span id="index_@Model.ListItem[i].IngredientId">@Model.ListItem[i].IngredientCode</span>
+
+                @Html.Hidden(string.Format("ListItem[{0}].Id", index), Model.ListItem[i].Id)
+                @Html.Hidden(string.Format("ListItem[{0}].OffSet", index), Model.ListItem[i].OffSet)
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientId", index), Model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientName", index), Model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientCode", index), Model.ListItem[i].IngredientCode, new { @id = "hidIngredientCode" })
+                @*@Html.Hidden(string.Format("ListItem[{0}].UOMId", index), Model.ListItem[i].UOMId, new { @id = "hidBaseUOMId" })*@
+                @Html.Hidden(string.Format("ListItem[{0}].Delete", index), Model.ListItem[i].Delete, new { @class = "IngredientStatus" })
+            </td>
+            <td>
+                @Model.ListItem[i].IngredientName<br />
+                @Html.ValidationMessage(string.Format("ListItem[{0}].IngredientName", index), new
+           {
+               @id = "ltrValidate" + Model.ListItem[i].IngredientId,
+               @class = "label field-validation-error label-danger"
+           })
+            </td>
+            <td>
+                @Html.TextBox(string.Format("ListItem[{0}].RequestQty", index), Model.ListItem[i].RequestQty, new
+           {
+               @class = "form-control text-center number",
+               @min = 0,
+               @id = "txtRequestQty"
+           })
+            </td>
+            <td>
+                @Html.TextBox(string.Format("ListItem[{0}].IssueQty", index), Model.ListItem[i].IssueQty, new
+           {
+               @class = "form-control text-center number",
+               @min = 0,
+               @id = "txtIssueQty",
+           })
+            </td>
+            <td>
+                @Html.TextBox(string.Format("ListItem[{0}].ReceiveQty", index), Model.ListItem[i].ReceiveQty, new
+           {
+               @class = "form-control text-center number",
+               @min = 0,
+               @id = "txtReceiveQty",
+           })
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.ListItem[i].UOMId,
+                new SelectList(Model.ListItem[i].ListUOM, "Value", "Text", Model.ListItem[i].UOMId), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM")).ToString(),
+                new
+                {
+                    @class = "form-control select2_multiple ddlUOM",
+                    //@id = "ddlUOMIngredient"+ Model.ListItem[i].UOMId,
+                    @style = "width:100%;"
+                })
+                @for (int a = 0; a < Model.ListItem[i].ListUOM.Count; a++)
+                {
+                    @Html.HiddenFor(m => m.ListItem[i].ListUOM[a].Value);
+                    @Html.HiddenFor(m => m.ListItem[i].ListUOM[a].Text);
+                }
+                @*<div style="display: none;">@Html.DropDownListFor(model => Model.ListItem[i].ListUOM,)</div>*@
+                @*@Html.Hidden(string.Format("ListItem[{0}].ListUOM", index), Model.ListItem[i].ListUOM, new { @id = "hidListUOM" })*@
+            </td>
+            <td>
+                <a href="javascript:void(0)" class="a-fnb text-info" onclick="DeleteTabPanel('@Model.ListItem[i].IngredientId'); return false;">
+                    <i class="fa fa-minus-square"></i>
+                </a>
+            </td>
+        </tr>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $(".ddlUOM").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM"))',
+            allowClear: true
+        });
+    });
+
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+
+        $('.number').on('focus', function () {
+            var qty = parseFloat(this.value)
+            if (qty == 0) {
+                this.value = '';
+            }
+        });
+
+    });
+
+   
+</script>

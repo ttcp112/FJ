@@ -1,0 +1,333 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockTransferModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("StockTransfer - Add New"));
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+               new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Inventory" }, { "C", "Stock Transfer - Add New" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="x_panel">
+                            <div class="row text-right">
+                                <ul class="header-buttons pull-right list-inline">
+                                    <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                    <li><a href="@Url.Action("Index", "IngStockTransfer")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                                </ul>
+                            </div>
+                            <div class="box-body" style="display: block;">
+                                @using (@Html.BeginForm("Create", "IngStockTransfer", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data" }))
+                                {
+                                    @Html.Partial("_Form", Model)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        var _IssueStoreId = "";
+        var _ReceiveStoreId = "";
+        var _empId = null;
+
+        $(document).ready(function () {
+            _IssueStoreId = $("#IssuingStoreDdlView").val();
+            if (_IssueStoreId != "" && _IssueStoreId != null) {
+                _empId = '@Model.IssueBy';
+                LoadEmployee("#divDdlIssueBy", _IssueStoreId, _empId);
+            }
+            _ReceiveStoreId = $("#ReceivingStoreDdlView").val();
+            if (_ReceiveStoreId != "" && _ReceiveStoreId != null) {
+                LoadEmployee02(_ReceiveStoreId);
+            }
+        });
+
+        function LoadEmployee(element, IssueStoreId, issueEmpId) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: CreateAbsoluteUrl("LoadEmployee"),
+                type: "post",
+                traditional: true,
+                data: { StoreID: IssueStoreId, empId: issueEmpId },
+                dataType: 'html',
+                success: function (data) {
+                    $(".se-pre-con").hide();
+                    $(element).html(data);
+                }
+            });
+        }
+
+        $("#IssuingStoreDdlView").change(function () {
+            _IssueStoreId = this.value;
+            if (_IssueStoreId === _ReceiveStoreId) {
+                $('#IssuingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Warehouse must be different Receive Warehouse"))');
+                _empId = '@Model.IssueBy';
+                LoadEmployee("#divDdlIssueBy", _IssueStoreId, _empId);
+            }
+            else {
+                $('#IssuingStoreMsg').text('');
+                _empId = '@Model.IssueBy';
+                LoadEmployee("#divDdlIssueBy", _IssueStoreId, _empId);
+            }
+        });
+
+        $("#ReceivingStoreDdlView").change(function () {
+            _ReceiveStoreId = this.value;
+            //$(".ddl-receive-store").html('');
+            if (_ReceiveStoreId === _IssueStoreId) {
+                $('#ReceivingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receive Warehouse must be different Issue Warehouse"))');
+                LoadEmployee02(_ReceiveStoreId);
+            } else {
+                $('#ReceivingStoreMsg').text('');
+                LoadEmployee02(_ReceiveStoreId);
+            }
+        });
+
+        function LoadEmployee02(ReceiveStoreId) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: CreateAbsoluteUrl("LoadEmployee02"),
+                type: "post",
+                traditional: true,
+                data: { StoreID: ReceiveStoreId },
+                dataType: 'json',
+                success: function (lstEmp) {
+                    $(".se-pre-con").hide();
+                    $(".ddl-receive-store").each(function (e) {
+                        AddOptionForDDLEmployee(this, lstEmp);
+                    });
+
+                    var currReceiveStoreId = '@Model.ReceiveStoreId';
+                    var requestBy = '@Model.RequestBy';
+                    if (requestBy != '' && currReceiveStoreId == ReceiveStoreId) {
+                        $('#RequestByCMD').val(requestBy).trigger('change'); // For case Edit
+                    } else {
+                        $('#RequestByCMD').val(null).trigger('change');
+                    }
+
+                    var receiveBy = '@Model.ReceiveBy';
+                    if (receiveBy != '' && currReceiveStoreId == ReceiveStoreId) {
+                        $('#ReceiveByCMD').val(receiveBy).trigger('change'); // For case Edit
+                    } else {
+                        $('#ReceiveByCMD').val(null).trigger('change');
+                    }
+                }
+            });
+        }
+        function AddOptionForDDLEmployee(ddl, lstEmp) {
+            $(ddl).empty();
+            $(ddl).append($('<option/>', {
+                value: "",
+                text: "-- Select --",
+            }));
+
+            for (var i = 0; i < lstEmp.length; i++) {
+                $(ddl).append($('<option/>', {
+                    value: lstEmp[i].ID,
+                    text: lstEmp[i].Name
+                }));
+            }
+        }
+        function setSelectedValue(selectObj, valueToSet) {
+            for (var i = 0; i < selectObj.options.length; i++) {
+                if (selectObj.options[i].value == valueToSet) {
+                    selectObj.options[i].selected = true;
+                    return;
+                }
+            }
+        }
+        /*=======================*/
+        var listItemNew = [];
+
+        function SubmitForm(form) {
+            listItemNew = [];
+            $('#IssuingStoreMsg').text('');
+            $('#ReceivingStoreMsg').text('');
+
+            var IssuingStoreId = $('#IssuingStoreDdlView').val();
+            if (IssuingStoreId == '' || IssuingStoreId == null) {
+                $('#IssuingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store issuing warehouse"))');
+                return false;
+            }
+            var ReceivingStoreId = $('#ReceivingStoreDdlView').val();
+            if (ReceivingStoreId == '' || ReceivingStoreId == null) {
+                $('#ReceivingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store receive warehouse"))');
+                return false;
+            }
+            /**/
+            $('#ddlRequestByMsg').text('');
+            var ddlRequestBy = $('#ddlRequestBy').val();
+            if (ddlRequestBy == '' || ddlRequestBy == null) {
+                $('#ddlRequestByMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose employee request"))');
+                return false;
+            }
+
+            $('#ddlIssueByMsg').text('');
+            var ddlIssueBy = $('#ddlIssueBy').val();
+            if (ddlIssueBy == '' || ddlIssueBy == null) {
+                $('#ddlIssueByMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose employee issue"))');
+                return false;
+            }
+
+            $('#ddlReceiveByMsg').text('');
+            var ddlReceiveBy = $('#ddlReceiveBy').val();
+            if (ddlReceiveBy == '' || ddlReceiveBy == null) {
+                $('#ddlReceiveByMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose employee receive"))');
+                return false;
+            }
+            //================
+            var isSubmit = true;
+            var _receiveQty = 0;
+            var _issueQty = 0;
+            $.each($('.ng-IngredientNew'), function () {
+                var div = $(this);
+                if ($(div).css('display') != 'none') {
+                    var IngredientId = $(div).find('#hidIngredientId').val();
+                    var RequestQty = $(div).find('#txtRequestQty').val();
+                    var IssueQty = $(div).find('#txtIssueQty').val();
+                    var ReceiveQty = $(div).find('#txtReceiveQty').val();
+
+                    _receiveQty = parseFloat(ReceiveQty)
+                    _issueQty = parseFloat(IssueQty)
+                    listItemNew.push(IngredientId);
+
+                    var UOMId = $(div).find('#ddlUOMIngredient').val();
+
+                    if (RequestQty <= 0) {
+                        $("#ltrValidate" + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter [Request Quantity] a value equal or larger than 0"))');
+                        isSubmit = false;
+                    } else {
+                        if (IssueQty <= 0) {
+                            $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter [Issue Quantity] a value equal or larger than 0"))');
+                            isSubmit = false;
+                        } else {
+                            if (ReceiveQty <= 0) {
+                                $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter [Receive Quantity] a value equal or larger than 0"))');
+                                isSubmit = false;
+                            } else {
+                                if (UOMId == '') {
+                                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM"))');
+                                    isSubmit = false;
+                                } else {
+                                    $('#ltrValidate' + IngredientId).html('');
+                                }
+                            }
+                        }
+                    }
+                    //alert("ReceiveQty: " + _receiveQty);
+                    //alert("IssueQty: " + _issueQty);
+                    if (_receiveQty > _issueQty) {
+                        $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The [Receive Quantity] should be less than or equal to"))' + parseFloat(IssueQty));
+                        isSubmit = false;
+                    }
+                }
+            });
+
+            if (listItemNew.length == 0) {
+                $('#IssuingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Ingredient for Stock Transfer"))');
+                isSubmit = false;
+            }
+            else if (_IssueStoreId === _ReceiveStoreId) {
+                $('#IssuingStoreMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Issue Warehouse and Receive Warehouse must be different"))');
+                isSubmit = false;
+            }
+            if (isSubmit) {
+                disableButton('#btn-actives', true);
+                $(form).submit();
+            }
+        }
+
+        function disableButton(btn, status) {
+            if (status) {
+                $(btn).addClass('disabled');
+            } else {
+                $(btn).removeClass('disabled');
+            }
+        }
+        $(document).ready(function () {
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                //maxDate: new Date(),
+                showDropdowns: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            });
+
+            $(".ddlEmployee").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose employee"))',
+                allowClear: true
+            });
+
+            $("#IssuingStoreDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose issuing store"))',
+                allowClear: true
+            });
+            $("#ReceivingStoreDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose receiving store"))',
+                allowClear: true
+            });
+        });
+
+        function SearchIngredient(btn) {
+            var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+            var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+            var arrKeySearch = keySearch.split(' ');
+            if (keySearch != '') {
+                for (var i = 0; i < trs.length; i++) {
+                    var name = $.trim($(trs[i]).find('td#search').text());
+                    for (var j = 0; j < arrKeySearch.length; j++) {
+                        if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                            if ($(trs[i]).css('display') == 'none')
+                                $(trs[i]).css('display', 'table-row');
+                            break;
+                        }
+                        else
+                            if ($(trs[i]).css('display') == 'table-row')
+                                $(trs[i]).css('display', 'none');
+                    }
+                }
+            }
+            else {
+                $(trs).each(function (e) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                });
+            }
+        }
+
+        function TickCheckBox(td) {
+            var tr = $(td).parents('tr:first');
+            $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+        }
+
+        function TickAllCheckBox(chk) {
+            var trs = $('.modal-body:first').find('tbody tr');
+            for (var i = 0; i < trs.length; i++) {
+                $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+            }
+        }
+
+</script>
+}

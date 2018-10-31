@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ScheduleReports xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Reports>
+    <Report>
+      <Key>40bafef6-7d23-4dfa-b2e6-d20d7743267e</Key>
+      <Value>Audit Trail Report</Value>
+    </Report>
+    <Report>
+      <Key>9467b1de-f16d-4f45-a50e-4f9c7266fa3f</Key>
+      <Value>Cash Out Report</Value>
+    </Report>
+    <Report>
+      <Key>021c53b6-68dd-4084-8ef9-f354499d208a</Key>
+      <Value>Cash In Report</Value>
+    </Report>
+
+    <Report>
+      <Key>49cef628-52ea-4786-9321-877c69b9a115</Key>
+      <Value>Closed Receipt Report</Value>
+    </Report>
+
+    <Report>
+      <Key>d82e5026-9107-40b1-bae6-6f1c1ba76693</Key>
+      <Value>Daily Receipt Report</Value>
+    </Report>
+
+    <Report>
+      <Key>fc817af2-38dc-4c3b-bea4-58607c6b192a</Key>
+      <Value>Daily Sales Report</Value>
+    </Report>
+
+    <Report>
+      <Key>1de2e447-af11-4cc3-8293-13330e33a233</Key>
+      <Value>Daily Itemized Sales Analysis Detail Report</Value>
+    </Report>
+
+    <Report>
+      <Key>595c9ea8-74dc-49a5-964f-4247bde9507d</Key>
+      <Value>Itemized Sales Analysis Detail Report</Value>
+    </Report>
+
+    <Report>
+      <Key>ffe3510e-fb94-47a0-953e-2c60b1194799</Key>
+      <Value>Discount Details Report</Value>
+    </Report>
+
+    <Report>
+      <Key>4c11065d-a0eb-4b40-a3b7-8b32e4c34253</Key>
+      <Value>Hourly Itemized Sales Report</Value>
+    </Report>
+
+    <Report>
+      <Key>c8f888e8-dfd3-4ff5-ab69-376f77707039</Key>
+      <Value>Hourly Sales Report</Value>
+    </Report>
+
+    <Report>
+      <Key>29b93e10-b062-4c7e-ad48-5e8bfcdf591d</Key>
+      <Value>Itemized Sales Analysis Report</Value>
+    </Report>
+
+    <Report>
+      <Key>9a0d99ff-4981-490d-a859-2ea8264dfe93</Key>
+      <Value>No Sale Detail Report</Value>
+    </Report>
+
+    <Report>
+      <Key>6984ed30-beb0-4039-aa37-460ddf5412d7</Key>
+      <Value>Receipt sby Payment Methods Report</Value>
+    </Report>
+
+    <Report>
+      <Key>e79c397b-52f8-4d0a-b05a-93cde2b9c002</Key>
+      <Value>Time Clock Summary Report</Value>
+    </Report>
+
+    <Report>
+      <Key>7306c075-57c2-44f1-bd19-f864f99a0fbc </Key>
+      <Value>Top Selling Products Report</Value>
+    </Report>
+
+  </Reports>
+</ScheduleReports>

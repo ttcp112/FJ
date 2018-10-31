@@ -1,0 +1,107 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.InteEmployeeModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Employees"))
+                    + " - " + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add New"));
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Employees" }, { "C", "Add New" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="#" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="@Url.Action("Index", "SBEmployeeInte")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "SBEmployeeInte", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data", @autocomplete = "off" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SubmitForm(form) {
+            $(form).submit();
+        }
+
+        $(document).ready(function () {
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                maxDate: new Date(),
+                //==========
+                showDropdowns: true,
+                showWeekNumbers: true,
+                locale: {
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                }
+            });
+
+            $("#MaritalStatusDdl").select2({
+                placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Marital Status"))",
+                allowClear: true
+            });
+
+            $("#ddlRole").select2({
+                placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role"))",
+                allowClear: true
+            });
+
+            //Reset value of input Email and PinCode
+            setTimeout(function () {
+                @if (string.IsNullOrEmpty(Model.Email))
+                 {
+                     @:$('#txtEmail').val('');
+                }
+                @if (string.IsNullOrEmpty(Model.Pincode))
+                {
+                    @:$("#txtPincode").off("change");       //optional, depends on your code
+                    @:$("#txtPincode").val('');             //clear
+                    @:$("#txtPincode").attr("value", "");   //clear #2 (just to be sure)
+                }
+            }, 20);
+        });
+
+        @*function chkItemClick(e, _StoreID, _StoreName) {
+            StoreID = _StoreID;
+            var checked = $(e).prop('checked');
+            var disabled = $(chkStore).attr("data-disabled");
+            if (checked) {
+                $('.se-pre-con').show();
+                ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString("d")';
+                var StoreName = _StoreName;
+                AddMoreRoleWorkingTIme(StoreID, StoreName);
+            } else {
+                var div = $('.cls_' + StoreID);
+                $(div).find('input.GroupStatus').val(9);
+                $(div).css('display', 'none');
+            }
+        }*@
+
+    </script>
+}

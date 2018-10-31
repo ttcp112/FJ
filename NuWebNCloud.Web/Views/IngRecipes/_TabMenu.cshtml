@@ -1,0 +1,15 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Product", "IngRecipes")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "Product" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-cutlery"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dishes")) </a>
+    </li>
+    <li>
+        <a href="@Url.Action("Modifier", "IngRecipes")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "Modifier" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-beer"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifiers"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Ingredient", "IngRecipes")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "Ingredient" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-pagelines"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients"))</a>
+    </li>
+</ul>

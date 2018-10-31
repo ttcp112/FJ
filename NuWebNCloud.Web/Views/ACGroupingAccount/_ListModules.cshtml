@@ -1,0 +1,81 @@
+﻿@using NuWebNCloud.Shared.Models.AccessControl
+@model NuWebNCloud.Shared.Models.AccessControl.RoleOrganizationModels
+@using NuWebNCloud.Shared.Utilities;
+
+@helper ShowPermissions(List<ModulePermissionModels> permissions, string type, int level = 1, string parent = "")
+{
+for (int i = 0; i < permissions.Count; i++)
+{
+    var item = permissions[i];
+    string itemName = item.Name.Replace(" ", "");
+    parent = parent.Replace(" ", "");
+    int countParent = item.ListChild.Count;
+    var data_parent = level - 1 + "-" + (parent.Equals("") ? itemName : parent);
+    var data_id = (level - 1) + itemName;
+
+        <tr class="role-level-@level @level-@parent">
+            <td>
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@item.Name))
+                @Html.Hidden(type + "[" + i + "]" + ".Name", item.Name)
+
+                @Html.Hidden(type + "[" + i + "]" + ".Id", item.Id)
+                @Html.Hidden(type + "[" + i + "]" + ".ModuleID", item.ModuleID)
+                @Html.Hidden(type + "[" + i + "]" + ".ModuleParentID", item.ModuleParentID)
+            </td>
+            @*<td class="table-actions">
+                @Html.CheckBox(type + "[" + i + "]" + ".IsActive", item.IsActive, new
+           {
+               //@class = "js-switch",
+               @onclick = "ToogleChild(this,'IsActive')",
+               @disabled = "disabled",
+               @data_parent = data_parent + "IsActive",
+               @data_id = data_id + "IsActive",
+               @data_count = countParent
+           })
+            </td>*@
+            <td class="table-actions">
+                @Html.CheckBox(type + "[" + i + "]" + ".IsView", item.IsView, new
+           {
+               //@class = "js-switch",
+               @onclick = countParent == 0 ? "ToogleChild(this,'IsView')" : "ToogleParent(this,'IsView')",
+               @data_parent = data_parent + "IsView",
+               @data_id = data_id + "IsView",
+               @data_count = countParent
+           })
+            </td>
+            <td class="table-actions">
+                @if (item.Name.ToLower().Equals("reports") || parent.ToLower().Equals("reports"))
+                {
+                    @Html.Hidden(type + "[" + i + "]" + ".IsAction", item.IsView, new { @value = "true" })
+                }
+                else
+                {
+                    @Html.CheckBox(type + "[" + i + "]" + ".IsAction", item.IsAction, new
+                   {
+                       //@class = "js-switch",
+                       @onclick = countParent == 0 ? "ToogleChild(this,'IsAction')" : "ToogleParent(this,'IsAction')",
+                       @data_parent = data_parent + "IsAction",
+                       @data_id = data_id + "IsAction",
+                       @data_count = countParent
+                   })
+                }
+
+            </td>
+        </tr>
+    if (item.ListChild != null && item.ListChild.Count != 0)
+    {
+        @ShowPermissions(item.ListChild, type + "[" + i + "].ListChild", level + 1, item.Name)
+    }
+}
+}
+
+<table class="table table-bordered role-table">
+    <tr style="background-color:#34495e; color:#fff;">
+        <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Module Name"))</th>
+        @*<th class="table-actions">Active</th>*@
+        <th class="table-actions">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</th>
+        <th class="table-actions">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+    </tr>
+    <tr></tr>
+    @ShowPermissions(Model.ListModule, "ListModule")
+</table>

@@ -1,0 +1,19 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index", "SBInventoryDiscount")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "view" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Data"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create", "SBInventoryDiscount")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "create" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add New"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Import", "SBInventoryDiscount")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "import" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-mail-forward"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Import"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Export", "SBInventoryDiscount")" id="lnkExport" class="btn btn-default btn-block menuTab @(Model == "export" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-mail-reply"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Export"))</a>
+    </li>
+</ul>

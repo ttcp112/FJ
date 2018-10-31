@@ -1,0 +1,21 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductViewModels
+@using NuWebNCloud.Shared.Utilities;
+
+@*Group by company, updated 041420180*@
+@Html.DropDownList("ListStoreID", (SelectList)Model.ListStoreTo, new
+{
+    @class = "form-control select2_multiple",
+    @id = "storeToDdl",
+    @style = "width:100%;",
+    @multiple = "multiple",
+    @name = "states[]"
+})
+@Html.ValidationMessage("ListStoreID", null, new { @class = "label" })
+
+<script>
+    $(document).ready(function () {
+        $("#storeToDdl").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+        }).val(@Html.Raw(Json.Encode(Model.ListStoreID))).trigger('change.select2');
+    });
+</script>

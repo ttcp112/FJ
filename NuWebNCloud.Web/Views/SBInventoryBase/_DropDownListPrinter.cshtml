@@ -1,0 +1,19 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.SBInventoryBaseModel
+@Html.DropDownList("lPrinter", Model.ListPrinters,
+               @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose printer")).ToString(), new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "ddlPrinter",
+                   @style = "width:100%;",
+                   @multiple = "multiple"
+               })
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlPrinter").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose printer"))',
+            allowClear: true
+        });
+    });
+</script>

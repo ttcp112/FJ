@@ -1,0 +1,135 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes Self Made - Add New"));
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                <h4>
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management")) <small>
+                        <i class="fa fa-angle-double-right"></i><a href="@Url.Action("Index","IngReceiptNoteSelfMade",new { area = "" })">
+                            <span style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transaction Data"))</span>
+                        </a>&nbsp;<i class="fa fa-angle-double-right"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes Self Made - Add New"))
+                    </small>
+                </h4>
+
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>
+                                    &nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Make Receipt Note"))</a></li>
+                                <li><a href="@Url.Action("Index", "IngReceiptNoteSelfMade")" clas class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>
+                                    &nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "IngReceiptNoteSelfMade", FormMethod.Post,
+            new
+            {
+                @class = "form-horizontal create-form",
+                @enctype = "multipart/form-data"
+            }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        function SubmitForm(form) {
+            var storeId = $('#storeDdl').val();
+            if (storeId == '' || storeId == null) {
+                $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+                return false;
+            }
+            $('#validationStore').text('');
+            //================
+            var isSubmit = true;
+            $.each($('.ng-IngredientNew'), function () {
+                var offset = $(this).attr("data-offset");
+                var divChild = $(this);
+                if ($(divChild).css('display') !== 'none') {
+                    var RemainingQty = parseFloat($(divChild).find('#ltrRemainingQty').html());
+                    var QtyToleranceP = parseFloat($(divChild).find('#hidQtyToleranceP').val());
+                    var RequiredQty = RemainingQty + QtyToleranceP;
+
+                    var Qty = $(divChild).find('#txtReceivingQty').val();
+                    if (Qty <= 0) {
+                        $('#ltrValidate_' + offset).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The receiving quantity is larger 0"))');
+                        isSubmit = false;
+                    } else {
+                        if (RequiredQty > 0 && Qty > RequiredQty) {
+                            $('#ltrValidate' + offset).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The receiving quantity is larger than remaining quantity."))'
+                                                + "<br/>" +
+                                                            '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter the value less than the remaining quantity required."))');
+                            isSubmit = false;
+                        }
+                        else {
+                            $('#ltrValidate_' + offset).html('');
+                        }
+
+                    }
+
+                }
+            });
+            var countIngredient = $('.ng-IngredientNew:visible').length;
+            if (countIngredient == 0) {
+                $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose ingredient for Received Notes Self Made !!!"))');
+                isSubmit = false;
+            }
+            if (isSubmit) {
+                disableButton('#btn-actives', true);
+                $(form).submit();
+            }
+        }
+
+        function disableButton(btn, status) {
+            if (status) {
+                $(btn).addClass('disabled');
+            } else {
+                $(btn).removeClass('disabled');
+            }
+        }
+        $(document).ready(function () {
+            $("#storeDdl").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            });
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            });
+        });
+
+        $("#storeDdl").change(function () {
+            //StoreID = this.value;
+            //$('#validationStore').text('');
+        });
+
+    </script>
+}

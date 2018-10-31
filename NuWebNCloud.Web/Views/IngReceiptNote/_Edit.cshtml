@@ -1,0 +1,146 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Notes - Edit"));
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Inventory" }, { "C", "Received Notes - Edit" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-edit-save" onclick="EditAction('#form-edit')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Edit", "IngReceiptNote", FormMethod.Post, new { @id = "form-edit", @class = "form-horizontal" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var listItemNew = [];
+
+    @foreach (var ing in Model.ListItem)
+    {
+        @:var IngredientId = '@ing.IngredientId';
+                    @:listItemNew.push(IngredientId);
+                }
+
+    function EditAction(form) {
+        var storeId = $('#storeDdl').val();
+        if (storeId == '' || storeId == null) {
+            $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        }
+        $('#validationStore').text('');
+        //================
+        var isSubmit = true;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') == 'block') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var Qty = $(div).find('#txtQty').val();
+                if (Qty < 0) {
+                    //$(div).addClass('row-error');
+                    $('#ltrValidate' + IngredientId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity is required"))');
+                    isSubmit = false;
+                } else {
+                    //$(div).removeClass('row-error');
+                    $('#ltrValidate' + IngredientId).html('');
+                }
+            }
+        });
+        if (listItemNew.length == 0) {
+            $('#validationStore').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Ingredient for Receipt Note !!!"))');
+            isSubmit = false;
+        }
+        if (isSubmit) {
+            $('.se-pre-con').show();
+            SubmitForm(form);
+        }
+    }
+
+    $('#form-edit').submit(function (e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function () {
+                $('.se-pre-con').hide();
+                CloseDetail();
+                Search();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+
+    $(document).ready(function () {
+        $("#storeDdl").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+            allowClear: true
+        });
+    });
+
+    function SearchIngredient(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td#search').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+    function TickCheckBox(td) {
+        var tr = $(td).parents('tr:first');
+        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'))
+    }
+
+    function TickAllCheckBox(chk) {
+        var trs = $('.modal-body:first').find('tbody tr');
+        for (var i = 0; i < trs.length; i++) {
+            $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+        }
+    }
+</script>

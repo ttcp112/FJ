@@ -1,0 +1,59 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@using NuWebNCloud.Shared.Utilities;
+@if (Model.ListItem != null)
+{
+    <table class="table center-content">
+        <thead>
+            <tr style="background-color:#34495e; color:#fff;">
+                <th style="width:1%;text-align:center;"><input type="checkbox" onclick="TickAllCheckBox(this)"  id="chkAllItem"/></th>
+                <th style="width:35%;text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name")) </th>
+                <th style="width:39%;text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Description")) </th>
+                <th style="width:25%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM"))</th>
+            </tr>
+        </thead>
+        <tbody id="body-dishes0">
+            @for (int i = 0; i < Model.ListItem.Count; i++)
+            {
+                <tr>
+                    <td style="text-align:center;" onclick="TickCheckBox(this,'#body-dishes0')">
+                        @Html.CheckBoxFor(model => model.ListItem[i].IsSelect, new { @tabindex = "-1" })
+
+                        @Html.HiddenFor(model => model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                        @Html.HiddenFor(model => model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+                        @Html.HiddenFor(model => model.ListItem[i].IngredientCode, new { @id = "hidIngredientCode" })
+                        @Html.HiddenFor(model => model.ListItem[i].Description, new { @id = "hidIngredientDescription" })
+                        @Html.HiddenFor(model => model.ListItem[i].BaseUsage, new { @id = "hidBaseUsage" })
+                        @Html.HiddenFor(model => model.ListItem[i].BaseUOM, new { @id = "hidBaseUOM" })
+
+                        @*//hidReceivingQuantity*@
+                        @Html.HiddenFor(model => model.ListItem[i].Qty, new { @id = "hidReceivingQuantity" })
+                    </td>
+                    <td id="search" style="cursor:pointer;">@Model.ListItem[i].IngredientName</td>
+                    <td id="search" style="cursor:pointer;">@Model.ListItem[i].Description</td>
+                    <td style="text-align:center;">
+                        @Html.DropDownListFor(model => model.ListItem[i].BaseUOMId,
+                                new SelectList(Model.ListItem[i].ListUOM, "Value", "Text", Model.ListItem[i].BaseUOMId),
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM")).ToString(),
+                                new
+                                {
+                                    @class = "form-control select2_multiple BaseUOMddlPopup",
+                                    @id = "BaseUOMddl",
+                                    @style = "width:100%;"
+                                })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script src="@Url.Content("~/build/js/fnFilterClear.js")"></script>
+    <script>
+            $(document).ready(function () {
+                $(".BaseUOMddlPopup").select2({
+                    placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM"))",
+                    allowClear: true
+                });
+
+            });
+    </script>
+}

@@ -1,0 +1,214 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.PaymentMethodModels
+@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared;
+@{ 
+    string ParentId = Model.ParentName;
+    var _clsHiddenXero = ViewBag.ListAccountXero.Count > 0 ? "" : "hidden";
+    var _clsHidden = ViewBag.ListAccountXero.Count > 0 ? "hidden" : "";
+}
+
+<tr data-id="@Model.ID" style='@string.Format("display:{0}", Model.Status==9?"none":"table-row")'>
+    <td style="padding-left:0px;">
+        @Html.Hidden(string.Format("ListChild[{0}].IsIncludeOnSale", Model.OffSet), Model.IsIncludeOnSale)
+
+        @Html.Hidden(string.Format("ListChild[{0}].OffSet", Model.OffSet), Model.OffSet)
+        @Html.Hidden(string.Format("ListChild[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+        @Html.Hidden(string.Format("ListChild[{0}].ID", Model.OffSet), Model.ID)
+        @Html.TextBox(string.Format("ListChild[{0}].Name", Model.OffSet), Model.Name,
+       //!string.IsNullOrEmpty(Model.ID) ? (object)new
+       //{
+       //    @class = "form-control",
+       //    @placeholder = "Sub Payment Method Name",
+       //    @readonly = "readonly"
+       //} : 
+       new
+       {
+           @class = "form-control",
+           @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sub Payment Method Name")
+       })
+        @Html.ValidationMessage(string.Format("ListChild[{0}].Name", Model.OffSet), new { @class= "label" })
+        <br />
+        @*Number of Copies*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Number of Copies"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.TextBox(string.Format("ListChild[{0}].NumberOfCopies", Model.OffSet), Model.NumberOfCopies, new
+           {
+               @class = "form-control",
+               @type = "number",
+               @min = "0",
+           })
+            </div>
+            @Html.ValidationMessage(string.Format("ListChild[{0}].NumberOfCopies", Model.OffSet), new { @class = "label" })
+        </div>
+
+        @*Fixed Amount*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Fixed Amount"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.TextBox(string.Format("ListChild[{0}].FixedAmount", Model.OffSet), Model.FixedAmount,
+               //!string.IsNullOrEmpty(ParentId) ? (object)new
+               //{
+               //    @class = "form-control",
+               //    @type = "number",
+               //    @readonly = "readonly"
+               //} :
+               new
+               {
+                   @class = "form-control",
+                   @type = "number",
+                   @min = "0",
+               })
+            </div>
+        </div>
+
+        @*GLAccount Code*@
+        
+        <div class="form-group @_clsHiddenXero glaccount-combobox">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+
+                    @*@Html.DropDownList(string.Format("ListChild[{0}].GLAccountCode", Model.OffSet), (SelectList)ViewBag.ListAccountXero, "Please choose account", new
+                   {
+                       @class = "form-control select2_multiple clsGLAccountCode",
+                       @id = "ddlGLAccountCode",
+                       @style = "width:100%;"
+                   })*@
+                    @Html.DropDownList(string.Format("ListChild[{0}].GLAccountCode", Model.OffSet), new SelectList(ViewBag.ListAccountXero, "Code", "NameDisplayCombobox", "ReportingCodeName", (object)Model.GLAccountCode), "Please choose account", new
+                    {
+                       @class = "form-control select2_multiple clsGLAccountCode",
+                       @id = "ddlGLAccountCode",
+                       @style = "width:100%;"
+                    })
+                @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+            </div>
+        </div>
+        <div class="form-group @_clsHidden glaccount-textbox">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GLAccount Code")):</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.TextBox(string.Format("ListChild[{0}].GLAccountCode", Model.OffSet), Model.GLAccountCode, new
+               {
+                   @class = "form-control",
+               })
+                @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+            </div>
+        </div>
+
+        @*Sequence*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.TextBox(string.Format("ListChild[{0}].Sequence", Model.OffSet), Model.Sequence, new
+           {
+               @class = "form-control",
+               @type = "number",
+               @min = "0",
+           })
+            </div>
+        </div>
+
+        @*Give Back Change*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Give Back Change"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <label>@Html.CheckBox(string.Format("ListChild[{0}].IsGiveBackChange", Model.OffSet), Model.IsGiveBackChange)</label>
+            </div>
+        </div>        
+
+        @*Allow To Kick Drawer*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow To Kick Drawer"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <label>@Html.CheckBox(string.Format("ListChild[{0}].IsAllowKickDrawer", Model.OffSet), Model.IsAllowKickDrawer)</label>
+            </div>
+        </div>
+
+        @*Include On Sale*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Include On Sale"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <label>@Html.CheckBox(string.Format("ListChild[{0}].IsIncludeOnSale", Model.OffSet), Model.IsIncludeOnSale, new { @disabled = "" })</label>
+            </div>
+        </div>
+
+        @*Show On POS*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show On POS"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <label>@Html.CheckBox(string.Format("ListChild[{0}].IsShowOnPos", Model.OffSet), Model.IsShowOnPos, new { })</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12"> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                    <img id="upload-preview-@Model.OffSet" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+                }
+                else
+                {
+                    <img id="upload-preview-@Model.OffSet" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+                }
+            </div>
+        </div>
+        <!--IMAGE-->
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image representative ")) </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.TextBox(string.Format("ListChild[{0}].PictureUpload", Model.OffSet), Model.PictureUpload, new
+           {
+               @type = "file",
+               @onchange = "PreviewImage(this,\"upload-preview-" + Model.OffSet + "\")",
+               @accept = "*.jpg"
+           })
+                @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label-danger" })
+            </div>
+        </div>
+
+        @*Color*@
+        <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Color"))</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="input-group" id="divColor-@Model.OffSet">
+                    @Html.TextBox(string.Format("ListChild[{0}].ColorCode", Model.OffSet), Model.ColorCode, new
+                   {
+                       @class = "form-control",
+                       @value = "#dddfe1",
+                       @id = "txtColorCode-" + Model.OffSet,
+                   })<span class="input-group-addon"><i></i></span>
+                </div>
+            </div>
+        </div>
+
+    </td>
+    <td width="50px">
+        <a href="#" onclick="DeleteAddSubPaymentPanel(this); return false;" style="font-size:28px; color:red;">
+            <i class="fa fa-remove"></i>
+        </a>
+    </td>
+</tr>
+
+<script>
+    $(document).ready(function () {
+        Preview();
+        if (typeof ($.fn.colorpicker) === 'undefined') {
+            return;
+        }
+
+        $('#divColor-@Model.OffSet').colorpicker();
+
+        $(".clsGLAccountCode").select2({
+            placeholder: "Please choose account",
+            allowClear: true,
+        })
+    });
+
+    function colorpicker(index){
+
+    }
+
+    function Preview(bgColor) {
+    }
+
+</script>

@@ -1,0 +1,71 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.RSVPProductMappingModels
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Items Mapping - Add New").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Settings" }, { "B", "RSVP Product Mapping" }, { "C", "Items Mapping - Add New" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    @*<div class="x_title">
+                            @Html.Partial("_TabMenu", "create")
+                            <div class="clearfix"></div>
+                        </div>*@
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0);" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="@Url.Action("Index", "SRSVPProductMapping")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "SRSVPProductMapping", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SubmitForm(form) {
+            var isSubmit = true;
+            $('.trTabOffSet:visible').each(function (index, value) {
+                var objError = $(this).find('#ltrError');
+                objError.html('');
+                //============
+                var ItemCode = $(this).find('button').html().toLowerCase();
+                var RSVPItemCode = $(this).find('#txtRSVPCode').val();
+                if (ItemCode == 'select') {
+                    objError.html('Please choose Item Code.');
+                    isSubmit = false;
+                    return true;
+                }
+                else if (RSVPItemCode == '') {
+                    objError.html('Please enter RSVP Item Code.');
+                    isSubmit = false;
+                    return true;
+                }
+            });
+            if (isSubmit) {
+                $(form).submit();
+            }
+        }
+
+        $(document).ready(function () {
+        });
+    </script>
+}

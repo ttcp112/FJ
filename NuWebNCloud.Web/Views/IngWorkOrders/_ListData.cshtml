@@ -1,0 +1,233 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.WorkOrderModelsViewModels
+@{
+    int i = 0;
+}
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Work Orders"))
+            </h2 >
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive" cellspacing="0" style="width:100%;">
+                    <thead>
+                        <tr class="headings">
+                            <th style = "text-align:center;" ><input type="checkbox" id="check-all" onclick="toggleCheckedAll()" /></th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO Number"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO Date"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Completed Date"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Status"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Alert"))</th>
+                        </tr >
+                    </thead >
+                    <tbody >
+                        @foreach(var item in Model.ListItem)
+                                {
+                                        string styleRow = "row-evenItem";
+                                        if (i % 2 == 0)
+                                        {
+                                            styleRow = "row-oddItem";
+                                        }
+                            <tr class="even pointer @styleRow" style="color:#34495e; font-weight:bold;">
+                                <td class="a-center text-center">
+                                    @if(item.Status != (int) Commons.EPOStatus.Closed)
+                                {
+                                        <input type = "checkbox" id = "@item.Id" data-status = "@item.Status" name = "table_records" class="chkChild" onclick="toggleChecked();" />
+                                    }
+                                </td>
+                                <td class="text-center">@item.WONumber</td>
+                                <td>@item.StoreName</td>
+                                @*<td class="text-right">@item.Symbol @string.Format("{0:N2}", item.Total)</td>*@
+                                <td class="text-center">@item.WODate.ToString("MM/dd/yyyy")</td>
+                                <td class="text-center">@item.DateCompleted.ToString("MM/dd/yyyy")</td>
+                                <td class="text-center">
+                                    @if (item.Status == (int)Commons.EPOStatus.Open)
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Open.ToString()))
+                                    }
+                                            else if (item.Status == (int)Commons.EPOStatus.Approved)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Approved.ToString()))
+                                                                    }
+                                            else if (item.Status == (int)Commons.EPOStatus.InProgress)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.InProgress.ToString()))
+                                                                    }
+                                            else if (item.Status == (int)Commons.EPOStatus.Closed)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Commons.EPOStatus.Closed.ToString()))
+                                                                    }
+                                </td >
+                                <td >
+                                    <a href = "javascript:void(0)" class="btn btn-primary btn-xs view details" id="btn_View"
+                                       onclick="ShowView('@Url.Action("View", "IngWorkOrders", new { id = @item.Id })');"><i class="fa fa-eye"></i>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>
+                                    @if(item.Status != (int) Commons.EPOStatus.Open)
+                                        {
+                                        @*if (item.ListReceiptPO != null && item.ListReceiptPO.Count > 0)
+                                        {
+                                            <div class="btn-group" style="margin-top:-5px;">
+                                                <button type="button" class="btn btn-danger btn-xs">Received Note</button>
+                                                <button type="button" class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu" role="menu" style="padding:5px;margin-left: -60px;">
+                                                    <table style="font-size:13px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="padding-right:5px;">#</td>
+                                                                <td class="text-center">Received No.</td>
+                                                                <td class="text-center">Received Qty</td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @for (int j = 0; j < item.ListReceiptPO.Count; j++)
+                                                            {
+                                                                var itemReceiptPO = item.ListReceiptPO[j];
+                                                                <tr>
+                                                                    <td style="padding-right:5px;">@(j + 1)</td>
+                                                                    <td>@itemReceiptPO.ReceiptNoteNo</td>
+                                                                    <td class="text-center">@itemReceiptPO.RecievingQty</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        }*@
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)"
+                                           onclick="ShowView('@Url.Action("Edit", "IngWorkOrders", new { id = @item.Id})');"
+                                           class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Edit"))</a>
+
+                                        <a href = "javascript:void(0)" onclick = "ShowView('@Url.Action("Delete", "IngWorkOrders", new { id = @item.Id })')"
+                                           class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>
+                                           }
+                                </td>
+                                <td class="text-center">
+                                    @*@if (item.Status == (int)Commons.EPOStatus.Open || item.Status == (int)Commons.EPOStatus.Approved)
+                                    {
+                                        if (item.ColorAlert.Equals("red"))
+                                        {
+                                            <i class="fa fa-warning text-danger" data-toggle="tooltip" data-placement="top" title="Expired"></i>
+                                        }
+                                        else if (item.ColorAlert.Equals("yellow"))
+                                        {
+                                            DateTime currentDate = DateTime.Now.Date;
+                                            DateTime DeliveryDate = item.DateCompleted.Date;
+                                            int day = (DeliveryDate - currentDate).Days + 1;
+                                            if (day <= 1)
+                                            {
+                                                <i class="fa fa-warning text-info" data-toggle="tooltip" data-placement="top" title="@day day left"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-warning text-info" data-toggle="tooltip" data-placement="top" title="@day days left"></i>
+                                            }
+
+                                        }
+                                    }*@
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+
+    //=========================================
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "type": "string-string-num", targets: 1 },
+                { "orderable": false, "targets": [0, 7] },
+                { "width": "2%", "targets": [0, 3, 4, 5, 6, 7] },
+                { "width": "20%", "targets": 2 },
+            ],
+            "order": [
+                    [2, 'asc'],
+                    [1, 'desc']
+            ],
+            "displayLength": 25,
+            "drawCallback": function (settings) {
+                //this.api().columns(6).every(function () {
+                //    var column = this;
+                //    var select = $('<select style="width:100%; color: #000;"><option value="">All</option></select>')
+                //        .appendTo($(column.header()).empty())
+                //        .on('change', function () {
+                //            var val = $.fn.dataTable.util.escapeRegex(
+                //                $(this).val()
+                //            );
+                //            column.search(val ? '^' + val + '$' : '', true, false)
+                //                .draw();
+                //        });
+                //    column.data().unique().sort().each(function (d, j) {
+                //        select.append('<option value="' + d + '">' + d + '</option>')
+                //    });
+
+                //});
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(2, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="8"><strong style="color:#d9534f;">' + (group === '' ? '|' : group) + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

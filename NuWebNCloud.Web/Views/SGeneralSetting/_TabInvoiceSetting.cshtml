@@ -1,0 +1,171 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.InvoiceDTO
+
+<div data-id="@Model.ID" class="InvoiceSettingRow">
+    @Html.Hidden(string.Format("ListInvoice[0].ID"), Model.ID)
+    @Html.Hidden(string.Format("ListInvoice[0].Name"), Model.Name)
+    @Html.Hidden(string.Format("ListInvoice[0].IsSelected"), Model.IsSelected)
+    @Html.Hidden(string.Format("ListInvoice[0].Setting.ImageURL"), Model.Setting.ImageURL, new { @id = "idURL-" + Model.ID })
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BusinessID"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.BusinessID"), Model.Setting.BusinessID, new
+           {
+               @class = "form-control",
+           })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.BusinessID"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("SellerID"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.SellerID"), Model.Setting.SellerID, new
+           {
+               @class = "form-control",
+           })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.SellerID"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("RepresentID"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.RepresentID"), Model.Setting.RepresentID, new
+           {
+               @class = "form-control",
+           })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.RepresentID"))
+        </div>
+    </div>
+
+    <div class="box-body">
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Logo"))</label>
+            <div class="col-sm-4">
+                <button class="btn btn-default" type="button" onclick="showLogoInvoiceUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+                @Html.TextBox(string.Format("ListInvoice[0].Setting.ImgLogoInvoiceUpload"), Model.Setting.ImgLogoInvoiceUpload,
+        new { @type = "file", @onchange = "PreviewImage(this,\"logoinvoice-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urllogoInvoice" })
+            </div>
+            <div class="col-sm-3">
+                @if (!string.IsNullOrEmpty(Model.Setting.Logo))
+                {
+                    <img id="logoinvoice-preview" src="@Model.Setting.ImageURL" height="100" width="200" class="col-sm-offset-2" />
+                }
+                else
+                {
+                    <img id="logoinvoice-preview" class="col-sm-offset-2" src="@Commons.Image200_100" height="100" width="200" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Title 1"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.Title"), Model.Setting.Title, new
+           {
+               @class = "form-control",
+           })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.Title"))
+        </div>
+        <label class="col-sm-1 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Title 2"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.Title2"), Model.Setting.Title2, new
+       {
+           @class = "form-control",
+       })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.Title2"))
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Period Prefix"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.PeriodPrefix"), Model.Setting.PeriodPrefix, new
+        {
+            @class = "form-control",
+        })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.PeriodPrefix"))
+        </div>
+        <label class="col-sm-1 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Period Suffix"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.PeriodSuffix"), Model.Setting.PeriodSuffix, new
+        {
+            @class = "form-control",
+        })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.PeriodSuffix"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice From"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.InvoiceFrom"), Model.Setting.InvoiceFrom, new
+       {
+           @class = "form-control",
+           @type = "number",
+       })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.InvoiceFrom"))
+        </div>
+        <label class="col-sm-1 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Invoice To"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.InvoiceTo"), Model.Setting.InvoiceTo, new
+       {
+           @class = "form-control",
+           @type = "number",
+       })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.InvoiceTo"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Headban"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.Headban"), Model.Setting.Headban, new
+       {
+           @class = "form-control",
+       })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.Headban"))
+        </div>
+        <label class="col-sm-1 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Branchban"))</label>
+        <div class="col-sm-3">
+            @Html.TextBox(string.Format("ListInvoice[0].Setting.Branchban"), Model.Setting.Branchban, new
+       {
+           @class = "form-control",
+       })
+            @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.Branchban"))
+        </div>
+    </div>
+
+    @if (Model.Setting.InvoicePrefix != null && Model.Setting.InvoicePrefix.Count > 0)
+    {
+        <div class="form-group">
+            <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Month"))</label>
+            <div class="col-sm-3">
+                <label class="col-sm-2 control-label" style="margin-left: -15px; ">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value"))</label>
+            </div>
+        </div>
+        for (int i = 0; i < Model.Setting.InvoicePrefix.Count; i++)
+        {
+            @Html.Hidden(string.Format("ListInvoice[0].Setting.InvoicePrefix[{0}].Month", i), Model.Setting.InvoicePrefix[i].Month)
+            <div class="form-group">
+                <label class="col-sm-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Model.Setting.InvoicePrefix[i].Month.ToString()))</label>
+                <div class="col-sm-3">
+                    @Html.TextBox(string.Format("ListInvoice[0].Setting.InvoicePrefix[{0}].Value", i), Model.Setting.InvoicePrefix[i].Value, new
+                {
+                    @class = "form-control",
+                })
+                    @Html.ValidationMessage(string.Format("ListInvoice[0].Setting.InvoicePrefix[{0}].Value", i))
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+
+</script>

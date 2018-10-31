@@ -1,0 +1,252 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Product.ProductModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+
+
+<div class="se-pre-con"></div>
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+              new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+              !string.IsNullOrEmpty(_ID) ? (object)new
+              {
+                  @class = "form-control select2_multiple",
+                  @disabled = "disabled",
+                  @id = "storeDdl",
+                  @style = "width:100%;"
+              } : new
+              {
+                  @class = "form-control select2_multiple",
+                  @id = "storeDdl",
+                  @style = "width:100%;"
+              })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+             (SelectList)ViewBag.StoreID,
+             !string.IsNullOrEmpty(_ID) ? (object)new
+             {
+                 @class = "form-control select2_multiple",
+                 @disabled = "disabled",
+                 @id = "storeDdl",
+                 @style = "width:100%;"
+             } : new
+             {
+                 @class = "form-control select2_multiple",
+                 @id = "storeDdl",
+                 @style = "width:100%;"
+             })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+    @*SetMenu Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Default Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = ""+ (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")) + "", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*SET MENU CODE*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifier Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.ProductCode, new { @class = "form-control", placeholder = "" + (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifier Code")) + "" })
+            @Html.ValidationMessageFor(model => model.ProductCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*BAR CODE*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BarCode"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.BarCode, new { @class = "form-control", placeholder = "" + (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Bar Code")) + "" })
+            @Html.ValidationMessageFor(model => model.BarCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Sequence*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.OrderByIndex, new { @class = "form-control", @type = "number", @min = 0, placeholder = "" + (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order")) + "" })
+            @Html.ValidationMessageFor(model => model.OrderByIndex, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>
+
+    @*Kitchen Display Name*@
+    <div class="form-group">
+        <label for="" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Kitchen Display Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Description, new { @class = "form-control", placeholder = "" + (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be shown")) + "" })
+            @Html.ValidationMessageFor(model => model.Description, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Print out Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print out Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.PrintOutText, new { @class = "form-control", placeholder = "" + (_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To be printed")) + "" })
+            @Html.ValidationMessageFor(model => model.PrintOutText, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Prices*@
+    <div class="prices-div">
+        @Html.Partial("~/Views/SBInventoryBase/_Price.cshtml", Model)
+    </div>
+
+    @*Quantity*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Quantity, new { @class = "form-control", placeholder = "0", type = "number", min = 0 })
+            @Html.ValidationMessageFor(model => model.Quantity, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Check Stock*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Stock"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsCheckedStock)</label>
+        </div>
+    </div>
+
+    @*Limit*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Limit"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Limit, new { @class = "form-control", placeholder = "0", type = "number", min = 0 })
+            @Html.ValidationMessageFor(model => model.Limit, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Category*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="category">
+                @*@Html.DropDownListFor(model => model.CategoryID, new SelectList(Model.ListCategories, "Value", "Text", Model.CategoryID), 
+               "-- Select --", new { @class = "form-control select2_multiple", onchange = "ChangeCategory(this)", @id = "ddlCategory", @style="width:100%;" })*@
+                @*Updated 08282017*@
+                <select class="form-control select2_multiple" style="width: 100%" id="ddlCategory" onchange="ChangeCategory(this)" name="CategoryID">
+                    <option></option>
+                    @foreach (var cate in Model.lstCateGroup)
+                    {
+                        <option class="@cate.Level" value="@cate.Id" @if (cate.Selected) { @Html.Raw("selected") }>@cate.Name</option>
+                    }
+                </select>
+            </div>
+            @Html.ValidationMessageFor(model => model.CategoryID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Open Price*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Open Price"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsAllowedOpenPrice)</label>
+        </div>
+    </div>
+
+    @*Print on check*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Print On Check"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsPrintedOnCheck)</label>
+        </div>
+    </div>
+
+    @*Allow to Apply Discount/Promotion*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow to Apply Discount/Promotion"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsAllowedDiscount)</label>
+        </div>
+    </div>
+
+
+    @*Service Charge*@
+    @*<div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">Service Charge</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    @Html.CheckBoxFor(model => model.HasServiceCharge, new { @class = "chb-ServiceCharge", onchange = "ToggleComponent(this, '.txt-ServiceCharge')", id = "chbServiceCharge" })
+                </span>
+                @Html.TextBoxFor(model => model.sServiceCharge, new { @class = "form-control txt-ServiceCharge", type = "number", id = "txtServiceCharge" })
+                <div class="input-group-addon">%</div>
+            </div>
+            @Html.ValidationMessageFor(model => model.ServiceCharge, null, new { @class = "label" })
+        </div>
+    </div>*@
+</div>
+
+<script type="text/javascript">
+
+    var btnGlobal;
+    $(document).ready(function (e) {
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        if ($(".chb-ServiceCharge").prop('checked')) {
+            $(".txt-ServiceCharge").attr('readonly', false);
+        } else {
+            $(".txt-ServiceCharge").attr('readonly', true);
+        }
+    });
+
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+</script>

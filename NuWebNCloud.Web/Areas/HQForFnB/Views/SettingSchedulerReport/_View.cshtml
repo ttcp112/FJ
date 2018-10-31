@@ -1,0 +1,46 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.SettingSchedulerTaskModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "HQ" }, { "B", "Settings" }, { "C", "Scheduled Reports - View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="#" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;Close</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="col-md-2 col-sm-2 col-xs-12 text-right">Name: </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Email
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 col-sm-2 col-xs-12 text-right">Created Date: </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.CreatedDate
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 col-sm-2 col-xs-12 text-right">Created User: </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.CreatedUser
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

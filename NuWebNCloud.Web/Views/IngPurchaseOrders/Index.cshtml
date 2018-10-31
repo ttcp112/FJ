@@ -1,0 +1,254 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.PurchaseOrderViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Orders").ToString();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Transaction Data" }, { "C", "Purchase Orders - View Data" } })
+            </div>
+        </div><!--end page-->
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div><!--end x_title-->
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngPurchaseOrders", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-approved" onclick="ChangeStatus('@Commons.EPOStatus.Approved.ToString("d")')"><i class="fa fa-check"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Approved"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-close" onclick="ChangeStatus('@Commons.EPOStatus.Closed.ToString("d")')"><i class="fa fa-download"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close PO"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.StoreID,
+                                        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                                        new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "storeDdlView",
+                                            @style = "width:100%;"
+                                        })*@
+
+                                    @*Group by company, updated 041420180*@
+                                    @Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "storeDdlView",
+                                            @style = "width:100%;"
+                                        })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-2 col-sm-2 col-xs-12 text-right lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply Form"))</div>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    @Html.TextBoxFor(model => model.ApplyFrom, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker has-feedback-left", @placeholder = "Apply Form", @autocomplete = "off" })
+                                    @*<span class="fa fa-calendar form-control-feedback left " aria-hidden="false"></span>*@
+                                    @Html.ValidationMessageFor(model => model.ApplyFrom, null, new { @class = "label" })
+                                </div>
+                                <div class="col-md-1 col-sm-1 col-xs-12 text-right lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply To"))</div>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    @Html.TextBoxFor(model => model.ApplyTo, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker has-feedback-left", @placeholder = "Apply To", @autocomplete = "off" })
+                                    @*<span class="fa fa-calendar form-control-feedback left " aria-hidden="false"></span>*@
+                                    @Html.ValidationMessageFor(model => model.ApplyTo, null, new { @class = "label" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-2 col-xs-12 text-right"></div>
+                            <div class="col-md-7 col-sm-7 col-xs-12 text-right">
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                            </div>
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+
+                </div><!--end x_content-->
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <!--Row content-->
+        <div class="row">
+        </div>
+
+    </div><!--end page-->
+    <div class="detail-view" style="height:100%;">
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                calender_style: "picker_2",
+                showDropdowns: true,
+                locale: {
+                    daysOfWeek: _daysOfWeek,
+                    monthNames: _monthNames
+                }
+            }, function (start, end, label) {
+            });
+        });
+
+        $(function () {
+            Search();
+            disableButton('#btn-approved', false);
+            disableButton('#btn-close', false);
+
+            $("#storeDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            }).val('@Model.StoreID').trigger('change.select2');
+        });
+
+        $(".search-form").submit(function (e) {
+            Search();
+            return false;
+        });
+
+        var lstIdSelectedApproved = [];
+        var lstIdSelectedClose = [];
+
+        function toggleCheckedAll() {
+            var isCheckAll = $('#check-all').prop("checked");
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                if (isCheckAll === true) {
+                    $(listChk[i]).prop('checked', true);
+
+                    var status = $(listChk[i]).attr('data-status');
+                    var item = $(listChk[i]).attr('id');
+                    if (status === '@Commons.EPOStatus.Open.ToString("d")') {
+                        lstIdSelectedApproved.push(item);
+                    }
+                    else if (status === '@Commons.EPOStatus.Approved.ToString("d")' || status === '@Commons.EPOStatus.InProgress.ToString("d")') {
+                        lstIdSelectedClose.push(item);
+                    }
+
+                    disableButton(true);
+
+                } else {
+                    $(listChk[i]).prop('checked', false);
+
+                    lstIdSelectedApproved = [];
+                    lstIdSelectedClose = [];
+
+                    disableButton('#btn-approved', false);
+                    disableButton('#btn-close', false);
+                }
+            }
+
+            if (lstIdSelectedApproved.length > 0) {
+                disableButton('#btn-approved', true);
+            }
+            if (lstIdSelectedClose.length > 0) {
+                disableButton('#btn-close', true);
+            }
+        }
+
+        function toggleChecked() {
+            var _countApproved = 0;
+            lstIdSelectedApproved = [];
+
+            var _countClose = 0;
+            lstIdSelectedClose = [];
+
+            var _count = 0;
+            var listChk = $('.chkChild');
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('id');
+
+                if ($(listChk[i]).prop('checked') === true) {
+                    var status = $(listChk[i]).attr('data-status');
+                    if (status === '@Commons.EPOStatus.Open.ToString("d")') {
+                        lstIdSelectedApproved.push(item);
+                        _countApproved++;
+                    }
+                    else if (status === '@Commons.EPOStatus.Approved.ToString("d")' || status === '@Commons.EPOStatus.InProgress.ToString("d")') {
+                        lstIdSelectedClose.push(item);
+                        _countClose++;
+                    }
+                    _count++;
+                }
+
+                if (listChk.length !== _count) {
+                    $('#check-all').prop("checked", false);
+                }
+                else {
+                    $('#check-all').prop("checked", true);
+                }
+
+                if (_countApproved === 0) {
+                    disableButton('#btn-approved', false);
+                } else {
+                    disableButton('#btn-approved', true);
+                }
+                //----
+                if (_countClose === 0) {
+                    disableButton('#btn-close', false);
+                } else {
+                    disableButton('#btn-close', true);
+                }
+            }
+        }
+
+        function disableButton(btn, status) {
+            if (!status) {
+                $(btn).addClass('disabled');
+            } else {
+                $(btn).removeClass('disabled');
+            }
+        }
+
+        function ChangeStatus(TypeStatus) {
+            var listData = lstIdSelectedApproved;
+            if (TypeStatus === '@Commons.EPOStatus.Closed.ToString("d")') {
+                listData = lstIdSelectedClose;
+            }
+            if (typeof listData == 'undefined' || listData.length == 0) {
+                alert("Please choose least one purchase order!");
+                return;
+            }
+            $('.se-pre-con').show();
+            $.ajax({
+                url: '@Url.Action("ChangeStatus", "IngPurchaseOrders")',
+                type: 'POST',
+                dataType: 'html',
+                cache: false,
+                data: { lstId: listData, status: TypeStatus },
+                success: function () {
+                    //$('.se-pre-con').hide();
+                    Search();
+                    disableButton('#btn-approved', false);
+                    disableButton('#btn-close', false);
+                    //=========
+                    lstIdSelectedApproved = [];
+                    lstIdSelectedClose = [];
+                },
+                error: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        };
+    </script>
+}

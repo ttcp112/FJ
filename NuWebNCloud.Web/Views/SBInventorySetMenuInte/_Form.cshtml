@@ -1,0 +1,619 @@
+﻿@using NuWebNCloud.Shared;
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <table class="table table-hover table-max-height">
+                <thead>
+                    <tr style="background-color: #337ab7; color: #fff;">
+                        <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name")) </label></td>
+                        <td class="align-right" style="width:2%;">@*<input id="chkAllItemStore" type="checkbox" onclick="chkAllItemClick(this)" />*@</td>
+                    </tr>
+                </thead>
+                <tbody class="store-items">
+                    @*@for (int i = 0; i < Model.ListStoreView.Count; i++)
+                    {
+                        <tr id="@Model.ListStoreView[i].Value" data-value="@Model.ListStoreView[i].Text">
+                            <td class="align-left">@Model.ListStoreView[i].Text</td>
+                            <td class="align-right">
+                                <label>
+                                    @if (Model.ListStoreView[i].Selected)
+                                    {
+                                        @Html.Hidden(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected, new { @value = "True" })
+                                        @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected,
+                                             new
+                                             {
+                                                 //@onClick = "chkItemClick(this,'" + @Model.ListStoreView[i].Value + "','" + @Model.ListStoreView[i].Text + "')",
+                                                 @id = "chkStore_" + @Model.ListStoreView[i].Value,
+                                                 @class = "child_chkStore",
+                                                 @data_disabled = "" + Model.ListStoreView[i].Disabled + "",
+                                                 @disabled = "disabled",
+                                                 @data_storeName = "" + Model.ListStoreView[i].Text + "",
+                                                 @data_storeId = "" + Model.ListStoreView[i].Value + "",
+                                             })
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected,
+                                        new
+                                        {
+                                            @onClick = "chkItemClick(this,'" + @Model.ListStoreView[i].Value + "','" + @Model.ListStoreView[i].Text + "')",
+                                            @id = "chkStore_" + @Model.ListStoreView[i].Value,
+                                            @class = "child_chkStore",
+                                            @data_disabled = "" + Model.ListStoreView[i].Disabled + "",
+                                            @data_storeName = "" + Model.ListStoreView[i].Text + "",
+                                            @data_storeId = "" + Model.ListStoreView[i].Value + "",
+                                        })
+                                    }
+                                    @Html.Hidden(string.Format("ListStoreView[{0}].Value", i), Model.ListStoreView[i].Value)
+                                    @Html.Hidden(string.Format("ListStoreView[{0}].Text", i), Model.ListStoreView[i].Text)
+                                </label>
+                            </td>
+                        </tr>
+                    }*@
+
+                    @*Group by company, updated 041420180*@
+@{ 
+                        var lstStoreGroup = Model.ListStoreView.GroupBy(gg => gg.Group.Name).OrderBy(oo => oo.Key).ToList();
+                        int index = 0;
+                        foreach (var company in lstStoreGroup)
+                        {
+                            <tr class="company-name"><td colspan="2">@Html.Raw(company.Key)</td></tr>
+                            var lstStores = company.ToList();
+                            lstStores = lstStores.OrderBy(oo => oo.Text).ToList();
+
+                            for (int i = 0; i < lstStores.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="align-left">@lstStores[i].Text</td>
+                                    <td class="align-right">
+                                        <label>
+                                            @if(lstStores[i].Selected)
+                                            {
+                                                @Html.Hidden(string.Format("ListStoreView[{0}].Selected", i), lstStores[i].Selected, new { @value = "True" })
+                                                @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", i), lstStores[i].Selected,
+                                                     new
+                                                     {
+                                                         @id = "chkStore_" + @lstStores[i].Value,
+                                                         @class = "child_chkStore",
+                                                         @data_disabled = "" + lstStores[i].Disabled + "",
+                                                         @disabled = "disabled",
+                                                         @data_storeName = "" + lstStores[i].Text + "",
+                                                         @data_storeId = "" + lstStores[i].Value + ""
+                                                     })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", index), lstStores[i].Selected,
+                                                new
+                                                {
+                                                    @onClick = "chkItemClick(this,'" + @lstStores[i].Value + "','" + @lstStores[i].Text + "')",
+                                                    @id = "chkStore_" + @lstStores[i].Value,
+                                                    @class = "child_chkStore",
+                                                    @data_disabled = "" + lstStores[i].Disabled + "",
+                                                    @data_storeName = "" + lstStores[i].Text + "",
+                                                    @data_storeId = "" + lstStores[i].Value + ""
+                                                })
+                                            }
+                                            
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Value", index), lstStores[i].Value)
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Text", index), lstStores[i].Text)
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Disabled", index), lstStores[i].Disabled)
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Group.Name", index), company.Key)
+                                        </label>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+            @Html.ValidationMessageFor(model => model.ListStoreView, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*SetMenu Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Default Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new
+       {
+           @class = "form-control",
+           @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Menu Name")),
+           autocomplete = "off"
+       })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*SET MENU CODE*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Menu Code")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.ProductCode, new
+       {
+           @class = "form-control",
+           @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Menu Code"))
+       })
+            @Html.ValidationMessageFor(model => model.ProductCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*BAR CODE*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BarCode")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.BarCode, new
+       {
+           @class = "form-control",
+           @placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("BarCode"))
+       })
+            @Html.ValidationMessageFor(model => model.BarCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <!-- For PonS -->
+    @*Div Auto*@
+    <div class="form-group" id="divAuto">
+        @if (Model.ListProductOnStore != null && Model.ListProductOnStore.Count > 0)
+        {
+            for (int i = 0; i < Model.ListProductOnStore.Count; i++)
+            {
+                @Html.Partial("_ProductItemOnStore", Model.ListProductOnStore[i])
+            }
+        }
+    </div>
+</div>
+
+<!--Model Confirm clone data-->
+<div class="modal fade" id="modalComfirmStore" tabindex="-1" role="dialog" aria-labelledby="modalItemLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Confirm Store To Clone Data</h4>
+            </div>
+            <div class="modal-body scroll" id="popupSeason_@Model.StoreID">
+                <div class="form-group-sm">
+                    <table class="table center-content">
+                        <thead>
+                            <tr style="background-color:#34495e; color:#fff;">
+                                <th width="85%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name")) </th>
+                                <th width="5%" style="text-align:center;">
+                                    <input id="chkAllItemClone" type="checkbox" onclick="ToogleCheckAllItem(this, '#body-comfirm-store')" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-comfirm-store" class="timeslot"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span></span>
+                <button class="btn btn-default" data-dismiss="modal" onclick="CloneDataByStore();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Done"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+        $("#modalComfirmStore").on('shown.bs.modal', function (event) {
+            $('#chkAllItemClone').prop('checked', false);
+            var mStr = "";
+            mListStore = [];
+            $('tbody.store-items tr:not(.company-name)').find('input[type="checkbox"]:checked').each(function () {
+                //var _key = $(this).parents('tr:first').attr('id');
+                //var _text = $(this).parents('tr:first').attr('data-value');
+                var _key = $(this).attr('data-storeid');
+                var _text = $(this).attr('data-storename');
+                if (_key !== _StoreID) {
+                    mStr += "<tr id='" + _key + "'>";
+                    mStr += "<td>" + _text + "</td>";
+                    mStr += "<td style='text-align:center;'> <input type='checkbox' class='chkAll_" + _key
+                         + " chkItemClone' onclick='checkItemClone(this, \".chkItemClone\", \"#chkAllItemClone\")' />" + "</td>";
+                    mStr += "</tr>";
+                } else {
+                    var mStore = {
+                        key: _key,
+                        text: _text
+                    };
+                    mListStore.push(mStore);
+                }
+            });
+            if (mStr !== "") {
+                $('#body-comfirm-store').append(mStr);
+            }
+            $('.se-pre-con').hide();
+        });
+
+        @*//===========
+        @if (!string.IsNullOrEmpty(_ID))
+        {
+            int totalStore = Model.ListStoreView.Count;
+            int totalStoreSelect = Model.ListStoreView.Count(x=>x.Selected);
+            bool _flag = (totalStoreSelect == totalStore);
+            @:$('#chkAllItemStore').prop('checked', @_flag.ToString().ToLower());
+            @:$('#chkAllItemStore').prop('disabled', @_flag.ToString().ToLower());
+        }*@
+    });
+
+    /*PonS*/
+    //function chkAllItemClick(e) {
+    //    var checked = $(e).prop('checked');
+    //    $('.child_chkStore').each(function (index, value) {
+    //        var disabled = $(this).is(':disabled');
+    //        if (!disabled) {
+    //            $(this).prop('checked', checked);
+    //            var storeId = $(this).data('storeid');
+    //            var storeName = $(this).data('storename');
+    //            chkItemClick(this, storeId, storeName);
+    //        }
+    //    });
+    //}
+
+    function chkItemClick(e, _StoreID, _StoreName) {
+        StoreID = _StoreID;
+        var checked = $(e).prop('checked');
+        //var disabled = $(e).attr("data-disabled");
+        //if (disabled == 'True') {
+        //    $(e).prop('checked', true);
+        //}
+        //else {
+        if (checked) {
+            ItemType = '@Commons.EProductType.Dish.ToString("d")';
+            var StoreName = _StoreName;
+            AddMoreProductItemOnStore(StoreID, StoreName);
+        } else {
+            var div = $('.cls_' + StoreID);
+            $(div).find('input.GroupStatus').val(9);
+            $(div).css('display', 'none');
+            //====
+            DelObject(div, StoreID);
+        }
+        //}
+        ////===============
+        //var totalRow = $('.child_chkStore').length;
+        //var totalChecked = $(".child_chkStore:checked").length;
+        //$('#chkAllItemStore').prop('checked', (totalRow == totalChecked));
+    }
+
+    //Clone data between Store
+    function CloneDataByStore() {
+        if (mListStore.length > 0) {
+            var obj = {};
+            var mCountStore = 0;
+            mCountStore = $('tbody.timeslot tr').find('input[type="checkbox"]:checked').length;
+            if (mCountStore > 0) {
+                var r = confirm('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("When clone data to other stores, some data may be lost at each store!"))');
+                if (r) {
+                    var lengthTabContent = 0;
+                    var listTabObj = [];
+                    var InteGroupProductModels = null;
+
+                    $('.product-item-on-store:visible').each(function (index, value) {
+                        var _offSet = $(this).attr('data-offset');
+                        var _storeID = $(this).attr('data-id');
+                        if (_storeID === mListStore[0].key) {
+                            obj = {
+                                Sequence: $('#Sequence_' + _offSet).val(),
+                                KitchenDisplayName: $('#KitchenDisplayName_' + _offSet).val(),
+                                PrintOutName: $('#PrintOutName_' + _offSet).val(),
+                                Quantity: $('#Quantity_' + _offSet).val(),
+                                Limit: $('#Limit_' + _offSet).val(),
+                                IsActive: $('#IsActive_' + _offSet).is(':checked'),
+                                IsCheckStock: $('#IsCheckStock_' + _offSet).is(':checked'),
+                                IsAllowOpenPrice: $('#IsAllowOpenPriceP_' + _offSet).is(':checked'),
+                                IsPrintOnCheck: $('#IsPrintOnCheck_' + _offSet).is(':checked'),
+                                Price: $('#Price_' + _offSet).val(),
+                                SeasonalPrice: $('#SeasonalPrice_' + _offSet).val(),
+                                ddlPrice: $('.ddlPrice2_' + _offSet).val(),
+                                Cost: $('#Cost_' + _offSet).val(),
+                                ExpiredDate: $('#ExpiredDate_' + _offSet).val(),
+                                Measure: $('#Measure_' + _offSet).val(),
+                                IsAllowDiscount: $('#IsAllowDiscount_' + _offSet).is(':checked'),
+                                chbServiceCharge: $('#chbServiceCharge_' + _offSet).is(':checked'),
+                                txtServiceCharge: $('#txtServiceCharge_' + _offSet).val(),
+                                //txtKiosk: $('#txtKiosk_' + _OffSet).val(),
+                                IsComingSoon: $('#IsComingSoon_' + _offSet).is(':checked'),
+                                Info: $('#Info_' + _offSet).val(),
+                                IsShowMessage: $('#IsShowMessageP_' + _offSet).is(':checked'),
+                                Message: $('#Message_' + _offSet).val(),
+                                IsShowInReservation: $('#IsShowInReservation_' + _offSet).is(':checked'),
+                                IsPromotion: $('#IsPromotion_' + _offSet).is(':checked'),
+                                Category: $('#Category_' + _offSet).val()
+                            };
+                            //=========
+                            $('#div-mediate_' + _storeID + ' .trTabOffSet:visible').each(function (index, value) {
+
+                                var Sequence = $(this).find('#txtTabSequence').val();
+                                var Name = $(this).find('#txtTabName').val();
+                                var Description = $(this).find('#txtTabMessage').val();
+                                var Maximum = $(this).find('#txtTabQuantity').val();
+                                //==============List Dish
+                                $(this).find('#modalDish').show();
+                                var listDish = [];
+                                var InteProductOnGroupModels = null;
+                                $(this).find('.mediate-dish:visible').each(function (index, value) {
+                                    var ProductID = $(this).data('id');
+                                    var ProductName = $(this).find('#txtDishName').val();
+                                    var ExtraPrice = $(this).find('#txtDishExtraPrice').val();
+                                    var Sequence = $(this).find('#txtDishSequence').val();
+                                    var ProductName = $(this).find('#txtDishName').val();
+                                    InteProductOnGroupModels = {
+                                        ProductID: ProductID,
+                                        ProductName: ProductName,
+                                        ExtraPrice: ExtraPrice,
+                                        Sequence: Sequence,
+                                        Name: ProductName
+                                    };
+                                    listDish.push(InteProductOnGroupModels);
+                                });
+                                $(this).find('#modalDish').hide();
+                                //==============End List Dish
+                                InteGroupProductModels = {
+                                    Sequence: Sequence,
+                                    Name: Name,
+                                    Description: Description,
+                                    Maximum: Maximum,
+                                    ListProductOnGroup: listDish
+                                }
+                                listTabObj.push(InteGroupProductModels);
+                            });
+                        }
+                    });
+
+
+                    $('.product-item-on-store:visible').each(function (index, value) {
+                        var _offSet = $(this).attr('data-offset');
+                        var _storeID = $(this).attr('data-id');
+                        $('tbody.timeslot tr').find('input[type="checkbox"]:checked').each(function () {
+                            var _key = $(this).parents('tr:first').attr('id');
+                            if (_storeID === _key) {
+                                $('[id = Sequence_' + _offSet + ']').val(obj.Sequence);
+                                $('[id = KitchenDisplayName_' + _offSet + ']').val(obj.KitchenDisplayName);
+                                $('[id = PrintOutName_' + _offSet + ']').val(obj.PrintOutName);
+                                $('[id = Quantity_' + _offSet + ']').val(obj.Quantity);
+                                $('[id = Limit_' + _offSet + ']').val(obj.Limit);
+                                $('[id = IsActive_' + _offSet + ']').prop('checked', obj.IsActive);
+                                $('[id = IsCheckStock_' + _offSet + ']').prop('checked', obj.IsCheckStock);
+                                $('[id = IsAllowOpenPriceP_' + _offSet + ']').prop('checked', obj.IsAllowOpenPrice);
+                                $('[id = IsPrintOnCheck_' + _offSet + ']').prop('checked', obj.IsPrintOnCheck);
+                                $('[id = Price_' + _offSet + ']').val(obj.Price);
+                                $('[id = SeasonalPrice_' + _offSet + ']').val(obj.SeasonalPrice);
+                                $('[id = Cost_' + _offSet + ']').val(obj.Cost);
+                                $('[id = ExpiredDate_' + _offSet + ']').val(obj.ExpiredDate);
+                                $('[id = Measure_' + _offSet + ']').val(obj.Measure);
+                                $('[id = IsAllowDiscount_' + _offSet + ']').prop('checked', obj.IsAllowDiscount);
+                                $('[id = chbServiceCharge_' + _offSet + ']').prop('checked', obj.chbServiceCharge);
+                                $('[id = txtServiceCharge_' + _offSet + ']').val(obj.txtServiceCharge);
+                                if (!obj.chbServiceCharge)
+                                    $('[id = txtServiceCharge_' + _offSet + ']').attr('readonly', true)
+                                else
+                                    $('[id = txtServiceCharge_' + _offSet + ']').attr('readonly', false)
+                                //$('[id *= txtKiosk_]').val(obj.txtKiosk);
+                                $('[id = IsComingSoon_' + _offSet + ']').prop('checked', obj.IsComingSoon);
+                                $('[id = Info_' + _offSet + ']').val(obj.Info);
+                                $('[id = IsShowMessageP_' + _offSet + ']').prop('checked', obj.IsShowMessage);
+                                $('[id = Message_' + _offSet + ']').val(obj.Message);
+                                $('[id = IsShowInReservation_' + _offSet + ']').prop('checked', obj.IsShowInReservation);
+                                $('[id = IsPromotion_' + _offSet + ']').prop('checked', obj.IsPromotion);
+                                $('.ddlPrice2_' + _offSet).val(obj.ddlPrice).trigger('change');
+                                $('#Category_' + _offSet).val(obj.Category).trigger('change');
+
+                                /*=====*/
+                                //Reset Table Row
+                                //$('#div-mediate_' + _storeID + ' .trTabOffSet').hide();
+                                $('#div-mediate_' + _storeID + ' .trTabOffSet').remove();
+
+                                for (var k = 0; k < listTabObj.length; k++) {
+                                    //(function (j) {
+                                    var index = k;
+                                    var InteGroupProductModels = listTabObj[index];
+                                    InteGroupProductModels.OffSet = index;
+                                    InteGroupProductModels.StoreID = _storeID;
+                                    InteGroupProductModels.StoreOffSet = _offSet;
+                                    //=========
+                                    $('.se-pre-con').show();
+                                    $.ajax({
+                                        url: '@Url.Action("AddTabClone", "SBInventorySetMenuInte")',
+                                        type: 'POST',
+                                        data: JSON.stringify(InteGroupProductModels),
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: 'html',
+                                        async: false,
+                                        success: function (data) {
+                                            $('.se-pre-con').hide();
+                                            $("#tr-add-more-tab_" + _storeID + "").before(data);
+                                            //====Call List Dish
+                                            var GroupProductModels = {
+                                                ListProductOnGroup: InteGroupProductModels.ListProductOnGroup,
+                                                currentgroupOffSet: index,
+                                                currentOffset: 0,
+                                                StoreID: InteGroupProductModels.StoreID,
+                                                StoreOffSet: InteGroupProductModels.StoreOffSet
+                                            }
+                                            if (InteGroupProductModels.ListProductOnGroup.length > 0) {
+                                                $('.se-pre-con').show();
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: '@Url.Action("AddDishesClone", "SBInventorySetMenuInte")',
+                                                    traditional: true,
+                                                    data: JSON.stringify(GroupProductModels),
+                                                    contentType: "application/json; charset=utf-8",
+                                                    dataType: "html",
+                                                    async: false,
+                                                    success: function (data) {
+                                                        $('.se-pre-con').hide();
+                                                        $('#tr-add-more-dish_' + _storeID + '-' + _offSet + '-' + GroupProductModels.currentgroupOffSet).before(data);
+                                                        //========
+                                                        $('#popupTabConent-' + _storeID + '').css({ "overflow": "auto", "height": $(window).height() - 200 + "px" })
+                                                    },
+                                                    error: function (jqXHR) {
+                                                        //do something
+                                                        $('.se-pre-con').hide();
+                                                    }
+                                                });
+                                            }
+                                            //====End Call List Dish
+                                        },
+                                        error: function (jqXHR) {
+                                            //do something
+                                            $('.se-pre-con').hide();
+                                        }
+                                    });
+                                    //})(k);
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    }
+
+    function checkItemClone(e, listItemCheck, idCheckAll) {
+        var totalRow = $(listItemCheck).length;
+        var totalChecked = $(listItemCheck + ":checked").length;
+        $(idCheckAll).prop('checked', (totalRow == totalChecked));
+    }
+
+    var mListStore = [];
+    var _StoreID;
+    function CloneDataTabPanelProItem(StoreID, _OffSet) {
+
+        $('#body-comfirm-store').html('');
+        var mCountStore = 0;
+        mCountStore = $('tbody.store-items tr').find('input[type="checkbox"]:checked').length;
+        if (mCountStore > 1) {
+            $('.se-pre-con').show();
+            _StoreID = StoreID;
+            $("#modalComfirmStore").modal('show');
+        }
+    }
+
+    function DeleteTabPanelProItem(StoreID, _OffSet) {
+        var chkStore = $('#chkStore_' + StoreID);
+        var disabled = $(chkStore).attr("data-disabled");
+        //if (!chkStore.is(':disabled')) {
+        //if (disabled == 'False') {
+        var div = $('#divStore_' + StoreID + '-' + _OffSet);
+        $(div).find('input.GroupStatus').val(9);
+        $(div).css('display', 'none');
+        $('#chkStore_' + StoreID).prop('checked', false);
+        //====
+        DelObject(div, StoreID);
+        //} else {
+        //    $(chkStore).prop('checked', true);
+        //}
+    }
+
+    function DelObject(div, StoreID) {
+        $(div).find('div#modalSeason_' + StoreID + '').remove();
+        $(div).find('div#divDish_' + StoreID + '').remove();
+        $(div).find('div#modal-choose-dishes_' + StoreID + '').remove();
+        $(div).find('div#modal-choose-dish_' + StoreID + '').remove();
+    }
+
+    function AddMoreProductItemOnStore(_StoreID, _StoreName) {
+        var currentOffset = $(".product-item-on-store").length;
+        $(document).ajaxStart(function () {$('.se-pre-con').show();}).ajaxStop(function () {$('.se-pre-con').hide();});
+
+        //setTimeout(function(){
+            $.ajax({
+                url: '@Url.Action("AddMoreProductItemOnStore", "SBInventorySetMenuInte")',
+                type: 'get',
+                data: {
+                    currentOffset: currentOffset,
+                    StoreID: _StoreID,
+                    StoreName: _StoreName
+                },
+                //async: false,
+                dataType: 'html',
+                success: function (data) {
+                    $("#divAuto").append(data);
+                },
+                beforeSend: function () {
+                        $('.se-pre-con').show();
+                },
+                complete: function () {
+                        $('.se-pre-con').hide();
+                }
+            });
+        //}, 1000);
+
+        @*$.when($.ajax({
+            url: '@Url.Action("AddMoreProductItemOnStore", "SBInventorySetMenuInte")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+                StoreID: _StoreID,
+                StoreName: _StoreName
+            },
+            dataType: 'html'
+        }) ).then(function(data, textStatus, jqXHR ) {
+            $("#divAuto").append(data);
+        });*@
+
+        
+        @*var http = new XMLHttpRequest();
+        var url = '@Url.Action("AddMoreProductItemOnStore", "SBInventorySetMenuInte")';
+        var params = "currentOffset="+currentOffset+"&StoreID="+_StoreID+"&StoreName="+_StoreName+"";
+        http.open("POST", url, false);
+        //Send the proper header information along with the request
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                var data = http.responseText;
+                $("#divAuto").append(data);
+                $('.se-pre-con').hide();
+            }
+        }
+        http.send(params);*@
+        
+    }
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+</script>

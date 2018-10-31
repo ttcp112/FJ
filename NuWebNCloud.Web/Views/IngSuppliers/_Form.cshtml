@@ -1,0 +1,260 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.SupplierModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("CompanyId", Model.CompanyId)
+}
+@Html.HiddenFor(model => model.Id)
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    @*COMPANY*@
+    <div class="form-group" id="divCompany">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.DropDownListFor(model => model.CompanyId,
+            new SelectList(@ViewBag.ListCompany, "Value", "Text", Model.CompanyId), _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose company.").ToString(),
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "Companydll",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "Companydll",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.CompanyId, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsActived, new { @class = "text-left", @checked = "checked" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")) </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Address")) </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextBoxFor(model => model.Address, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Address, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.City, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.City, null, new { @class = "label" })
+        </div>
+        <label class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @*@Html.TextBoxFor(model => model.Country, new { @class = "form-control", autocomplete = "off" })*@
+
+            @*Updated 08292017*@
+            @Html.DropDownListFor(model => model.Country, new SelectList(Model.ListCountries, "Value", "Text", Model.Country),
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Country")).ToString(), new
+            {
+                @class = "form-control select2_multiple",
+                @id = "countryDdl",
+                @style = "width:100%;"
+            })
+
+            @Html.ValidationMessageFor(model => model.Country, null, new { @class = "validateLevel label label-danger" })
+        </div>
+        <label class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip Code")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.ZipCode, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.ZipCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone 1")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.Phone1, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Phone1, null, new { @class = "label" })
+        </div>
+
+        <label class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone 2")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.Phone2, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Phone2, null, new { @class = "label" })
+        </div>
+
+        <label class="control-label col-md-1 col-sm-1 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Fax")) </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.Fax, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Fax, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email")) </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Contact Info")) </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            @Html.TextAreaFor(model => model.ContactInfo, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.ContactInfo, null, new { @class = "label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:50px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient(s)")) </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tab_SelectedIngredient" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                            @(string.Format("{0}", string.IsNullOrEmpty(_ID) ? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("All")).ToString() : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Selected")).ToString()))
+                        </a>
+                    </li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="form-group" style="padding:10px 5px 0 5px;">
+                        <div class="input-group">
+                            <input type="text" class="form-control col-md-10" placeholder= @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Name")) onkeypress="HandleKeyPress(event)" id="txtSearch" />
+                            <div class="input-group-btn">
+                                <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_SelectedIngredient" aria-labelledby="home-tab">
+                        @if (Model.ListSupIng != null && Model.ListSupIng.Count > 0)
+                        {
+                            @Html.Partial("_ListIngredient", Model)
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_ID))
+    {
+        <div class="form-group">
+            <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-2">
+                <a class="btn btn-primary" onclick="return LoadIngredientUnSelect();">
+                    <i class="fa fa-plus"></i> &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more ingredients"))
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:50px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient(s)")) </label>
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                    <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#tab_UnSelectedIngredient" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UnSelected"))</a>
+                        </li>
+                    </ul>
+                    <div id="myTabContentUnSelected" class="tab-content">
+                        @*<div class="form-group" style="padding:10px 5px 0 5px;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control col-md-10" placeholder="Ingredients Name" onkeypress="HandleKeyPress(event)" id="txtSearch" />
+                                        <div class="input-group-btn">
+                                            <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                            </div>*@
+                        <div role="tabpanel" class="tab-pane fade active in" id="tab_UnSelectedIngredient" aria-labelledby="home-tab">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+<script>
+    //=========================================
+    $(document).ready(function () {
+
+    });
+    function SearchIngredient(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('#myTabContent:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td#search').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+    /**/
+    function LoadIngredientUnSelect() {
+        $('#tab_UnSelectedIngredient').html('');
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LoadIngredientUnSelect", "IngSuppliers")',
+            traditional: true,
+            data: {
+                Id: _SupplierId,
+                CompanyId: _CompnanyId,
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $('#tab_UnSelectedIngredient').html(data);
+                var heightDivIngredient = $('.cls_Ingredient_Supplier_UnSelected').length;
+                if (heightDivIngredient > 10) {
+                    $("#tab_UnSelectedIngredient").css({ "overflow": "auto", "height": "500px" })
+                }
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+</script>

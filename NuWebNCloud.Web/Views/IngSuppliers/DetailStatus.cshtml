@@ -1,0 +1,44 @@
+﻿@model NuWebNCloud.Shared.Models.ResultModels
+@using NuWebNCloud.Shared.Utilities;
+
+<div class="right_col" role="main">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h3 class="breadcrumb">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Import Ingredient Result"))</h3>
+        <ul class="header-buttons pull-right list-inline">
+            <li><a id="btn-close-importdetail" class="btn btn-beauty btn-default" href="@Url.Action("Import", "IngIngredients")">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+        </ul>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div id="divSuccessImport" role="alert" class="alert alert-success alert-dismissible fade in">
+                    <span class="fa fa-check-square-o" aria-hidden="true"></span> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Import File Successfully"))
+                </div>
+
+                <div id="divErrorImport" role="alert" class="alert alert-danger alert-dismissible fade in">
+                    <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Import File Error")): @Html.DisplayFor(ss => ss.Message)
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //ready
+        var isOk = '@Model.IsOk';
+        //alert(isOk);
+        if (isOk == 'True') {
+            //alert(1);
+            $("#divSuccessImport").show();
+            $("#divErrorImport").hide();
+        } else {
+            //alert(2);
+            $("#divSuccessImport").hide();
+            $("#divErrorImport").show();
+        }
+    })
+</script>

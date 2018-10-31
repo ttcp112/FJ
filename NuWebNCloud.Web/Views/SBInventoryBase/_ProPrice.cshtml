@@ -1,0 +1,72 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+@using NuWebNCloud.Shared.Utilities;
+@for (int i = 0; i < Model.ListPrices.Count; i++)
+{
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Model.ListPrices[i].PriceName</label>
+        <div class="col-md-4">
+            <div class="input-group">
+                @if (Model.ListPrices[i].IsDefault)
+                {
+                    @Html.TextBox(string.Format("ListProductOnStore[{0}].ListPrices[{1}].Price", Model.OffSet, i), Model.ListPrices[i].Price,
+                   new
+                   {
+                       @class = "form-control" + " " + "_Price" + Model.OffSet,
+                       placeholder = "S$0.00",
+                       type = "number",
+                       @id = "Price_" + Model.OffSet,
+                       min = 0
+                   })
+                }
+                else
+                {
+                    @Html.TextBox(string.Format("ListProductOnStore[{0}].ListPrices[{1}].Price", Model.OffSet, i), Model.ListPrices[i].Price,
+                   new
+                   {
+                       @class = "form-control" + " " + "SeasonalPrice_" + Model.OffSet,
+                       placeholder = "S$0.00",
+                       type = "number",
+                       @id = "SeasonalPrice_" + Model.OffSet,
+                       min = 0
+                   })
+                }
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListPrices[{1}].ID", Model.OffSet, i), Model.ListPrices[i].ID)
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListPrices[{1}].PriceName", Model.OffSet, i), Model.ListPrices[i].PriceName)
+                @*@Html.Hidden(string.Format("ListProductOnStore[{0}].ListPrices[{1}].SeasonID", Model.OffSet, i), Model.ListPrices[i].SeasonID,
+                            new { @class = "SelectingSeason_" + Model.StoreID + "" })*@
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListPrices[{1}].StoreID", Model.OffSet, i), Model.ListPrices[i].StoreID)
+                <div class="input-group-addon">@Model.CurrencySymbol</div>
+            </div>
+            @Html.ValidationMessage(string.Format("ListProductOnStore[{0}].ListPrices[{1}].Price", Model.OffSet, i), new { @class = "label" })
+        </div>
+        <div class="col-md-2">
+            @if (Model.ListPrices[i].IsDefault)
+            {
+                <input type="text" class="form-control readonly" readonly value="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Default Price"))" />
+                @Html.Hidden(string.Format("ListProductOnStore[{0}].ListPrices[{1}].IsDefault", Model.OffSet, i), Model.ListPrices[i].IsDefault)
+            }
+            else
+            {
+                @Html.DropDownList(string.Format("ListProductOnStore[{0}].ListPrices[{1}].SeasonID", Model.OffSet, i),
+                       new SelectList(Model.ListPrices[i].ListSeasons, "Value", "Text", Model.ListPrices[i].SeasonID), "Please choose seasonal price",
+                       new
+                       {
+                           @class = "form-control ddl-prices ddlPrice_" + Model.StoreID + "_" + Model.OffSet + " " + "ddlPrice2_" + Model.OffSet,
+                           //onchange = "ChangeSeasonForStore(this,'" + Model.StoreID +"')",
+                           @id = "ddlPrice",
+                           @style = "width:100%;"
+                       })
+            }
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ddlPrice_@Model.StoreID" + "_@Model.OffSet").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose seasonal price"))", 
+            allowClear: true,
+        });
+    });
+</script>

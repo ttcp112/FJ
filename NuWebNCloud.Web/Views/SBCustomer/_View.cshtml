@@ -1,0 +1,176 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.CustomerModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                         new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Customers" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12"> </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.ListStore[0].StoreName
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                        @if (Model.IsMembership)
+                                        {
+                                            <i class="glyphicon glyphicon-star" style="color: #FFB026;"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @*@Model.Phone*@ ********
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Identity Card"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @*@Model.IC*@ ********
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @*@Model.Email*@ ********
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Gender"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.Gender ? Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Male")).ToString() : Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Female")).ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Marital Status"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.Marital ? Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Married")).ToString() : Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Single")).ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.IsActive ? Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")).ToString() : Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("InActive")).ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Membership"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", Model.IsMembership ? Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes")).ToString() : Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).ToString())
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Joined Date"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.JoinedDate
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Anniversary"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Anniversary
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Birthday"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.BirthDate
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Company Reg #"))
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.CompanyReg
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Home Address")) </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.HomeStreet
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.HomeCity
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ZIP Code"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.HomeZipCode
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.HomeCountry
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Office Address"))</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.OfficeStreet
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.OfficeCity
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ZIP Code"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.OfficeZipCode
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country"))</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.OfficeCountry
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

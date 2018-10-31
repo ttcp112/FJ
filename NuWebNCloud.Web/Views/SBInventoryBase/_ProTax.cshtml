@@ -1,0 +1,37 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteProductItemOnStore
+
+@if (Model.ListTax != null)
+{
+    if (Model.ListTax.Count == 0)
+    {
+        <tr>
+            <td class="text-center" colspan="3">
+                None
+            </td>
+        </tr>
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListTax.Count; i++)
+        {
+            <tr data-id="@Model.ListTax[i].ID" class="NameTax_@Model.StoreID" style="cursor:pointer;"
+                data-value="@Model.ListTax[i].Name" onclick="ToggleTax(this, '@Model.StoreID'); return false;">
+                <td width="49%" class="text-center">
+                    @Model.ListTax[i].Name
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].Name", Model.OffSet, i), Model.ListTax[i].Name)
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].ID", Model.OffSet, i), Model.ListTax[i].ID)
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].Percent", Model.OffSet, i), Model.ListTax[i].Percent)
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].StoreID", Model.OffSet, i), Model.ListTax[i].StoreID)
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].StoreName", Model.OffSet, i), Model.ListTax[i].StoreName)
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListTax[{1}].Status", Model.OffSet, i), Model.ListTax[i].Status, new { @class = "TaxStatus" })
+                </td>
+                <td width="49%" class="text-center">
+                    @Model.ListTax[i].Percent
+                </td>
+                <td style="text-align: center;" width="2%">
+                    <i class="fa  @string.Format("{0}", Model.ListTax[i].Status != 9 ?"fa-check":"")" id="chkActive"></i>
+                </td>
+            </tr>
+        }
+    }
+}

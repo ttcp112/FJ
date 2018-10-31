@@ -1,0 +1,101 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.TableModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Settings")).ToString() }, { "B", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Table List")).ToString() }, { "C", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Detail")).ToString() } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close")) </a ></li >
+                            </ul >
+                        </div >
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Table Name")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Maximum Capacity")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Cover
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zone Name")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.ZoneName
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("For online reservation only")) </label >
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @string.Format("{0}", (Model.IsShowInReservation? @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Yes")) : @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No"))))
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Style")) </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if(Model.ViewMode == (byte) Commons.ETableStyle.Circle)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETableStyle.Circle.ToString()))
+                                        }
+                                            else if (Model.ViewMode == (byte)Commons.ETableStyle.Rectangle)
+                                            {
+                                               @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETableStyle.Rectangle.ToString()))
+                                                                        }
+                                               else if (Model.ViewMode == (byte)Commons.ETableStyle.Square)
+                                               {
+                                                   @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETableStyle.Square.ToString()))
+                                                                                                           }
+                                                   else
+                                                   {
+                                                      @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETableStyle.Other.ToString()))
+                                                                                                                                                  }
+                                    </div >
+                                </div >
+                                @*<div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">Position X</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.XPoint
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">Position Y</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.YPoint
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">Position Z</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.ZPoint
+                                    </div>
+                                </div>*@
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

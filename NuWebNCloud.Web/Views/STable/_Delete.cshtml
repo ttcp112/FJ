@@ -1,0 +1,76 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.TableModels
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Table List") + "-" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete");
+}
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", "Settings" }, { "B", "Table List" }, { "C", "Delete" }
+                })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-delete" onclick="SubmitForm('#form-delete')"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a></li>
+                                <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Delete", "STable", FormMethod.Post, new { @id = "form-delete", @class = "form-horizontal" }))
+                            {
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label"></label>
+                                    <div class="col-md-6" style="font-size: 20px; width: 100%;">
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Are you sure you want to delete this")) <strong>[ @Model.Name ]</strong>?
+                                        <br />
+                                        @Html.HiddenFor(model => model.ID)
+                                        @Html.HiddenFor(model => model.Name)
+                                        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //$("#btn-delete").click(function (e) {
+    //    $("#form-delete").submit();
+    //    e.preventDefault();
+    //});
+
+    $("#form-delete").submit(function (e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "post",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            beforeSend: function () {
+                $(".se-pre-con").show();
+            },
+            success: function () {
+                $(".se-pre-con").hide();
+                CloseDetail();
+                Search();
+            },
+            error: function (jqXHR) {
+                $(".se-pre-con").hide();
+                $(".detail-view").html(jqXHR.responseText);
+            }
+        });
+        e.preventDefault();
+    });
+
+</script>

@@ -1,0 +1,387 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.RecipeIngredientViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = "Recipe - Ingredients";
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @*@Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Ingredient" }, { "B", "Recipe" }, { "C", "Ingredients" } })*@
+
+                <h4>
+                   @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management"))  <small>
+                        <i class="fa fa-angle-double-right"></i><a href="@Url.Action("Ingredient","IngRecipes",new { area = "" })">
+                            <span style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Data")) </span>
+                        </a>&nbsp;<i class="fa fa-angle-double-right"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Recipe"))  - @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients")) 
+                    </small>
+                </h4>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "Ingredient")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+
+                    <div class="gridview">
+                        <div class="table-responsive">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>
+                                       @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients")) 
+                                    </h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                                        <thead style="background-color:#34495e; color:#fff;">
+                                            <tr>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Code")) </th>
+                                                <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Name")) </th>
+                                                <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients"))</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ListItem != null)
+                                            {
+                                                for (int i = 0; i < Model.ListItem.Count; i++)
+                                                {
+                                                    string styleRow = "row-evenItem";
+                                                    if (i % 2 == 0)
+                                                    {
+                                                        styleRow = "row-oddItem";
+                                                    }
+                                                    var item = Model.ListItem[i];
+                                                    <tr onclick="ShowModalAddIngredient('@item.MixtureIngredientId','@item.IngredientName')"
+                                                        style="cursor:pointer;color:#34495e; font-weight:bold;" class="@styleRow">
+                                                        <td style="color:#34495e; font-weight:bold; text-align:center;">@item.IngredientCode</td>
+                                                        <td style="color:#34495e; font-weight:bold;">@item.IngredientName</td>
+                                                        <td style="text-align:center;">@item.Ingredient</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+
+    <!-- Modal Add Ingredient-->
+    <div class="modal fade" id="modalIngredient" tabindex="-1" role="dialog" aria-labelledby="modalDishLabel" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="ltrTitle" style="color:#34495e; font-weight:bold;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Ingredients Recipe"))  </h4>
+                </div>
+                <div class="modal-body scroll" style="padding:0;">
+                    @*<div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-md-10" placeholder="Ingredients Name" onkeypress="HandleKeyPress(event)" />
+                                    <div class="input-group-btn">
+                                        <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    <div id="tbl-add-ingredient" class="form-group-sm">
+                    </div>
+                    <input type="hidden" id="hidId" />
+                </div>
+                <div class="modal-footer" style="text-align:center;">
+                    <div class="col-md-12">
+                        <h5><span class="label label-danger" id="ltrMsg"></span></h5>
+                    </div>
+                    @if (@ViewBag.IsAction == false)
+                    {
+                        <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" disabled onclick="AddIngredient()">Save</button>
+                    }
+                    else
+                    {
+                        <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</button>
+                    }
+                    @*<button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient()">Save</button>*@
+                    <button class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SearchIngredient(btn) {
+            var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+            var trs = $(btn).parents('.modal-body:first').find('tbody tr');
+            var arrKeySearch = keySearch.split(' ');
+            if (keySearch != '') {
+                for (var i = 0; i < trs.length; i++) {
+                    var name = $.trim($(trs[i]).find('td#search').text());
+                    for (var j = 0; j < arrKeySearch.length; j++) {
+                        if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                            if ($(trs[i]).css('display') == 'none')
+                                $(trs[i]).css('display', 'table-row');
+                            break;
+                        }
+                        else
+                            if ($(trs[i]).css('display') == 'table-row')
+                                $(trs[i]).css('display', 'none');
+                    }
+                }
+            }
+            else {
+                $(trs).each(function (e) {
+                    if ($(this).css('display') == 'none')
+                        $(this).css('display', 'table-row');
+                });
+            }
+        }
+
+        function TickCheckBox(td) {
+            var tr = $(td).parents('tr:first');
+            var isChecked = $(tr).find('input[type=checkbox]').prop('checked');
+            $(tr).find('input[type=checkbox]').prop('checked', isChecked)
+            if (isChecked == false) {
+                $(tr).find('input[type=text]').prop('value', "0");
+            }
+        }
+
+        function TickAllCheckBox(chk) {
+            var trs = $('.modal-body:first').find('tbody tr');
+            for (var i = 0; i < trs.length; i++) {
+                $(trs[i]).find('input[type=checkbox]').prop('checked', chk.checked);
+                if (chk.checked == false) {
+                    $(trs[i]).find('input[type=text]').prop('value', "0");
+                }
+            }
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function ShowView(url) {
+            ShowViewOrEdit(url);
+            return false;
+        }
+
+        $(document).ready(function () {
+            var handleDataTableButtons = function () {
+                if ($("#datatable-buttons").length) {
+                    $("#datatable-buttons").DataTable({
+
+                        dom: "Bfrtip",
+                        responsive: true
+                    });
+                }
+            };
+
+            TableManageButtons = function () {
+                "use strict";
+                return {
+                    init: function () {
+                        handleDataTableButtons();
+                    }
+                };
+            }();
+
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable({
+                keys: true
+            });
+
+            $('#datatable-responsive').DataTable({
+                "columnDefs": [
+                    //{ "orderable": false, "targets": 4 }
+                 { "width": "8%", "targets": 0 },
+                 { "width": "5%", "targets": 2 }
+                ],
+                "order": [[1, 'asc']]
+            });
+
+            //$('#datatable-scroller').DataTable({
+            //    ajax: "js/datatables/json/scroller-demo.json",
+            //    deferRender: true,
+            //    scrollY: 380,
+            //    scrollCollapse: true,
+            //    scroller: true
+            //});
+
+            var table = $('#datatable-fixed-header').DataTable({
+                fixedHeader: true
+            });
+
+            TableManageButtons.init();
+        });
+
+
+
+
+        /**/
+        function ShowModalAddIngredient(id, IngredientName) {
+
+            @*if ('@ViewBag.IsAction' == 'False') {
+                return;
+            }*@
+            $('#modalIngredient').modal('show');
+
+            $('#ltrMsg').text('');
+            var modal = $("#modalIngredient");
+            var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+            var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+            $(modal).modal({
+                keyboard: false,
+                show: true,
+                backdrop: false
+            });
+            LoadIngredient('#tbl-add-ingredient', id);
+
+            $('#hidId').val(id);
+
+            $('#ltrTitle').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add")) [' + IngredientName + '] @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Recipe"))');
+        }
+
+        function LoadIngredient(container, id) {
+            $('.se-pre-con').show();
+            $.ajax({
+                url: '@Url.Action("LoadIngredientIngredient", "IngRecipes")',
+                type: 'get',
+                data: { Id: id },
+                dataType: 'html',
+                traditional: true,
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                    //debugger
+                },
+                success: function (data) {
+                    $(container).html(data);
+                    ResizeModal(container, 200);
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+
+        function AddIngredient(btn) {
+            abc();
+            var trs = $('.modal-body table tbody tr');
+            var data = [];
+
+            var Id = $('#hidId').val();
+
+            for (var i = 0; i < trs.length; i++) {
+                var tr = trs[i];
+
+                var isSelect = $(tr).find('td input[type="checkbox"]').prop('checked');
+                var IngredientName = $(tr).find('td #hidIngredientName').val();
+                var BaseUOM = $(tr).find('td #BaseUOMddl').val(); //hidBaseUOM
+                var Usage = parseFloat($(tr).find('td #hidUsage').val());
+                if (Usage > 0) {
+                    isSelect = true;
+                }
+                if (isSelect) {
+                    if (Usage === 0) {
+                        $(tr).addClass('row-error');
+                        $('#ltrMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please input usage value for ingredient")) [' + IngredientName + ']');
+                        return;
+                    }
+                    else if (Usage < 0) {
+                        $(tr).addClass('row-error');
+                        $('#ltrMsg').text('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a value greater than or equal to 0 for ingredient")) [' + IngredientName + ']');
+                        return;
+                    }
+                    else {
+                        $('#ltrMsg').text('');
+                        $(tr).removeClass('row-error');
+                    }
+                    //===========
+                    if (BaseUOM === '') {
+                        $(tr).addClass('row-error');
+                        $('#ltrMsg').html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose UOM for ingredient")) [' + IngredientName + ']');
+                        return;
+                    } else {
+                        $(tr).removeClass('row-error');
+                        $('#ltrMsg').text('');
+                    }
+                }
+
+                //if (isSelect)
+                {
+                    var IngredientId = $(tr).find('td #hidIngredientId').val();
+                    var IngredientName = $(tr).find('td #hidIngredientName').val();
+                    var BaseUsage = $(tr).find('td #hidBaseUsage').val();
+                    var Usage = parseFloat($(tr).find('td #hidUsage').val());
+
+                    var Ingredient = {
+                        IngredientId: IngredientId,
+                        IngredientName: IngredientName,
+                        BaseUOM: BaseUOM,
+                        BaseUsage:BaseUsage,
+                        Usage: Usage,
+                        IsSelect: isSelect
+                    };
+                    data.push(Ingredient);
+                }
+            }
+            var RecipeIngredientIngredientViewModels = {
+                Id: Id,
+                ListItem: data
+            }
+            if (data.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddIngredientIngredient", "IngRecipes")',
+                    traditional: true,
+                    data: JSON.stringify(RecipeIngredientIngredientViewModels),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    beforeSend: function () {
+                        $('.se-pre-con').show();
+                    },
+                    error: function (e) {
+                        @*if (e.status == 200) {
+                            $('#modalIngredient').modal('hide');
+                            //Search();
+                            window.location.href = '@Url.Action("Ingredient", "IngRecipes")';
+                        } else {
+                            $('#ltrMsg').text('Have a error when you add an Ingredient');
+                        }*@
+                    },
+                    success: function (data) {
+                        $('#modalIngredient').modal('hide');
+                        //Search();
+                        window.location.href = '@Url.Action("Ingredient", "IngRecipes")';
+                    },
+                    complete: function () {
+                        $('.se-pre-con').hide();
+                    }
+                });
+            }
+        }
+
+    </script>
+
+}

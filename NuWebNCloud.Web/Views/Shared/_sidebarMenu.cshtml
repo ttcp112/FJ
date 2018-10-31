@@ -1,0 +1,300 @@
+﻿@using NuWebNCloud.Web.App_Start
+@{
+    var _modules = NuAuthAttribute._ListMenuUserModule;
+}
+
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+        <h3>&nbsp;</h3>
+        @{
+            var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+            if (user.IndustryId == null)
+            {
+            }
+            else
+            {
+                <ul class="nav side-menu">
+                    <li id="ReportsId">
+                        <a><i class="fa fa-bar-chart-o"></i> @Html.Raw(user.GetLanguageTextFromKey("Reports"))<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            @if (@Html.Raw(user.IndustryId).ToString().ToLower().Equals("hqforfnb"))
+                            {
+                                <li id="AuditTrailReport" class="LstChildReportFnB countLiInMenu">
+                                    <a href="@Url.Action("Index", "AuditTrailReport", new { area = "HQForFnB" })">
+                                        @Html.Raw(user.GetLanguageTextFromKey("Audit Trail"))
+                                    </a>
+                                </li>
+
+                                <li id="CashOutReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "CashOutReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Cash Out"))</a></li>
+                                <li id="CashInReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "CashInReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Cash In"))</a></li>
+                                <li id="ClosedReceiptReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "ClosedReceiptReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Closed Receipts"))</a></li>
+                                <li id="DailyReceiptReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DailyReceiptReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Daily Receipts"))</a></li>
+                                <li id="DailySalesReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DailySalesReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Daily Sales"))</a></li>
+                                <li id="DailyItemizedSalesAnalysisDetailReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DailyItemizedSalesAnalysisDetailReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Daily Detail Itemized Sales Analysis"))</a></li>
+                                <li id="ItemizedSalesAnalysisDetailReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "ItemizedSalesAnalysisDetailReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Detail Itemized Sales Analysis"))</a></li>
+                                <li id="DiscountDetailsReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DiscountDetailsReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Discount Details"))</a></li>
+                                //09/08/2017
+                                <li id="HourlyItemSalesReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "HourlyItemizedSalesReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Hourly Itemized Sales Report"))</a></li>
+
+                                <li id="HourlySalesReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "HourlySalesReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Hourly Sales"))</a></li>
+                                <li id="ItemizedSalesAnalysisReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "ItemizedSalesAnalysisReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Itemized Sales Analysis"))</a></li>
+                                //09/08/2017 - no sale
+                                <li id="NoSaleReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "NoSaleDetailReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("No Sale Report"))</a></li>
+
+                                <li id="ReceiptsbyPaymentMethodsReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "ReceiptsbyPaymentMethodsReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Receipts by Payment Method"))</a></li>
+                                <li id="TimeClockSummaryReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "TimeClockSummaryReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Time Clock Summary"))</a></li>
+                                <li id="TopSellingProductsReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "TopSellingProductsReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Top Selling Products"))</a></li>
+
+                                //23/08 - FJ daily sale
+                                <li id="FJDailySalesReport" class="countLiInMenu">
+                                    <a><i class=""></i>@Html.Raw(user.GetLanguageTextFromKey("FJ Daily Sales"))<span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="">
+                                        <li><a href="@Url.Action("Index", "SettingForDailySales", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("FJ Settings"))</a></li>
+                                        <li><a href="@Url.Action("Index", "FJDailySalesReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Report"))</a></li>
+
+                                    </ul>
+                                </li>
+                                //06/04/2018 - Discount Summary Report
+                                <li id="DiscountSummaryReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DiscountSummaryReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Discount Summary"))</a></li>
+                                //27/08/2018
+                                <li id="DetailItemizedSalesAnalysisModifiersviewReport" class="LstChildReportFnB countLiInMenu"><a href="@Url.Action("Index", "DetailItemizedSalesAnalysisModifiersviewReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Detail Itemized Sales Analysis Modifiers view"))</a></li>
+                            }
+                            else if (@Html.Raw(user.IndustryId).ToString().ToLower().Equals("Retailer"))
+                            {
+                                <li id="Home"><a href="@Url.Action("Index", "Home", new { area = "Retailer" })">Retailer - Home</a></li>
+                            }
+                        </ul>
+                    </li>
+                    <li>
+                        <a id="InventoryManagementId"><i class="fa fa-cube"></i>@Html.Raw(user.GetLanguageTextFromKey("Inventory Management"))<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li class="LstChildInventory" id="RecipeId">
+                                <a>@Html.Raw(user.GetLanguageTextFromKey("Recipe"))<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="">
+                                    <li class="sub_menu LstChildRecipe countLiInMenu" id="IngIngredients"><a href="@Url.Action("Index", "IngIngredients", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Ingredients"))</a></li>
+                                    <li class="sub_menu LstChildRecipe countLiInMenu" id="IngRecipes"><a href="@Url.Action("Product", "IngRecipes", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Recipes"))</a></li>
+                                    <li class="sub_menu LstChildRecipe countLiInMenu" id="IngUOMs"><a href="@Url.Action("Index", "IngUOMs", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("UOMs"))</a></li>
+                                    <li class="sub_menu LstChildRecipe countLiInMenu" id="IngStoreSettings"><a href="@Url.Action("Index", "IngStoreSettings", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Store Settings"))</a></li>
+                                    <li class="sub_menu LstChildRecipe countLiInMenu" id="IngStockManagement"><a href="@Url.Action("Index", "IngStockManagement", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Stock Management"))</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="LstChildInventory" id="PurchasingId">
+                                <a>@Html.Raw(user.GetLanguageTextFromKey("Purchasing"))<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="">
+                                    <li class="sub_menu LstChildPurchasing countLiInMenu" id="IngSuppliers">
+                                        <a href="@Url.Action("Index", "IngSuppliers", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Suppliers"))</a>
+                                    </li>
+                                    <li class="sub_menu LstChildPurchasing countLiInMenu" id="IngPurchaseOrders">
+                                        <a href="@Url.Action("Index", "IngPurchaseOrders", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Purchase Orders"))</a>
+                                    </li>
+                                    <li class="sub_menu LstChildPurchasing countLiInMenu" id="IngWorkOrders">
+                                        <a href="@Url.Action("Index", "IngWorkOrders", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Work Orders"))</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="LstChildInventory" id="InventoryId">
+                                <a>@Html.Raw(user.GetLanguageTextFromKey("Inventory"))<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="">
+                                    <li class="sub_menu LstChildInventoryofInventory countLiInMenu" id="IngReceiptNote"><a href="@Url.Action("Index", "IngReceiptNote", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Received Notes"))</a></li>
+                                    <li class="sub_menu LstChildInventoryofInventory countLiInMenu" id="IngReceiptNoteSelfMade"><a href="@Url.Action("Index", "IngReceiptNoteSelfMade", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Received Notes Self Made"))</a></li>
+                                    <li class="sub_menu LstChildInventoryofInventory countLiInMenu" id="IngStockTransfer"><a href="@Url.Action("Index", "IngStockTransfer", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Stock Transfer"))</a></li>
+                                    <li class="LstChildInventoryofInventory" id="UsageManagementId">
+                                        <a><i class=""></i>@Html.Raw(user.GetLanguageTextFromKey("Usage Management"))<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu" style="">
+                                            <li class="LstChildUsageManagement countLiInMenu" id="IngStockCount"><a href="@Url.Action("Index", "IngStockCount", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Stock Count"))</a></li>
+                                            <li class="sub_menu LstChildUsageManagement countLiInMenu" id="IngIngredientUsage"><a href="@Url.Action("Index", "IngIngredientUsage", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Ingredients Usage"))</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="IngDataEntry" class="LstChildInventoryofInventory countLiInMenu"><a href="@Url.Action("Index", "IngDataEntry", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Data Entry"))</a></li>
+                                </ul>
+                            </li>
+                            <li class="LstChildInventoryReport" id="ReportInventoryId">
+                                <a>@Html.Raw(user.GetLanguageTextFromKey("Reports"))<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="">
+                                    <li class="sub_menu LstChildReportofInventory countLiInMenu" id="IngDailyTransactionsReport"><a href="@Url.Action("Index", "IngDailyTransactionsReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Daily Transactions"))</a></li>
+                                    <li class="sub_menu LstChildReportofInventory countLiInMenu" id="IngMonthlyTransactionsReport"><a href="@Url.Action("Index", "IngMonthlyTransactionsReport", new { area = "HQForFnB" })">@Html.Raw(user.GetLanguageTextFromKey("Monthly Transactions"))</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li id="SandboxId">
+                        <a><i class="fa fa-shopping-cart"></i> @Html.Raw(user.GetLanguageTextFromKey("Sandbox")) <span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li id="SBCustomer" class="LstChildSandbox countLiInMenu"><a href="@Url.Action("Index", "SBCustomer", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Customers"))</a></li>
+
+
+                            <li id="SBEmployee" class="LstChildSandbox countLiInMenu">
+                                @if (user.POSInstanceVersion.HasValue)
+                                {
+                                    //intergration
+                                    <a href="@Url.Action("Index", "SBEmployeeInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Employees"))</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Index", "SBEmployee", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Employees"))</a>
+                                }
+                            </li>
+                            <li class="LstChildSandbox" id="InventorySandboxId">
+                                <a>@Html.Raw(user.GetLanguageTextFromKey("Inventory"))<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="">
+                                    <li class="sub_menu LstChildInventorySandbox countLiInMenu" id="SBInventoryDishes">
+                                        @if (user.POSInstanceVersion.HasValue)
+                                        {
+                                            /**/
+                                            //dish integration
+                                            <a href="@Url.Action("Index", "SBInventoryDishesInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Dishes"))</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Index", "SBInventoryDishes", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Dishes"))</a>
+                                        }
+
+                                    </li>
+                                    <li id="SBInventoryModifier" class="LstChildInventorySandbox countLiInMenu">
+                                        @if (user.POSInstanceVersion.HasValue)
+                                        {
+                                            //integration
+                                            <a href="@Url.Action("Index", "SBInventoryModifierInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Modifiers"))</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Index", "SBInventoryModifier", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Modifiers"))</a>
+                                        }
+                                    </li>
+                                    <li id="SBInventorySetMenu" class="LstChildInventorySandbox countLiInMenu">
+                                        @if (user.POSInstanceVersion.HasValue)
+                                        {
+                                            //integration
+                                            <a href="@Url.Action("Index", "SBInventorySetMenuInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Set Menus"))</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Index", "SBInventorySetMenu", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Set Menus"))</a>
+                                        }
+                                    </li>
+                                    <li id="SBInventoryDiscount" class="LstChildInventorySandbox countLiInMenu">
+                                        <a href="@Url.Action("Index", "SBInventoryDiscount", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Discounts"))</a>
+                                    </li>
+                                    <li id="SBInventoryCategories" class="LstChildInventorySandbox countLiInMenu">
+                                        @if (user.POSInstanceVersion.HasValue)
+                                        {
+                                            //integration
+                                            <a href="@Url.Action("Index", "SBInventoryCategoriesInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Categories"))</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Index", "SBInventoryCategories", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Categories"))</a>
+                                        }
+                                    </li>
+                                    <li id="SBInventoryPromotion" class="LstChildInventorySandbox countLiInMenu">
+                                        <a href="@Url.Action("Index", "SBInventoryPromotion", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Promotions"))</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li id="SettingsId">
+                        <a><i class="fa fa-cogs"></i> @Html.Raw(user.GetLanguageTextFromKey("Settings"))<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li id="SStoreInformation" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SStoreInformation", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Store Information"))</a></li>
+                            <li id="SGeneralSetting" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SGeneralSetting", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("General Settings"))</a></li>
+                            <li id="SMerchantSetting" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SMerchantSetting", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Merchant settings"))</a></li>
+                            <li id="STransactionReasonSetting" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "STransactionReasonSettings", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Transaction Reason Settings"))</a></li>
+                            <li id="SZone" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SZone", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Zones"))</a></li>
+                            <li id="STable" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "STable", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Table List"))</a></li>
+                            <li id="SSeason" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SSeason", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Time Slot"))</a></li>
+                            <li id="STax" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "STax", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Taxes"))</a></li>
+                            <li id="STipServiceCharge" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "STipServiceCharge", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Tip & Service Charge"))</a></li>
+                            <li id="SPayment" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SPayment", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Payment Methods"))</a></li>
+                            <li id="SDefaultCurrency" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SDefaultCurrency", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Currency"))</a></li>
+                            <li id="SRSVPProductMapping" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SRSVPProductMapping", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("RSVP Product Mapping"))</a></li>
+                            @*<li id="SRSVPScreenSaverMode" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SScreenSaverMode", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Screen Saver Mode"))</a></li>*@
+                            @*<li id="SEmployeeAddCompany" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SEmployeeAddCompanyInte", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Employee Add Company"))</a></li>*@
+                            @*<li id="SSettingSchedulerReport" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SettingSchedulerReport", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Schedule Report Settting"))</a></li>*@
+                            @*<li id="SLocation" class="LstChildSettings countLiInMenu"><a href="@Url.Action("Index", "SLocation", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Location"))</a></li>*@
+                        </ul>
+                    </li>
+                    <li id="AccessControlId">
+                        <a><i class="fa fa-users"></i>@Html.Raw(user.GetLanguageTextFromKey("Access Control"))<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            @*<li id="ACModule" class="LstChildAccessControl countLiInMenu"><a href="@Url.Action("Index", "ACModule", new { area = "" })">Modules</a></li>*@
+                            <li id="ACGroupingAccount" class="LstChildAccessControl countLiInMenu"><a href="@Url.Action("Index", "ACGroupingAccount", new { area = "" })">@Html.Raw(user.GetLanguageTextFromKey("Roles & Accounts"))</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            }
+        }
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var array = @Html.Raw(Json.Encode(_modules));
+        if (array.length > 0) {
+            $(".countLiInMenu").each(function (index, element) {
+                var IdName = $(this).attr('id');
+                var IndexOf = array.indexOf(IdName);
+                if (IndexOf != -1) {
+                    $('#'+IdName).show();
+                }
+                else {
+                    $('#'+IdName).remove();
+                }
+            });
+        }
+        var count = $('.LstChildReportFnB').length;
+        if (count == 0) {
+            $('#ReportsId').remove();
+        }
+
+        var count = $('.LstChildRecipe').length;
+        if (count == 0) {
+            $('#RecipeId').remove();
+        }
+
+        var count = $('.LstChildPurchasing').length;
+        if (count == 0) {
+            $('#PurchasingId').remove();
+        }
+
+        var count = $('.LstChildUsageManagement').length;
+        if (count == 0) {
+            $('#UsageManagementId').remove();
+        }
+
+        var count = $('.LstChildInventoryofInventory').length;
+        if (count == 0) {
+            $('#InventoryId').remove();
+        }
+        var count = $('.LstChildInventory').length;
+        if (count == 0) {
+            $('#InventoryManagementId').remove();
+        }
+
+        var count = $('.LstChildInventorySandbox').length;
+        if (count == 0) {
+            $('#InventorySandboxId').remove();
+        }
+
+        var count = $('.LstChildSandbox').length;
+        if (count == 0) {
+            $('#SandboxId').remove();
+        }
+
+        var count = $('.LstChildSettings').length;
+        if (count == 0) {
+            $('#SettingsId').remove();
+        }
+
+        var count = $('.LstChildAccessControl').length;
+        if (count == 0) {
+            $('#AccessControlId').remove();
+        }
+    });
+
+
+</script>

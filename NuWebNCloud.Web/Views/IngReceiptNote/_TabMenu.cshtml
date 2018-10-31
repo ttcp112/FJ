@@ -1,0 +1,21 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index", "IngReceiptNote")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "view" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Data"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create", "IngReceiptNote")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "create" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add New"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Export", "IngReceiptNote")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "export" ? new HtmlString("active") : new HtmlString(""))">
+            <i class="fa fa-mail-forward"></i> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Export"))
+        </a>
+    </li>
+    <li>
+        <a href="javascript:void(0)" id="lnkReturnNote" class="btn btn-default btn-block menuTab @(Model == "returnnote" ? new HtmlString("active") : new HtmlString(""))">
+            <i class="fa fa-mail-reply"></i> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note"))
+        </a>
+    </li>
+</ul>

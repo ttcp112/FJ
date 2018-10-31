@@ -1,0 +1,137 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Api.MerchantConfigApiModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Settings"));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Reports" }, { "B", "FJ Settings" }, { "C", "Edit" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    <div class="row text-right">
+                        <ul class="header-buttons pull-right list-inline">
+                            <li><a href="javascript:void(0);" class="btn btn-success" id="btn-actives" onclick="SubmitForm('#create-formFJSetting')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                            <li><a href="@Url.Action("Index", "SettingForDailySales")" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                        </ul>
+                    </div>
+                    <div class="box-body" style="display: block;">
+                        @using (Html.BeginForm("Index", "SettingForDailySales", FormMethod.Post,
+new
+{
+    @id = "create-formFJSetting",
+    @class = "form-horizontal",
+    enctype = "multipart/form-data"
+}))
+                        {
+                            @Html.HiddenFor(ss => ss.Id)
+                            <div class="form-group">
+                                <label for="MorningStart" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Morning Start"))</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                    <div class="bootstrap-timepicker">
+                                        <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-clock-o"></i>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.MorningStart,
+                                    new
+                                    {
+                                        @class = "form-control timepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Morning Start")
+                                    })
+                                        </div>
+                                    </div>
+                                    @*@Html.ValidationMessageFor(model => model.StartTime, null, new { @class = "label" })*@
+                                </div>
+                                <label for="MorningEnd" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Morning End"))</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+
+                                    <div class="bootstrap-timepicker">
+                                        <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-clock-o"></i>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.MorningEnd,
+                                            new
+                                            {
+                                                @class = "form-control timepicker",
+                                                @autocomplete = "off",
+                                                @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Morning End")
+                                            })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="MidDayStart" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mid-day Start"))</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                    <div class="bootstrap-timepicker">
+                                        <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-clock-o"></i>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.MidDayStart,
+                                    new
+                                    {
+                                        @class = "form-control timepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mid-day Start")
+                                    })
+                                        </div>
+                                    </div>
+                                </div>
+                                <label for="MidDayEnd" class="col-md-2 col-sm-2 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mid-day End"))</label>
+                                <div class="col-md-4 col-sm-8 col-xs-12 ">
+
+                                    <div class="bootstrap-timepicker">
+                                        <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-clock-o"></i>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.MidDayEnd,
+                                            new
+                                            {
+                                                @class = "form-control timepicker",
+                                                @autocomplete = "off",
+                                                @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Mid-day End")
+                                            })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <p class="col-md-6 col-sm-6 col-xs-12" style="color:#c9302c">@ViewBag.result<p />
+                            </div>
+                        }
+                            </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SubmitForm(form) {
+            $(form).submit();
+        }
+    </script>
+    }

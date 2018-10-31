@@ -1,0 +1,341 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Sandbox.CustomerModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(),
+        !string.IsNullOrEmpty(_ID) ? (object)new
+        {
+            @class = "form-control select2_multiple",
+            @disabled = "disabled",
+            @id = "storeDdl",
+            @style = "width:100%;"
+        } : new
+        {
+            @class = "form-control select2_multiple",
+            @id = "storeDdl",
+            @style = "width:100%;"
+        })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+                (SelectList)ViewBag.StoreID,
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Identity Card*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Identity Card"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.IC, new { @class = "form-control", placeholder = "" + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Identity Card")) + "" })
+            @Html.ValidationMessageFor(model => model.IC, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Phone*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", placeholder = "" + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone")) + "" })
+            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Email*@
+    <div class="form-group">
+        <label for="CustomerEmail" class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email"))</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Gender*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Gender"))</label>
+        <div class="col-md-10">
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.Gender, "true", new { @checked = "checked" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Male"))
+            </label>
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.Gender, "false") @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Female"))
+            </label>
+        </div>
+    </div>
+
+    @*Marital*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Marital Status"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.Marital,
+                      new SelectList(Model.ListMarital, "Value", "Text", Model.Marital), null,
+                      new
+                      {
+                          @class = "form-control select2_multiple",
+                          @id = "MaritalStatusDdl",
+                          @style = "width:100%;"
+                      })
+            @Html.ValidationMessageFor(model => model.Marital, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label>
+        <div class="checkbox col-md-6">
+            <label>
+                @Html.CheckBoxFor(model => model.IsActive)
+            </label>
+        </div>
+    </div>
+
+    @*Membership*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Membership")) </label>
+        <div class="checkbox col-md-6">
+            <label>
+                @Html.CheckBoxFor(model => model.IsMembership)
+            </label>
+        </div>
+    </div>
+
+    @*Joined Date*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Joined Date")) </label>
+        <div class="col-md-6">
+            @if (Model.JoinedDate != null)
+            {
+                @Html.TextBox("JoinedDate", string.Format("{0:MM/dd/yyyy}", Model.JoinedDate), new { @id = "joinedDate", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.JoinedDate, null, new { @class = "label" })
+            }
+            else
+            {
+                @Html.TextBox("JoinedDate", DateTime.Now.ToShortDateString(), new { @id = "joinedDate", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.JoinedDate, null, new { @class = "label" })
+            }
+        </div>
+    </div>
+
+    @*Anniversary*@
+    <div class="form-group anniversary">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Anniversary")) </label>
+        <div class="col-md-6">
+            @Html.TextBox("Anniversary", string.Format("{0:MM/dd/yyyy}", Model.Anniversary), new { @id = "anniversary", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.Anniversary, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Birthday*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Birthday")) </label>
+        <div class="col-md-6">
+            @if (Model.BirthDate != null)
+            {
+                @Html.TextBox("BirthDate", string.Format("{0:MM/dd/yyyy}", Model.BirthDate), new { @id = "birthday", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.BirthDate, null, new { @class = "label" })
+            }
+            else
+            {
+                @Html.TextBox("BirthDate", "", new { @id = "birthday", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.BirthDate, null, new { @class = "label" })
+            }
+        </div>
+    </div>
+
+    @*Company Reg #*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Company Reg #"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.CompanyReg, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.CompanyReg, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Home Address*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Home Address")) </label>
+    </div>
+
+    @*Street*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.HomeStreet, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.HomeStreet, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*City*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.HomeCity, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.HomeCity, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*ZIP Code*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip Code")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.HomeZipCode, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.HomeZipCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Country*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.HomeCountry, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.HomeCountry, null, new { @class = "label" })
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    @*Office Address*@
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Office Address")) </label>
+    </div>
+
+    @*Street*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.OfficeStreet, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OfficeStreet, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*City*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.OfficeCity, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OfficeCity, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*ZIP Code*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip Code")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.OfficeZipCode, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OfficeZipCode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Country*@
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(model => model.OfficeCountry, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OfficeCountry, null, new { @class = "label" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"> @Html.CheckBoxFor(model => model.PrivacyPolicy, new { id = "chkPrivacyPolicy" })</label>
+        <label class="col-md-9 col-sm-9 col-xs-12">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("I consent to the collection, use, disclose and processing of my personal data in accordance to your"))
+            <a data-toggle="modal" href="#myModal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Privacy Policy")).</a>
+        </label>
+        @Html.ValidationMessageFor(model => model.PrivacyPolicy, null, new { @class = "label label-danger" })
+    </div>
+</div>
+
+<div class="modal fade second" id="myModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="modal-title" style="font-weight:bolder">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Privacy Policy").ToUpper())</h3>
+            </div>
+            <div class="modal-body scroll">
+                <div id="" class="form-group-sm" style="overflow: auto; height: 500px;text-align: justify;padding:10px">
+                    <div>
+                        @Html.Partial("_PrivacyPolicy")
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button style="background-color:#d9d9d9" type="button" class="btn" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+    });
+
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+</script>

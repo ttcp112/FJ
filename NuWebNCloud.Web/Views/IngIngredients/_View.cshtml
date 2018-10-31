@@ -1,0 +1,215 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientModel
+@using NuWebNCloud.Shared.Utilities;
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management")).ToString() }, { "B", Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Recipe")).ToString() }, { "C", Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients")) + " - " + Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Detail")) } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    <div class="row text-right">
+                        <ul class="header-buttons pull-right list-inline">
+                            <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                        </ul>
+                    </div>
+                    <div class="row form-horizontal form-label-left">
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Company")) : </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.CompanyName
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                               @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IsActive.ToString())) @*@Model.IsActive*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.Name
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.Code
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.Description
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ReOrdering Qty")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @string.Format("{0:N0}", Model.ReOrderQty)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sale Price")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @string.Format("{0:N0}", Model.MinAlertQty)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                              @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IsPurchase.ToString()))  
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Self-made")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IsSelfMode.ToString()))
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock-able")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @*@Model.IsStockable*@
+                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IsStockable.ToString()))
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Stock")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                               @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.IsCheckStock.ToString())) @*@Model.IsCheckStock*@
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Base UOM")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.BaseUOMName
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Model.ReceivingUOMName
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Conversion rate")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @string.Format("{0:N4}", Model.ReceivingQty)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity Tolerance")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @string.Format("{0:N4}", Model.QtyTolerance)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage UOM(s)")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <div class="table-responsive">
+                                    <div class="">
+                                        <div class="x_content">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive-ingredient" cellspacing="0" style="width:100%;">
+                                                    <thead>
+                                                        <tr lass="headings">
+                                                            <th class="column-title text-center" style="width:2%;">#</th>
+                                                            <th class="column-title text-center" style="width:50%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage UOM"))</th>
+                                                            <th class="column-title text-center" style="width:48%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Conversion rate"))</th>
+                                                        </tr>
+                                                    </thead>
+                                                    @if (Model.ListIngUOM != null)
+                                                    {
+                                                        for (int i = 0; i < Model.ListIngUOM.Count; i++)
+                                                        {
+                                                            string TypeRowItem = "row-evenItem";
+                                                            if (i % 2 == 0)
+                                                            {
+                                                                TypeRowItem = "row-oddItem";
+                                                            }
+                                                            var item = Model.ListIngUOM[i];
+                                                            <tbody>
+                                                                <tr class=@TypeRowItem>
+                                                                    <td class="text-center">@(i + 1)</td>
+                                                                    <td>@item.UOMName</td>
+                                                                    <td class="text-center">@string.Format("{0:N4}", item.ReceivingQty)</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        }
+                                                    }
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier(s)")): </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <div class="table-responsive">
+                                    <div class="">
+                                        <div class="x_content">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive-ingredient" cellspacing="0" style="width:100%;">
+                                                    <thead>
+                                                        <tr lass="headings">
+                                                            <th class="column-title text-center" style="width:30%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>
+                                                            <th class="column-title text-center" style="width:35%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Address"))</th>
+                                                            <th class="column-title text-center" style="width:35%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone"))</th>
+                                                        </tr>
+                                                    </thead>
+                                                    @if (Model.ListIngSupplier != null)
+                                                    {
+                                                        for (int i = 0; i < Model.ListIngSupplier.Count; i++)
+                                                        {
+                                                            string TypeRowItem = "row-evenItem";
+                                                            if (i % 2 == 0)
+                                                            {
+                                                                TypeRowItem = "row-oddItem";
+                                                            }
+                                                            var item = Model.ListIngSupplier[i];
+                                                            <tbody>
+                                                                @if (item.IsActived)
+                                                                {
+                                                                    <tr class=@TypeRowItem>
+                                                                        <td>@item.SupplierName</td>
+                                                                        <td>@item.SupplierAddress</td>
+                                                                        <td>@item.SupplierPhone</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        }
+                                                    }
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

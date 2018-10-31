@@ -1,0 +1,18 @@
+﻿<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("ViewArea", "ACGroupingAreas")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "ViewArea" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;View Area</a>
+    </li>
+    <li>
+        <a href="@Url.Action("AddArea", "ACGroupingAreas")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "AddArea" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp; Add Area</a>
+    </li>
+    <li>
+        <a href="@Url.Action("ViewGroup", "ACGroupingAreas")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "ViewGroup" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;View Group</a>
+    </li>
+    <li>
+        <a href="@Url.Action("AddGroup", "ACGroupingAreas")" id="lnkExport" class="btn btn-default btn-block menuTab @(Model == "AddGroup" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Group</a>
+    </li>
+</ul>

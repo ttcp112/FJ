@@ -1,0 +1,277 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.TransactionReasonSetting.ReasonModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+
+}
+
+<style>
+    .Lever_class {
+        background-color: #dae6f1;
+    }
+
+    #Lever_ {
+        padding-left: 15px !important;
+        padding-top: 10px !important;
+    }
+</style>
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12" style="overflow: auto; max-height: 500px;">
+            <table class="table table-hover">
+                <thead>
+                    <tr style="background-color: #337ab7; color: #fff;">
+                        <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label></td>
+                        <td class="align-right" style="width:2%;"><label></label></td>
+                    </tr>
+                </thead>
+                @*<tbody class="store-items">
+                        @for (int i = 0; i < Model.ListStoreView.Count; i++)
+                            {
+                                <tr id="@Model.ListStoreView[i].Value" data-value="@Model.ListStoreView[i].Text">
+                                    <td class="align-left">@Model.ListStoreView[i].Text</td>
+                                    <td class="align-right">
+                                        <label>
+                                            @if (Model.ListStoreView[i].Selected)
+                                            {
+                                                @Html.Hidden(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected, new { @value = "True" })
+                                                @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected,
+                                                                                                       new
+                                                                                                       {
+                                                                                                           @onClick = "chkItemClick(this,'" + @Model.ListStoreView[i].Value
+                                                                                                           + "','" + @Model.ListStoreView[i].Text + "')",
+                                                                                                           @id = "chkStore_" + @Model.ListStoreView[i].Value,
+                                                                                                           @class = "child_chkStore",
+                                                                                                           @data_disabled = "" + Model.ListStoreView[i].Disabled + "",
+                                                                                                           @disabled = "disabled",
+                                                                                                       })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBox(string.Format("ListStoreView[{0}].Selected", i), Model.ListStoreView[i].Selected,
+                                                                                                  new
+                                                                                                  {
+                                                                                                      @onClick = "chkItemClick(this,'" + @Model.ListStoreView[i].Value
+                                                                                                      + "','" + @Model.ListStoreView[i].Text + "')",
+                                                                                                      @id = "chkStore_" + @Model.ListStoreView[i].Value,
+                                                                                                      @class = "child_chkStore",
+                                                                                                      @data_disabled = "" + Model.ListStoreView[i].Disabled + ""
+                                                                                                  })
+                                            }
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Value", i), Model.ListStoreView[i].Value)
+                                            @Html.Hidden(string.Format("ListStoreView[{0}].Text", i), Model.ListStoreView[i].Text)
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+
+                    </tbody>*@
+
+                <tbody class="store-items">
+                    @if (Model.ListStoreOnComp != null && Model.ListStoreOnComp.Any())
+                    {
+                        for (int i = 0; i < Model.ListStoreOnComp.Count; i++)
+                        {
+                            <tr id="@Model.ListStoreOnComp[i].Id" data-value="@Model.ListStoreOnComp[i].Name" class="Lever_@Model.ListStoreOnComp[i].IsCompany">
+                                <td id="Lever_@Model.ListStoreOnComp[i].IsCompany" class="align-left">@Model.ListStoreOnComp[i].Name</td>
+
+                                <td class="align-right">
+                                    @if (!Model.ListStoreOnComp[i].IsCompany)
+                                    {
+                                        <label>
+                                            @if (Model.ListStoreOnComp[i].Selected)
+                                            {
+                                                if (Model.ListStoreOnComp[i].Disabled)
+                                                {
+                                                    @Html.Hidden(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected, new { @value = "True" })
+                                                    @Html.CheckBox(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected,
+                                                                                new
+                                                                                {
+                                                                                    @onClick = "chkItemClick(this,'" + @Model.ListStoreOnComp[i].Id
+                                                                                    + "','" + @Model.ListStoreOnComp[i].Name + "')",
+                                                                                    @id = "chkStore_" + @Model.ListStoreOnComp[i].Id,
+                                                                                    @class = "child_chkStore",
+                                                                                    @data_disabled = "" + Model.ListStoreOnComp[i].Disabled + "",
+                                                                                    @disabled = "disabled",
+                                                                                })
+                                                }
+                                                else
+                                                {
+                                                    @Html.CheckBox(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected,
+                                                              new
+                                                              {
+                                                                  @onClick = "chkItemClick(this,'" + @Model.ListStoreOnComp[i].Id
+                                                                  + "','" + @Model.ListStoreOnComp[i].Name + "')",
+                                                                  @id = "chkStore_" + @Model.ListStoreOnComp[i].Id,
+                                                                  @class = "child_chkStore",
+                                                                  @data_disabled = "" + Model.ListStoreOnComp[i].Disabled + ""
+                                                              })
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBox(string.Format("ListStoreOnComp[{0}].Selected", i), Model.ListStoreOnComp[i].Selected,
+                                                                                                    new
+                                                                                                    {
+                                                                                                        @onClick = "chkItemClick(this,'" + @Model.ListStoreOnComp[i].Id
+                                                                                                        + "','" + @Model.ListStoreOnComp[i].Name + "')",
+                                                                                                        @id = "chkStore_" + @Model.ListStoreOnComp[i].Id,
+                                                                                                        @class = "child_chkStore",
+                                                                                                        @data_disabled = "" + Model.ListStoreOnComp[i].Disabled + ""
+                                                                                                    })
+                                            }
+                                            @Html.Hidden(string.Format("ListStoreOnComp[{0}].Value", i), Model.ListStoreOnComp[i].Id)
+                                            @Html.Hidden(string.Format("ListStoreOnComp[{0}].Text", i), Model.ListStoreOnComp[i].Name)
+                                        </label>
+                                    }
+                                </td>
+
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+            @Html.ValidationMessageFor(model => model.ListStoreOnComp, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Reason Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reason")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter Reason")), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Type*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.Code, new SelectList(Model.ListType, "Value", "Text", Model.Code),
+                                                                                            null, new
+                                                                                            {
+                                                                                                @class = "form-control select2_multiple",
+                                                                                                @id = "ddlType",
+                                                                                                @style = "width:100%;",
+                                                                                                @onChange = "enable(this)",
+
+                                                                                            })
+            @Html.ValidationMessageFor(model => model.Code, null, new { @class = "label" })
+        </div>
+    </div>
+    @*GL Account Code*@
+    <div class="form-group GLAccountCode">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("GL Account Code")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.GLAccountCode, new { @class = "form-control", placeholder = "GL Account Code", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.GLAccountCode, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Reason On Store*@
+    <div class="form-group" id="ReasonOnStore">
+        @if (Model.ListStore != null && Model.ListStore.Any())
+        {
+            for (int i = 0; i < Model.ListStore.Count; i++)
+            {
+                @Html.Partial("_ReasonOnStore", Model.ListStore[i])
+            }
+        }
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlType").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Type"))",
+            @*allowClear: true*@
+        });
+
+        if ($('#ddlType').val() == '@NuWebNCloud.Shared.Commons.EReasonCode.Deposit.ToString("d")' || $('#ddlType').val() == '@NuWebNCloud.Shared.Commons.EReasonCode.Payout.ToString("d")')
+        {
+
+            $('.GLAccountCode').show();
+    }
+    else
+        {
+            $('.GLAccountCode').hide();
+        }
+
+    });
+    function enable(e)
+    {
+        if ($(e).val() == '@NuWebNCloud.Shared.Commons.EReasonCode.Deposit.ToString("d")' || $(e).val() == '@NuWebNCloud.Shared.Commons.EReasonCode.Payout.ToString("d")')
+        {
+            $('.GLAccountCode').show();
+        }
+
+        else {
+            $('.GLAccountCode').hide();
+        }
+    }
+
+    function chkItemClick(e, _StoreID, _StoreName) {
+        StoreID = _StoreID;
+        var checked = $(e).prop('checked');
+        if (checked) {
+            $('.se-pre-con').show();
+            var StoreName = _StoreName;
+            AddMoreProductItemOnStore(StoreID, StoreName);
+        }
+        else {
+            var div = $('.cls_' + StoreID);
+            $(div).find('input.GroupStatus').val(9);
+            $(div).css('display', 'none');
+
+        }
+    }
+
+    function AddMoreProductItemOnStore(_StoreID, _StoreName) {
+        var currentOffset = $(".reason-item-on-store").length;
+        $.ajax({
+            url: '@Url.Action("AddStore", "STransactionReasonSettings")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+                StoreID: _StoreID,
+                StoreName: _StoreName
+            },
+            dataType: 'html',
+            success: function (data) {
+                $("#ReasonOnStore").append(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+    // delete reason on store
+
+    function DeleteTabPanelProItem(StoreID, _OffSet) {
+        var chkStore = $('#chkStore_' + StoreID);
+        var disabled = $(chkStore).attr("data-disabled");
+        var div = $('#divStore_' + StoreID + '-' + _OffSet);
+        $(div).find('input.GroupStatus').val(9);
+        $(div).css('display', 'none');
+        $('#chkStore_' + StoreID).prop('checked', false);
+
+    }
+
+</script>

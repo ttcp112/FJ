@@ -1,0 +1,18 @@
+﻿<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index", "SBInventoryGiftCard")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "view" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;View Data</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create", "SBInventoryGiftCard")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "create" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add new</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Import", "SBInventoryGiftCard")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "import" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-mail-forward"></i>&nbsp;&nbsp;Import</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Export", "SBInventoryGiftCard")" id="lnkExport" class="btn btn-default btn-block menuTab @(Model == "export" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-mail-reply"></i>&nbsp;&nbsp;Export</a>
+    </li>
+</ul>

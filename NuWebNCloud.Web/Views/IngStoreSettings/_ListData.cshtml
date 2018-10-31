@@ -1,0 +1,152 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StoreSettingViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    int i = 0;
+}
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Settings"))
+            </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive" cellspacing="0" style="width:100%;">
+                    <thead>
+                        <tr class="headings">
+
+                            <th class="column-title text-center"> <input type="checkbox" id="check-all" onclick="toggleCheckedAll()" /></th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Code"))  </th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name")) </th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name")) </th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM")) </th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reordering Quantity")) </th>
+                            <th class="column-title text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Min Alert")) </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ListItem)
+                        {
+                            string styleRow = "row-evenItem";
+                            if (i % 2 == 0)
+                            {
+                                styleRow = "row-oddItem";
+                            }
+                            <tr class="even pointer @styleRow" onclick="toggleChecked()">
+                                <td class="a-center text-center">
+                                    <input type="checkbox" id="@item.IngredientId"
+                                           data-id="@item.IngredientId" data-storeId="@item.StoreId"
+                                           name="table_records" class="chkChild" onclick="toggleChecked()" />
+                                </td>
+                                <td class="text-center">@item.IngredientCode</td>
+                                <td>@item.IngredientName</td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(item.StoreName))
+                                    {
+                                        @item.StoreName
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Not set up yet"))
+                                    }
+
+                                </td>
+                                <td class="text-center">@item.ReceivingUOM</td>
+                                <td class="text-center">@item.ReorderingQty</td>
+                                <td class="text-center">@item.MinAlert</td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--For popup-->
+<div class="modal fade" id="modelDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-small" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">X</span>
+                </button>
+            </div>
+            <div class="modal-body scroll" style="padding:0;">
+                <div id="tbl-listDetail" style="padding:15px;" class="form-group"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <label for="EmailValid" id="ValueValid1" class="tbl-listDetail" style="padding-top: 12px; color: red;" />
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <a href="javascript:void(0)" class="btn btn-danger" id="btn-save-dish" onclick="SaveData()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save")) </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+       
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [0] },
+                { "width": "2%", "targets": 0 },
+                { "width": "10%", "targets": [1, 4, 5] },
+                { "width": "5%", "targets": [6] },
+                { "width": "15%", "targets": [3] }
+            ],
+            "order": [[3, 'asc'], [2, 'asc']],
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(3, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="7"><strong style="color:#d9534f;">' + (group === '' ? '|' : group) + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+</script>

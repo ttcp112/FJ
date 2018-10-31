@@ -1,0 +1,103 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.MerchantSetting.MerchantSettingModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                new Dictionary<string, string> { { "A", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Settings")).ToString() }, { "B", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Merchant")).ToString() }, { "C", @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Detail")).ToString() }
+                })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                @*Store receives all payment of gift card purchase and recharge on Poins wallet*@
+                                <div class="form-group">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store receives all payment of gift card purchase and recharge on Poins wallet"))
+                                            </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label">
+                                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stores"))
+                                                </label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Model.StoreName
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*Allow multi-store order on wallet*@
+                                <div class="form-group">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow multi-store order on wallet"))
+                                            </h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label lineHeight">
+                                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Companies"))
+                                                </label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="" class="col-sm-2 control-label"></label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @if (Model.ListCompnayShow != null && Model.ListCompnayShow.Count > 0)
+                                                    {
+                                                        foreach (var item in Model.ListCompnayShow)
+                                                        {
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                                                    @Html.CheckBox(string.Format("ListCompnayShow[{0}].IsActive", item.OffSet), item.IsActive,
+                                                                       new { @id = "IsActive" + item.OffSet, @class= "js-switch", @disabled = "disabled" })
+                                                                </label>
+                                                                <div class="checkbox col-md-6 lighHeight" style="padding-top:0px;">
+                                                                    @item.CompanyName
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //Companies
+        if ($(".js-switch")[0]) {
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+            elems.forEach(function (html) {
+                var switchery = new Switchery(html, {
+                    color: '#26B99A'
+                });
+            });
+        }
+    });
+</script>

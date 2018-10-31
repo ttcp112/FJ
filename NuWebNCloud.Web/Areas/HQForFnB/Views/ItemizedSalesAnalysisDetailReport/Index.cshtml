@@ -1,0 +1,430 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Reports.ItemizedSalesAnalysisReportModel
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Detail Itemized Sales Analysis"));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Reports" }, { "B", "Detail Itemized Sales Analysis" }, { "C", "View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                <div class="x_content">
+                    @using (Html.BeginForm("Report", "ItemizedSalesAnalysisDetailReport", FormMethod.Post,
+new
+{
+    @id = "formReport",
+    @class = "form-horizontal",
+    enctype = "multipart/form-data"
+}))
+                    {
+                        <div class="form-group">
+                            @Html.ValidationSummary(true, "", new { @style = "color: red;" })
+                        </div>
+
+                        <div class="form-group">
+                            <label for="FromDate" class="col-md-3 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    @Html.TextBoxFor(model => model.FromDate, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "fromDate",
+                                        @class = "form-control datepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("From Date")
+                                    })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.FromDate, null, new { @class = "label" })
+                            </div>
+                            <label for="ToDate" class="col-md-1 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Date"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="input-prepend input-group">
+                                    <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    @Html.TextBoxFor(model => model.ToDate, "{0:MM/dd/yyyy}",
+                                    new
+                                    {
+                                        @id = "toDate",
+                                        @class = "form-control datepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To Date")
+                                    })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ToDate, null, new { @class = "label" })
+                            </div>
+                        </div>
+                        //Time
+                        <div class="form-group">
+                            <label for="StartTime" class="col-md-3 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Time"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div class="bootstrap-timepicker">
+                                    <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.StartTime,
+                                    new
+                                    {
+                                        @class = "form-control timepicker",
+                                        @autocomplete = "off",
+                                        @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Time")
+                                    })
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="EndTime" class="col-md-1 col-sm-3 col-xs-12 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Time"))</label>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+
+                                <div class="bootstrap-timepicker">
+                                    <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.EndTime,
+                                            new
+                                            {
+                                                @class = "form-control timepicker",
+                                                @autocomplete = "off",
+                                                @placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Time")
+                                            })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        //Start Update
+                        //SELECT
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.Type,
+                                    new SelectList(Model.ListType, "Value", "Text", Model.Type), null,
+                                    new
+                                    {
+                                        @class = "select2_single form-control",
+                                        @tabindex = "-1",
+                                        @id = "ddlSeleted"
+                                    })
+                            </div>
+                        </div>
+                        //COMPANY
+                        <div class="form-group" id="divCompany">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @Html.DropDownListFor(model => model.ListCompanys,
+                                    new SelectList(@ViewBag.Companys, "Value", "Text", Model.ListCompanys), null,
+                                    new
+                                    {
+                                        @class = "form-control select2_multiple",
+                                        @id = "companyDdl",
+                                        @multiple = "multiple",
+                                        @style = "width:100%;"
+                                    })
+                                @Html.ValidationMessageFor(model => model.ListCompanys, null,
+                               new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+                        //STORE
+                        <div class="form-group" id="divStore">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Stores"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                @*@Html.DropDownListFor(model => model.ListStores,
+                                new SelectList(@ViewBag.Stores, "Value", "Text", Model.ListStores), null,
+                                new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdl",
+                                    @multiple = "multiple",
+                                    @style = "width:100%;"
+                                })*@
+                                @*<select name="ListStores" id="storeDdl" class="form-control list-stores-group" style="width:100%;"> </select>*@
+
+                                @*Updated 07202018*@
+                                @Html.DropDownListFor(model => model.ListStores, (SelectList)ViewBag.StoresInfoSession, new
+                                {
+	                                @class = "form-control select2_multiple list-stores-group",
+	                                @id = "storeDdl",
+	                                @multiple = "multiple",
+	                                @style = "width:100%;"
+                                })
+
+                                @Html.ValidationMessageFor(model => model.ListStores, null, new { @class = "validateLevel label label-danger" })
+                            </div>
+                        </div>
+
+                        //Period
+                        @*<div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Choose Period</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="" class="col-sm-3 control-label">Breakfast</label>
+                                <div class="checkbox col-lg-1">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.Breakfast, new { @checked = true })
+                                    </label>
+                                    @Html.ValidationMessageFor(model => model.Breakfast, null,
+                                   new { @class = "validateLevel label label-danger" })
+                                </div>
+                                <label for="" class="col-sm-1 control-label">Lunch</label>
+                                <div class="checkbox col-lg-1">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.Lunch, new { @checked = true })
+                                    </label>
+                                </div>
+                                <label for="" class="col-sm-1 control-label">Dinner</label>
+                                <div class="checkbox col-lg-1">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.Dinner, new { @checked = true })
+                                    </label>
+                                </div>
+                            </div>*@
+
+                        //Partial Cate
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Dish Categories"))</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <div class="box-footer">
+                                    <button id="btn-load-data-cate" class="btn btn-primary">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" id="loadingSave"></span>
+                                </div>
+                                <div class="box-body scroll" id="category-grid">
+                                    @*@Html.Partial("~/Views/Shared/_FilterCategory.cshtml", Model)*@
+
+                                    @*Group category by parent & child*@
+                                    @Html.Partial("~/Views/Shared/_FilterCategory_V2.cshtml", Model)
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ListEmployees, null, new { @class = "validateCate label label-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose SetMenu"))</label>
+
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <div class="box-footer">
+                                    <button id="btn-load-data-setmenu" class="btn btn-primary">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" id="loadingSaveSet"></span>
+                                </div>
+                                <div class="box-body scroll" id="setmenu-grid">
+                                    @Html.Partial("~/Views/Shared/_FilterSetMenu.cshtml", Model)
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ListEmployees, null, new { @class = "validateSetMenu label label-danger" })
+                            </div>
+                        </div>
+
+                        //Button export
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 ">
+                            </div>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <div>
+                                    @Html.RadioButtonFor(m => m.FormatExport, "HTML",
+                                    new
+                                    {
+                                        @class = "flat",
+                                        @name = "export"
+                                    }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Html))
+                                    <br />
+                                    @Html.RadioButtonFor(m => m.FormatExport, "Excel",
+                                    new
+                                    {
+                                        @class = "flat",
+                                        @name = "export"
+                                    }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.Excel))
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3 col-sm-3 col-xs-12 ">
+                            </div>
+                            <div class="col-md-4 col-sm-8 col-xs-12 ">
+                                <button id="btn-Export" class="btn btn-success btn-md">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Export"))</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+<script>
+        var _typeState = @Model.Type;
+        var _listCompanys = [];
+        var _listStores = [];
+
+        $(document).ready(function () {
+            @*$('.list-stores-group').select2({
+                placeholder: _SStore,
+                multiple: true,
+                data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+            });*@
+
+            ///////======= Updated 07202018
+            $("#storeDdl").select2({
+	            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+	            allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.ListStores))).trigger('change.select2');
+
+            @if (Model.Type == Commons.TypeCompanySelected)
+            {
+                if (Model.ListCompanys != null && Model.ListCompanys.Count > 0)
+                {
+                    @:_listCompanys = '@Html.Raw(Json.Encode(Model.ListCompanys))';
+                            }
+            }
+            else{
+                if (Model.ListStores != null && Model.ListStores.Count > 0)
+                {
+                    @:_listStores = '@Html.Raw(Json.Encode(Model.ListStores))';
+                            }
+            }
+        });
+</script>
+
+    <script src="@Url.Content("~/Scripts/baseJs.js")"></script>
+
+    <script type="text/javascript">
+        $('#loadingSave').hide();
+        $("#loadingSaveSet").hide();
+
+        function ResetMessage() {
+            $(".validation-summary-errors").empty();
+            $(".validateLevel").empty();
+            $('.validateCate').empty();
+            $('.validateSetMenu').empty();
+        }
+        $("#storeDdl").change(function (e) {
+            $("#category-grid").empty();
+            $("#setmenu-grid").empty();
+        });
+
+        $("#btn-load-data-cate").on('click', function () {
+            ResetMessage();
+
+            var listData = null;
+
+            var type = $("#ddlSeleted").val();
+            if (type == 1)//Company
+            {
+                listData = $('#companyDdl').val();
+                if (listData == null) {
+                    //$('.validateLevel').html('Please choose Company');
+                    $('.validateLevel').html(_SCompany);
+                    return false;
+                }
+            } else if (type == 2) {//Store
+                listData = $('#storeDdl').val();
+                if (listData == null) {
+                    //$('.validateLevel').html('Please choose store');
+                    $('.validateLevel').html(_SStore);
+                    return false;
+                }
+            }
+            if (listData != null) {
+                $.ajax({
+                    //url: BaseUrl + 'ItemizedSalesAnalysisDetailReport/LoadCategories',
+                    //url: '@Url.Action("LoadCategories", "ItemizedSalesAnalysisDetailReport")',
+
+                    // Group category by parent & child
+                    url: '@Url.Action("LoadCategories_V2", "ItemizedSalesAnalysisDetailReport")',
+                    data: { lstStoreIds: listData, typeId: type },
+                    type: "post",
+                    traditional: true,
+                    dataType: "html",
+                    beforeSend: function () {
+                        $("#loadingSave").show();
+                    },
+                    success: function (data) {
+                        var isLoginPage = BackToLoginWhenSessionEnd(data);
+                        if (isLoginPage === false) {
+                            $("#category-grid").html(data);
+                            $("#loadingSave").hide();
+                            if (data === "") {
+                                //$('.validateCate').html('Category is not available.');
+                                $('.validateCate').html('Category is not available.');
+                            }
+                        }
+                        else {
+                            window.location = "/Login/Index";
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert(error.responseTextss);
+                    }
+                });
+            }
+            return false;
+        });
+
+        $("#btn-load-data-setmenu").on('click', function () {
+            ResetMessage();
+
+            var listData = null;
+
+            var type = $("#ddlSeleted").val();
+            if (type == 1)//Company
+            {
+                listData = $('#companyDdl').val();
+                if (listData == null) {
+                    // $('.validateLevel').html('Please choose Company');
+                    $('.validateLevel').html(_SCompany);
+                    return false;
+                }
+            } else if (type == 2) {//Store
+                listData = $('#storeDdl').val();
+                if (listData == null) {
+                    //$('.validateLevel').html('Please choose store');
+                    $('.validateLevel').html(_SStore);
+                    return false;
+                }
+            }
+            if (listData != null) {
+                $.ajax({
+                    //url: BaseUrl + 'ItemizedSalesAnalysisDetailReport/LoadSetMenus',
+                    url: '@Url.Action("LoadSetMenus", "ItemizedSalesAnalysisDetailReport")',
+                    data: { lstStoreIds: listData, typeId: type },
+                    type: "post",
+                    traditional: true,
+                    dataType: "html",
+                    beforeSend: function () {
+                        $("#loadingSaveSet").show();
+                    },
+                    success: function (data) {
+                        var isLoginPage = BackToLoginWhenSessionEnd(data);
+                        if (isLoginPage === false) {
+                            $("#setmenu-grid").html(data);
+                            $("#loadingSaveSet").hide();
+                            if (data === "") {
+                                //$('.validateSetMenu').html('Setmenu is not available.');
+                                $('.validateSetMenu').html('Setmenu is not available.');
+                            }
+                        }
+                        else {
+                            window.location = "/Login/Index";
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+
+        @*var a = @Model.ListStores;
+        if (a != null && a.length >0) {
+            $('storeDdl').val(a);
+        }*@
+    </script>
+}

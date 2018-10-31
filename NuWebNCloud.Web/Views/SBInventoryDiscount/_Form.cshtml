@@ -1,0 +1,148 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.DiscountModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+                (SelectList)ViewBag.StoreID,
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Discount Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Discount Name")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Discount Name")).ToString(), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+    @* Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label>@Html.CheckBoxFor(model => model.IsActive)</label>
+        </div>
+    </div>
+    @*Type*@
+    <div class="form-group">
+        <label for="" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value Type")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.BType, "True", new
+                {
+                    @id = "rdb-dollar",
+                    @name = "type",
+                    @onclick = "ChangeType('dollar')"
+                }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value"))
+            </label>
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.BType, "False", new
+                {
+                    @id = "rdb-percent",
+                    @name = "type",
+                    @onclick = "ChangeType('percent')"
+                }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Percent"))
+            </label>
+        </div>
+
+    </div>
+    @*Value*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.Value, new { @class = "form-control", @type = "number", @min = 1, @maxlength = "10" })
+                <div class="input-group-addon">%</div>
+            </div>
+            @Html.ValidationMessageFor(model => model.Value, null, new { @class = "label" })
+        </div>
+    </div>
+    @*Allow Open Discount*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow Open Discount")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsAllowOpenValue, new { @class = " text-left" })
+        </div>
+    </div>
+    @*Apply to Total Bill*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Apply to Total Bill")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.IsApplyTotalBill, new { @class = " text-left" })
+        </div>
+    </div>
+    @*Remark*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remark")): </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Enter Remark")).ToString() })
+            @Html.ValidationMessageFor(model => model.Description, null, new { @class = "label" })
+        </div>
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        if ($("#rdb-dollar").prop('checked')) {
+            ChangeType('dollar');
+        } else {
+            ChangeType('percent');
+        }
+    });
+
+    function ChangeType(value) {
+        if (value == 'dollar') {
+            $(".input-group-addon").text("S$");
+
+        } else {
+            $(".input-group-addon").text("%");
+        }
+    }
+</script>

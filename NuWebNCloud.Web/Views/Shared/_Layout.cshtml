@@ -1,0 +1,405 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    @*<base href="@Url.Content("~/")"></base>*@
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NüWeb F&B | @ViewBag.Title</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/bootstrap/dist/css/bootstrap.min.css")'>
+    <!--Font Awesome-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/font-awesome/css/font-awesome.min.css")'>
+
+    <!--NProgress-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/nprogress/nprogress.css")'>
+
+    <!--iCheck-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/iCheck/skins/flat/green.css")'>
+
+    <!--bootstrap progressbar-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css")'>
+
+    <!--JQVMap-->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/jqvmap/dist/jqvmap.min.css")'>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css")'>
+
+    <!-- Switchery -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/switchery/dist/switchery.min.css")'>
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/select2/dist/css/select2.min.css")'>
+
+    <!-- PNotify -->
+    <link href="@Url.Content("~/vendors/pnotify/dist/pnotify.css")" rel="stylesheet">
+    <link href="@Url.Content("~/vendors/pnotify/dist/pnotify.buttons.css")" rel="stylesheet">
+    <link href="@Url.Content("~/vendors/pnotify/dist/pnotify.nonblock.css")" rel="stylesheet">
+
+    <!--Custom Theme Style-->
+    <link rel="stylesheet" href='@Url.Content("~/build/css/custom.min.css")'>
+
+    <!-- Datatables -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css")'>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css")'>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css")'>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css")'>
+    <link rel="stylesheet" href='@Url.Content("~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css")'>
+
+    <!-- Bootstrap Colorpicker -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/mjolnic-bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css")'>
+
+    <!-- timepicker -->
+    <link rel="stylesheet" href='@Url.Content("~/vendors/timepicker/bootstrap-timepicker.min.css")'>
+
+    <link rel="stylesheet" href="@Url.Content("~/vendors/bootstrap-multiselect/bootstrap-multiselect.css")" type="text/css" />
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="@Url.Content("~/vendors/jquery/dist/jquery.min.js")"></script>
+    @*<link href="@Url.Content("~/Content/custom.scroll.css")" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet">*@
+    <script>
+        var ROOT = '@Url.Content("~/")';
+    </script>
+    @RenderSection("Styles", false)
+    <style>
+        .cd-top {
+            display: inline-block;
+            height: 40px;
+            width: 40px;
+            position: fixed;
+            bottom: 40px;
+            right: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            /*font-family: 'Material Icons';*/
+            /* image replacement properties */
+            overflow: hidden;
+            text-indent: 100%;
+            white-space: nowrap;
+            background: #d9534f url('@Url.Content("~/Assets/Images/cd-top-arrow.svg")') no-repeat center 50%;
+            visibility: hidden;
+            opacity: 0;
+            -webkit-transition: opacity .3s 0s, visibility 0s .3s;
+            -moz-transition: opacity .3s 0s, visibility 0s .3s;
+            transition: opacity .3s 0s, visibility 0s .3s;
+            z-index: 9999;
+        }
+
+            .cd-top.cd-is-visible, .cd-top.cd-fade-out, .no-touch .cd-top:hover {
+                -webkit-transition: opacity .3s 0s, visibility 0s 0s;
+                -moz-transition: opacity .3s 0s, visibility 0s 0s;
+                transition: opacity .3s 0s, visibility 0s 0s;
+            }
+
+            .cd-top.cd-is-visible {
+                /* the button becomes visible */
+                visibility: visible;
+                opacity: 1;
+            }
+
+           
+
+        .no-touch .cd-top:hover {
+            background-color: #e86256;
+            opacity: 1;
+        }
+    </style>
+</head>
+@{ 
+    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+}
+<body class="footer_fixed @string.Format("{0}",user.IsFromNuPos ? "nav-sm": "nav-md")"  style="background-color:#2A3F54;">
+    <a href="#0" class="cd-top">Top</a>
+    <div class="container body">
+        <div class="main_container">
+            <div id="left_menu" class="col-md-3 left_col menu_fixed">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0; background-color:#F2F2F2;">
+                        <a href="@Url.Action("Index", "Home", new { area = "" })" class="site_title">
+                            @*<i class="fa fa-cloud"></i>
+                                <span>NüWeb F&B</span>*@
+                            <img src="~/Assets/Images/logo.png" height="35" />
+                            <span style="color: #2A3F54;">NüWeb F&B</span>
+                        </a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="profile">
+                        @{
+
+                            if (user != null)
+                            {
+                                <div class="profile_pic">
+                                    @if (user.ImageUrl == null)
+                                    {
+                                        <img src="@Url.Content("~/Assets/images/avatarDefault.jpg")" alt="..." class="img-circle profile_img" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@user.ImageUrl" alt="..." class="img-circle profile_img">
+                                    }
+                                </div>
+                                <div class="profile_info">
+                                    <h2>@Html.Raw(user.UserName)</h2>
+                                </div>
+                            }
+                        }
+                        @*<div class="profile_pic">
+                                <img src="@Url.Content("~/Assets/images/picture.jpg")" alt="..." class="img-circle profile_img">
+                            </div>
+                            <div class="profile_info">
+                                @*<span>Welcome,</span>
+                                @{
+                                    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+                                    if (user != null)
+                                    {
+                                        <h2>@Html.Raw(user.UserName)</h2>
+                                    }
+                                }
+
+                            </div>*@
+                    </div>
+                    <br />
+                    <!-- sidebar menu -->
+                    @Html.Partial("_sidebarMenu")
+                    <!-- /sidebar menu -->
+                </div>
+            </div>
+
+            @Html.Partial("_topNavigation")
+            @RenderBody()
+            @Html.Partial("_footer")
+        </div>
+    </div>
+    <script>
+        /*Validation Input*/
+        var _required = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("This field is required."))';
+        var _email = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a valid email address."))';
+        var _url = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a valid URL."))';
+        var _date = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a valid date."))';
+        var _number = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a valid number."))';
+        var _digits = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter only digits."))';
+        var _creditcard = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a valid credit card number."))';
+        var _equalTo = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter the same value again."))';
+        var _max = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a value less than or equal to"))';
+        var _min = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter a value greater than or equal"))';
+        /*End*/
+
+        /*DatetimePicker*/
+        @{
+            _AttributeForLanguage.CurrentUser.GetLanguageForDateTimePicker();
+        }
+        var daysOfWeek = '@Html.Raw(Json.Encode(Commons._daysOfWeek))';
+        var _daysOfWeek = JSON.parse(daysOfWeek);
+        var monthNames = '@Html.Raw(Json.Encode(Commons._monthNames))';
+        var _monthNames = JSON.parse(monthNames);
+        /*End*/
+
+        /*Global declare*/
+        var _SState = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select a state"))';
+        var _SStore = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store."))';
+        var _SCompany = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose company."))';
+        var _SEmployee = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Employees is Null."))';
+        var _SCategory = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category is not available."))';
+        var _SMenu = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Menu is not available."))';
+        var _SPayment = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Payment method is null"))';
+        var _SCategoryNull = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category is Null."))';
+
+        var _Search = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Search"))';
+        var _Show = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Show"))';
+        var _entries = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("entries"))';
+        var _Showing = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Showing"))';
+        var _Of = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("of"))';
+        var _To = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("To"))';
+        _To = _To.toLowerCase();
+        var _NoDataAvailableInTable = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No data available in table"))';
+
+        var _NoResultsFound = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No results found"))';
+        var _UnableToConnectToTheInternet = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unable to connect to the Internet"))';
+        var _TitleError = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Error"))';
+
+        var _SfromDate = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The FromDate field is required."))';
+        var _StoDate = '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("The ToDate field is required."))';
+
+        /*End*/
+    </script>
+
+    <!--Bootstrap-->
+    <script src="@Url.Content("~/vendors/bootstrap/dist/js/bootstrap.min.js")"></script>
+    <!--FastClick-->
+    <script src="@Url.Content("~/vendors/fastclick/lib/fastclick.js")"></script>
+    <!--NProgress-->
+    <script src="@Url.Content("~/vendors/nprogress/nprogress.js")"></script>
+    <!--bootstrap progressbar-->
+    <script src="@Url.Content("~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js")"></script>
+    <!--iCheck-->
+    <script src="@Url.Content("~/vendors/iCheck/icheck.min.js")"></script>
+    <script src="@Url.Content("~/build/js/custom.js")"></script>
+    <script src="@Url.Content("~/Assets/js/file/FileSaver.min.js")"></script>
+    <!-- Bootstrap Colorpicker -->
+    <script src="@Url.Content("~/vendors/mjolnic-bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js")"></script>
+    <!-- Switchery -->
+    <script src="@Url.Content("~/vendors/switchery/dist/switchery.min.js")"></script>
+    <!-- Validate -->
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+    <!-- Custom Scroll bar -->
+    <script src="@Url.Content("~/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js")"></script>
+    <!-- Function -->
+    <script src="@Url.Content("~/js/Report/Function.js")"></script>
+    <!-- Daterangepicker -->
+    <script src="@Url.Content("~/js/moment/moment.min.js")"></script>
+    <script src="@Url.Content("~/js/moment/moment-timezone.js")"></script>
+    <script src="@Url.Content("~/js/moment/moment-timezone-with-data.js")"></script>
+
+    <script src="@Url.Content("~/js/datepicker/daterangepicker.js")"></script>
+
+    <script type="text/javascript" src="@Url.Content("~/js/daterangepicker/knockout-3.4.2.js")"></script>
+    <link rel="stylesheet" href='@Url.Content("~/js/daterangepicker/daterangepicker.css")'>
+    <script type="text/javascript" src="@Url.Content("~/js/daterangepicker/daterangepicker.js")"></script>
+
+    <!-- Select2  trongntn-->
+    <script src="@Url.Content("~/vendors/select2/dist/js/select2.full.js")"></script>
+    <!-- Datatables -->
+    <script src="@Url.Content("~/vendors/datatables.net/js/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js")"></script>
+    <script src="@Url.Content("~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js")"></script>
+    <script src="@Url.Content("~/vendors/datatables.net-scroller/js/datatables.scroller.min.js")"></script>
+    <script src="@Url.Content("~/vendors/timepicker/bootstrap-timepicker.min.js")"></script>
+
+    <!-- PNotify -->
+    <script src="@Url.Content("~/vendors/pnotify/dist/pnotify.js")"></script>
+    <script src="@Url.Content("~/vendors/pnotify/dist/pnotify.buttons.js")"></script>
+    <script src="@Url.Content("~/vendors/pnotify/dist/pnotify.nonblock.js")"></script>
+
+    <script type="text/javascript" src="@Url.Content("~/vendors/bootstrap-multiselect/bootstrap-multiselect.js")"></script>
+
+    <!-- Chart -->
+    <script type="text/javascript" src="@Url.Content("~/vendors/Chart.js/dist/Chart.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/vendors/Chart.js/dist/Chart.PieceLabel.min.js")"></script>
+
+    @*Css for menu toggle if login from NuPos*@
+    
+    @*@if (ViewBag.IsFromNuPos == true)
+    {
+        <style>
+            .nav-md .container.body .col-md-3.left_col {
+                display: none;
+            }
+
+            .nav-md .container.body .right_col {
+                margin-left: 0;
+            }
+
+            .main_container .top_nav {
+                margin-left: 0;
+            }
+        </style>
+    }*@
+
+    <script type="text/javascript">
+        @{
+                string controller = this.ViewContext.RouteData.Values["controller"].ToString();
+                string baseUrl = new Uri(Request.Url, Url.Content("~")).ToString();
+            }
+        ControllerName = "@controller";
+        BaseUrl = "@baseUrl";
+        $(document).ready(function () {
+            $(".timepicker").timepicker({
+                timeFormat: 'HH:mm',
+                showInputs: false,
+                showMeridian: false
+            });
+            var width = $(window).width();
+            if (width <= 990) {
+                $('#left_menu').removeClass('menu_fixed')
+            }
+        });
+        $(window).resize(function () {
+            var width = $(window).width();
+            if (width <= 990) {
+                $('#left_menu').removeClass('menu_fixed')
+            } else {
+                $('#left_menu').addClass('menu_fixed')
+            }
+        });
+        $(function () {
+            // browser window scroll (in pixels) after which the "back to top" link is shown
+            var offset = 300,
+                //browser window scroll (in pixels) after which the "back to top" link opacity is reduced
+                offset_opacity = 1200,
+                //duration of the top scrolling animation (in ms)
+                scroll_top_duration = 350,
+                //grab the "back to top" link
+                $back_to_top = $('.cd-top');
+
+            //hide or show the "back to top" link
+            $(window).scroll(function () {
+                ($(this).scrollTop() > offset) ? $back_to_top.addClass('cd-is-visible') : $back_to_top.removeClass('cd-is-visible cd-fade-out');
+                if ($(this).scrollTop() > offset_opacity) {
+                    $back_to_top.addClass('cd-fade-out');
+                }
+            });
+
+            //smooth scroll to top
+            $back_to_top.on('click', function (event) {
+                event.preventDefault();
+                $('body,html').animate({
+                    scrollTop: 0,
+                }, scroll_top_duration
+                );
+            });
+
+            @*$(document).ajaxComplete(function (a, xhr, c) {
+                if (xhr.status == 403 && xhr.responseText.indexOf("401Unauthorized") != -1 && '@Commons.Controller' !== '') {
+                    alert('You are not authorized to perform this operation. Please contact the Super Admin for advice.');
+                   window.location = "/" + '@Commons.Controller' + "/" + '@Commons.Action';
+                }
+            });
+
+            if ('@Commons.IsShowNotAuthorized' == 'True') {
+                alert('You are not authorized to perform this operation. Please contact the Super Admin for advice.');
+            }*@
+
+        });
+
+        /*check Connection for Page*/
+        setInterval(function () {
+            if (!navigator.onLine) {
+                init_PNotify();
+            }
+        }, 10000);
+        function init_PNotify() {
+            if (typeof (PNotify) === 'undefined') {
+                return;
+            }
+            //alert('Unable to connect to the Internet');
+            new PNotify({
+                title: _TitleError,
+                text: _UnableToConnectToTheInternet + '!!!',
+                type: 'error',
+                styling: 'bootstrap3'
+            });
+        };
+        @if(ViewBag.IsFromNuPos.ToString() == "True")
+        {
+            <text>
+        setTimeout(function () {
+            $('.child_menu').css("display", "none");
+            $('#sidebar-menu').find("li").removeClass("active");
+        },100)
+    </text>
+        }
+     
+    </script>
+
+    <script src="@Url.Content("~/Scripts/functions.js")"></script>
+    @RenderSection("Scripts", false)
+
+</body>
+</html>

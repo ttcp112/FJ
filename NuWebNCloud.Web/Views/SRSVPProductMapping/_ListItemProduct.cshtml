@@ -1,0 +1,59 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.RSVPStoreProducMappingModels
+
+@if (Model.ListRSVPProductMapping != null && Model.ListRSVPProductMapping.Count > 0)
+{
+    <table class="table table-striped table-hover">
+        <tbody id="list-dishes-@Model.OffSet">
+            @for (int i = 0; i < Model.ListRSVPProductMapping.Count; i++)
+            {
+                <tr data-id="@Model.ListRSVPProductMapping[i].ProductID" style="cursor:pointer;" class="SpecificItems">
+                    <td style="width:1%;">
+                        <input type="checkbox" onchange="ToogleItem(this, '#list-dishes-@Model.OffSet')"
+                               data-code="@Model.ListRSVPProductMapping[i].ProductCode"
+                               data-name="@Model.ListRSVPProductMapping[i].ProductName"
+                               data-id="@Model.ListRSVPProductMapping[i].ProductID" />
+
+                        @Html.HiddenFor(model => model.ListRSVPProductMapping[i].ProductID, new { @id = "hidID" })
+                        @Html.HiddenFor(model => model.ListRSVPProductMapping[i].ProductName, new { @id = "hidName" })
+                        @Html.HiddenFor(model => model.ListRSVPProductMapping[i].ProductCode, new { @id = "hidCode" })
+                        @Html.HiddenFor(model => model.ListRSVPProductMapping[i].ProductType, new { @id = "hidType" })
+                    </td>
+                    <td @*onclick="TickCheckBoxTd(this,'#list-dishes-@Model.OffSet')"*@ style="width:20%;">@Model.ListRSVPProductMapping[i].ProductCode </td>
+                    <td @*onclick="TickCheckBoxTd(this,'#list-dishes-@Model.OffSet')"*@>@Model.ListRSVPProductMapping[i].ProductName </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    function ToogleItem(e, containElementSelector) {
+        var isCheck = $(e).prop("checked");
+        if (!isCheck) {
+            _ProductID = '';
+            _ProductCode = '';
+            _ProductName = '';
+        }
+        else {
+            var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+            if (lengthCheck <= 1) {
+                _ProductID = $(e).data("id");
+                _ProductCode = $(e).data("code");
+                _ProductName = $(e).data("name");
+            } else {
+                $(e).prop("checked", false);
+                alert('User can only select 1 product');
+            }
+        }
+    }
+
+    //function TickCheckBoxTd(td, containElementSelector) {
+    //    var lengthCheck = $(containElementSelector).find("tr:visible").find("input[type='checkbox']:checked").length;
+    //    if (lengthCheck == 0) {
+    //        var tr = $(td).parents('tr:first');
+    //        $(tr).find('input[type=checkbox]').prop('checked', !$(tr).find('input[type=checkbox]').prop('checked'));
+    //    } else {
+    //        alert('User can only select 1 product');
+    //    }
+    //}
+</script>

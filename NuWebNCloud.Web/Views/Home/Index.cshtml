@@ -1,0 +1,1406 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Charts.DashBoardModels
+@{
+    ViewBag.Title = "Graphic Report";
+    var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+}
+@*
+    <div class="se-pre-con-home"></div>
+*@
+<div class="se-pre-con"></div>
+<div class="right_col" role="main">
+    <div class="submenu-home">
+        <div class="row">
+            <div class="col-md-7 col-sm-7 col-xs-12">
+                @{
+                    <label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Hi"))</label>
+                    @Html.Raw(user.UserName)<label>,</label><label>
+                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Take A Look At Your Store’s Performance."))
+                    </label>
+                }
+            </div>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                @*<select name="ListStoreIds" id="storeDdl" class="form-control list-stores-group"> </select>*@
+
+                @*Group by company, updated 07172018*@
+                @Html.DropDownListFor(model => model.ListStoreIds, (SelectList)ViewBag.StoresInfoSession, new
+                {
+	                @class = "form-control list-stores-group",
+	                @id = "storeDdl",
+	                @style = "width:100%;"
+                })
+
+                @Html.ValidationMessageFor(model => model.ListStoreIds, null, new { @class = "validateLevel label label-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="content-home">
+        @*Revenue report*@
+        <div class="div-revenue" style="margin-top:15px;">
+            <div class="row title-revenue">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <label class="report-name">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Revenue").ToUpper())</label>
+                </div>
+                <div class="col-md-5 col-sm-5 col-xs-12">
+                    <label style="font-weight:normal;"><i class="fas fa-circle" style="color:#a70c6d;"></i> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TC"))</label>&nbsp;&nbsp;
+                    <label style="font-weight:normal;"><i class="fas fa-circle" style="color:#49d1d2;"></i> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Total"))</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5 col-sm-5 col-xs-12 revenue-week">
+                    <div class="col-xs-12 widget_tally_box">
+                        <div class="x_panel">
+                            <div class="row x_title">
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <div class="row">
+                                        <label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Total Sale of The Week"))</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <input type="text" id="daterange-revenue-week" name="daterange-revenue-week" class="daterange-revenue-week"
+                                               style="text-align:center;  width:176px" readonly />
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 btn-right">
+                                    <div class="row">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div id="loadingRevenueWeekChart" class="waiting-bg"></div>
+                                <canvas id="revenueWeekChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 col-sm-7 col-xs-12 revenue-month">
+                    <div class="col-xs-12 widget_tally_box">
+                        <div class="x_panel">
+                            <div class="row x_title">
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Total Sale of The Month"))</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="text" id="daterange-revenue-month" name="daterange-revenue-month" class="daterange-revenue-month" style="text-align:center; width:176px" readonly />
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 btn-right">
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div id="loadingRevenueMonthChart" class="waiting-bg"></div>
+                                <canvas id="revenueMonthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Category report*@
+        <div class="div-category-glaccountcode" style="margin-top:15px;">
+            <div class="row title-caregory">
+                <label class="report-name">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("CATEGORIES"))</label>
+            </div>
+            <div class="col-md-12 col-xs-12 col-sm-12 widget_tally_box">
+                <div class="x_panel">
+                    <div class="row x_title">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            @Html.RadioButtonFor(m => m.CategoryChartRequestModels.Type, 0,
+                                 new
+                                 {
+                                     @class = "flat",
+                                     @name = "filterType",
+                                     @id = "categoryTypeWeek"
+                                 }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Week")) &nbsp;&nbsp;
+                            @Html.RadioButtonFor(m => m.CategoryChartRequestModels.Type, 1,
+                                    new
+                                    {
+                                        @class = "flat",
+                                        @name = "filterType",
+                                        @id = "categoryTypeMonth"
+                                    }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Month"))
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="text" id="daterange-category-week" name="daterange-category-week" class="daterange-category-week"
+                                    style="text-align:center; width:176px" readonly />
+                            <input type="text" id="daterange-category-month" name="daterange-category-month" class="daterange-category-month" style="width:176px;text-align:center; display:none" readonly />
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 btn-right">
+                        </div>
+                    </div>
+                    <div class="x_content">
+                        <div id="loadingCategoryChart" class="waiting-bg" style="z-index:9999;"></div>
+                        <div class="col-md-7 col-sm-7 col-xs-12">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-xs-12">
+                            <canvas id="categoryDetailChart" width="350" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Hourly Sale report*@
+        <div class="div-hourly-sale">
+            <div class="row title-hourly">
+                <label class="report-name">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Hourly Sales").ToUpper())</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-12 col-sm-12 widget_tally_box">
+                    <div class="x_panel">
+                        <div class="row x_title">
+                            <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top:10px;">
+                                @Html.RadioButtonFor(model => model.HourlySaleChartRequestModels.IsMonth, false, new { @class = "flat hourly-calendar", @id = "hourly-calendar-week" })  <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Week"))</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                @Html.RadioButtonFor(model => model.HourlySaleChartRequestModels.IsMonth, true, new { @class = "flat hourly-calendar", @id = "hourly-calendar-month" }) <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Month"))</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input type="text" id="daterange-hourly-week" name="daterange-hourly-week" class="daterange-hourly-week" style="text-align:center; width:176px; margin-top:5px" readonly />
+                                <input type="text" id="daterange-hourly-month" name="daterange-hourly-month" class="daterange-hourly-month" style="width:176px; text-align:center; display:none;" readonly />
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top:10px;">
+                                <div class="col-md-3 col-sm-12 col-xs-12 text-right" style="margin:0; padding:0">
+                                    <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Range"))</strong>
+                                </div>
+                                <div class="col-md-9 col-sm-12 col-xs-12">
+                                    @Html.DropDownListFor(model => model.HourlySaleChartRequestModels.TimeFrom,
+                                            new SelectList(@ViewBag.TIMER, "Value", "Text", Model.HourlySaleChartRequestModels.TimeFrom), null,
+                                            new
+                                            {
+                                                @class = "hourly-time-from"
+                                            })
+                                    @Html.Raw(" - ")
+                                    @Html.DropDownListFor(model => model.HourlySaleChartRequestModels.TimeTo,
+                                            new SelectList(@ViewBag.TIMER, "Value", "Text", Model.HourlySaleChartRequestModels.TimeTo), null,
+                                            new
+                                            {
+                                                @class = "hourly-time-to"
+                                            })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="x_content">
+                            <div id="loadingHourlySaleChart" class="waiting-bg"></div>
+                            <canvas id="hourlySaleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Top Selling report*@
+        <div class="div-top-selling">
+            <div class="row title-top-sell">
+                <label class="report-name">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Top Selling Items").ToUpper())</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-12 col-sm-12 widget_tally_box">
+                    <div class="x_panel">
+                        <div class="row x_title">
+                            <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top:10px;">
+                                <div class="col-xs-12 col-md-5 col-sm-12" style="padding:0">
+                                    <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Top Selling Items"))</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </div>
+                                <div class="col-xs-12 col-md-7 col-sm-12" style="padding:0;margin:0">
+                                    @Html.DropDownListFor(model => model.TopSellingChartRequestModels.TopSell,
+                                            new SelectList(Model.TopSellingChartRequestModels.ListTopSell, "Value", "Text", Model.TopSellingChartRequestModels.TopSell), null,
+                                            new
+                                            {
+                                                @class = "top-sell-number"
+                                            })
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    @Html.DropDownListFor(model => model.TopSellingChartRequestModels.ItemType,
+                                            new SelectList(Model.TopSellingChartRequestModels.ListItemType, "Value", "Text", Model.TopSellingChartRequestModels.ItemType), null,
+                                            new
+                                            {
+                                                @class = "top-sell-item-type",
+                                                @style = "min-width: 100px;"
+                                            })
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top:10px;">
+                                @Html.RadioButtonFor(model => model.TopSellingChartRequestModels.IsMonth, false, new { @class = "flat top-sell-calendar", @id = "top-sell-calendar-week" })  <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Week"))</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                @Html.RadioButtonFor(model => model.TopSellingChartRequestModels.IsMonth, true, new { @class = "flat top-sell-calendar", @id = "top-sell-calendar-month" }) <strong>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("By Month"))</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input type="text" id="daterange-top-sell-week" name="daterange-top-sell-week" class="daterange-top-sell-week" style="text-align:center; margin-top:5px; width:176px" readonly />
+                                <input type="text" id="daterange-top-sell-month" name="daterange-top-sell-month" class="daterange-top-sell-month" style="text-align:center; display:none; margin-top:5px; width:176px" readonly />
+                            </div>
+                        </div>
+                        <div class="x_content">
+                            <div id="loadingTopSellingChart" class="waiting-bg"></div>
+                            <canvas id="topSellingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .title-revenue .fas {
+        font-family: FontAwesome;
+        font-style: normal;
+    }
+
+    .category-lable {
+        color: green;
+        font-size: 16px;
+    }
+
+    .report-name {
+        font-size: 16px;
+        color: green;
+    }
+
+    .title-revenue .fas {
+        font-family: FontAwesome;
+        font-style: normal;
+    }
+
+    .hourly-time-from,
+    .hourly-time-to {
+        width: 100px;
+        display: inline-block;
+    }
+
+    .list-stores-group {
+        max-width: 100%;
+    }
+    /*.se-pre-con-home {
+        display: none;
+        height: 100%;
+        left: 0;
+        opacity: 0.5;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: #fff url("../../Assets/Images/Preloader_21.gif") no-repeat center center;
+        opacity: .75;
+        filter: alpha(opacity=75);
+        z-index: 20140629;
+    }*/
+    .daterangepickerknockout.opened {
+        display: block !important;
+    }
+
+    .daterangepickerknockout.expanded .calendar {
+        display: inline-table !important;
+    }
+
+    .daterangepickerknockout.single.expanded .calendar {
+        display: block !important;
+    }
+    /*waiting*/
+    .waiting-bg {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: #fff url("../../Assets/Images/Preloader_21.gif") no-repeat center center;
+    }
+
+    .calendar {
+        margin: 1px !important;
+    }
+</style>
+<script>
+   //Variable
+   var StoreId = '@Model.ListStoreIds.FirstOrDefault()';
+   var timeZone = ''; // Current client's timezone
+   var totalChart = 5; // For show loading... when update data of all chart
+   var totalCheckSession = 5;
+   //=== Revenue chart
+   var RevenueWeekDateFrom = new Date("@Model.RevenueChartWeekRequestModels.DateFrom.ToString("MM/dd/yyyy")");
+   var RevenueWeekDateTo = new Date("@Model.RevenueChartWeekRequestModels.DateTo.ToString("MM/dd/yyyy")");
+   var RevenueMonthDateFrom = new Date("@Model.RevenueChartMonthRequestModels.DateFrom.ToString("MM/dd/yyyy")");
+   var RevenueMonthDateTo = new Date("@Model.RevenueChartMonthRequestModels.DateTo.ToString("MM/dd/yyyy")");
+   var revenueWeekChart; // For update old chart (solution to error hovering over line chart shows old chart data)
+   var revenueMonthChart;
+
+   //=== Category chart
+   var CategoryWeekDateFrom = new Date("@Model.CategoryChartRequestModels.DateFrom.ToString("MM/dd/yyyy")");
+   var CategoryWeekDateTo = new Date("@Model.CategoryChartRequestModels.DateTo.ToString("MM/dd/yyyy")");
+   var CategoryMonthDateFrom = new Date("@Model.CategoryChartRequestModels.DateMonthFrom.ToString("MM/dd/yyyy")");
+   var CategoryMonthDateTo = new Date("@Model.CategoryChartRequestModels.DateMonthTo.ToString("MM/dd/yyyy")");
+   var listCategoryDetailsData;
+   var dataCateDetail;
+   var isCategoryDetailShow = false;
+   var isCategoryFirstShow = true;
+   var isWeekSelected = true;
+   var categoryChart;
+   var categoryDetailChart;
+   var ctxCategoryChart = $("#categoryChart").get(0).getContext("2d");
+   var ctxCategoryDetailChart = $("#categoryDetailChart").get(0).getContext("2d");
+
+   //=== Hourly Sale chart
+   var HourlyWeekDateFrom = new Date("@Model.HourlySaleChartRequestModels.WeekDateFrom.ToString("MM/dd/yyyy")");
+   var HourlyWeekDateTo = new Date("@Model.HourlySaleChartRequestModels.WeekDateTo.ToString("MM/dd/yyyy")");
+   var HourlyMonthDateFrom = new Date("@Model.HourlySaleChartRequestModels.MonthDateFrom.ToString("MM/dd/yyyy")");
+   var HourlyMonthDateTo = new Date("@Model.HourlySaleChartRequestModels.MonthDateTo.ToString("MM/dd/yyyy")");
+   var hourlySalesChart;
+   var isHourlyFirstShow = true;
+
+   //=== Top Selling chart
+   var TopSellWeekDateFrom = new Date("@Model.TopSellingChartRequestModels.WeekDateFrom.ToString("MM/dd/yyyy")");
+   var TopSellWeekDateTo = new Date("@Model.TopSellingChartRequestModels.WeekDateTo.ToString("MM/dd/yyyy")");
+   var TopSellMonthDateFrom = new Date("@Model.TopSellingChartRequestModels.MonthDateFrom.ToString("MM/dd/yyyy")");
+   var TopSellMonthDateTo = new Date("@Model.TopSellingChartRequestModels.MonthDateTo.ToString("MM/dd/yyyy")");
+   var topSellChart;
+   var isTopSaleFirstShow = true;
+   var topSaleType = '';
+
+   $(document).ready(function () {
+
+       topSaleType = $(".top-sell-item-type").val();
+
+       //$('.se-pre-con-home').show(); // Display when update for all chart
+       timeZone = moment.tz.guess();
+
+       //=== Select Store
+       @*$('.list-stores-group').select2({
+           data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+       });
+       $(".list-stores-group").select2().val(StoreId).trigger('change.select2');*@
+
+       //////===== Updated 07192018
+       $("#storeDdl").select2({
+	        placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+        }).val(StoreId).trigger('change.select2');
+
+       //=== Hourly Sales: select time
+       $(".hourly-time-from").select2();
+       $(".hourly-time-to").select2();
+
+       //=== Top Selling: select top sell and item type
+       $(".top-sell-number").select2();
+       $(".top-sell-item-type").select2();
+
+       //===== Init Chart =====
+       //=== Revenue week
+       var ctxRevenueWeekChart = $("#revenueWeekChart").get(0).getContext("2d");
+       revenueWeekChart = new Chart(ctxRevenueWeekChart, {
+           type: 'bar',
+           data: {},
+           options: {
+               responsive: true,
+               title: { display: false, text: '' },
+               legend: { display: false, position: 'bottom' },
+               scales: {
+                   yAxes: [{
+                       ticks: {
+                           min: 0,
+                           callback: function (value, index, values) {
+                               return NumberFormatCurrency(value, 2);
+                           }
+                       }
+                   }]
+               },
+               tooltips: {
+                   mode: 'index',
+                   intersect: false,
+                   callbacks: {
+                       label: function (t, d) {
+                           //return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 2);
+                           if (d.datasets[t.datasetIndex].label == "TC") {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 0);
+                           }
+                           else {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 2);
+                           }
+                       }
+                   }
+               }, //end tooltips
+               //events: ["mousemove", "mouseout", "click", "touchstart", "touchmove", "touchend"],
+               events: ["mousemove", "mouseout", "click"],
+               onClick: function () {
+                   SettimeoutHideTooltip("revenueWeekChart");
+               }
+           }
+       });
+       //=== Revenue month
+       var ctxRevenueMonthChart = $("#revenueMonthChart").get(0).getContext("2d");
+       revenueMonthChart = new Chart(ctxRevenueMonthChart, {
+           type: 'bar',
+           data: {},
+           options: {
+               responsive: true,
+               title: { display: false, text: '' },
+               legend: { display: false, position: 'bottom' },
+               scales: {
+                   yAxes: [{
+                       ticks: {
+                           min: 0,
+                           callback: function (value, index, values) {
+                               return NumberFormatCurrency(value, 2);
+                           }
+                       },
+                   }]
+               }, //end scales
+               tooltips: {
+                   mode: 'index',
+                   intersect: false,
+                   callbacks: {
+                       label: function (t, d) {
+                           if (d.datasets[t.datasetIndex].label == "TC") {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 0);
+                           }
+                           else {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 2);
+                           }
+                       }
+                   }
+               }, //end tooltips
+               //events: ["mousemove", "mouseout", "click", "touchstart", "touchmove", "touchend"],
+               events: ["mousemove", "mouseout", "click"],
+               onClick: function () {
+                   SettimeoutHideTooltip("revenueMonthChart");
+               }
+           }
+       });
+       //=== Hourly Sales
+       var ctxHourlySaleChart = $("#hourlySaleChart").get(0).getContext("2d");
+       hourlySalesChart = new Chart(ctxHourlySaleChart, {
+           type: "line",
+           data: {},
+           options: {
+               responsive: true,
+               hoverMode: 'index',
+               elements: {
+                   line: {
+                       tension: 0, // disables bezier curves
+                   }
+               },
+               stacked: false,
+               title: {
+                   display: false,
+               },
+               legend: {
+                   display: true
+               },
+               scales: {
+                   yAxes: [{
+                       type: "linear",
+                       display: true,
+                       position: "left",
+                       id: "money",
+                       scaleLabel: {
+                           display: true,
+                           labelString: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value"))',
+                           fontSize: 14
+                       },
+                       ticks: {
+                           min: 0,
+                           callback: function (value, index, values) {
+                               return NumberFormatCurrency(value, 2);
+                           }
+                       },
+                   }, {
+                       type: "linear",
+                       display: true,
+                       position: "right",
+                       id: "qly",
+                       scaleLabel: {
+                           display: true,
+                           labelString: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TC"))',
+                           fontSize: 14
+                       },
+                       ticks: {
+                           min: 0,
+                           //callback: function (value, index, values) {
+                           //    return NumberFormatCurrency(value, 0);
+                           //}
+                       },
+                       // grid line settings
+                       gridLines: {
+                           drawOnChartArea: false,
+                       },
+                   }],
+               },
+               tooltips: {
+                   mode: 'index',
+                   intersect: false,
+                   callbacks: {
+                       label: function (t, d) {
+                           if (d.datasets[t.datasetIndex].label == "TC") {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 0);
+                           }
+                           else {
+                               return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.yLabel, 2);
+                           }
+                       }
+                   }
+               }, //end tooltips
+               //events: ["mousemove", "mouseout", "click", "touchstart", "touchmove", "touchend"],
+               events: ["mousemove", "mouseout", "click"],
+               onClick: function () {
+                   SettimeoutHideTooltip("hourlySalesChart");
+               }
+           }
+       });
+       //===Top Selling
+       var ctxTopSellChart = $("#topSellingChart").get(0).getContext("2d");
+       topSellChart = new Chart(ctxTopSellChart, {
+           type: "line",
+           data: {},
+           options: {
+               responsive: true,
+               legend: {
+                   display: true,
+                   position: 'right'
+               },
+               elements: {
+                   point: {
+                       pointStyle: 'circle',
+                       radius: 10,
+                       hoverRadius: 12,
+                       borderColor: 'transparent',
+                   }
+               },
+               layout: {
+                   padding: {
+                       top: 25,
+                   }
+               },
+               scales: {
+                   xAxes: [{
+                       scaleLabel: {
+                           display: true,
+                           labelString: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Rank"))',
+                           fontSize: 14
+                       },
+                   }],
+                   yAxes: [{
+                       ticks: {
+                           beginAtZero: true,
+                           min: 0,
+                           callback: function (value, index, values) {
+                               if (topSaleType == 0) {
+                                   return NumberFormatCurrency(value, 0);
+                               }
+                               else {
+                                   return NumberFormatCurrency(value, 2);
+                               }
+                           }
+                       },
+                       scaleLabel: {
+                           display: true,
+                           labelString: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value"))',
+                           fontSize: 14
+                       },
+                   }]
+               },
+               events: false,
+               showTooltips: false,
+               animation: {
+                   duration: 0,
+                   onComplete: function () {
+                       var ctx = this.chart.ctx;
+                       ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+                       ctx.textAlign = 'center';
+                       ctx.textBaseline = 'bottom';
+                       ctx.fillStyle = "#333";
+                       this.data.datasets.forEach(function (dataset) {
+                           for (var i = 0; i < dataset.data.length; i++) {
+                               var arrMeta = $.map(dataset._meta, function (value, index) {
+                                   return [value];
+                               });
+                               //var model = dataset._meta[3].data[i]._model;
+                               var model = arrMeta[0].data[i]._model;
+                               if (topSaleType == 0) {
+                                   ctx.fillText(NumberFormatCurrency(dataset.data[i], 0), model.x, model.y - 12);
+                               }
+                               else {
+                                   ctx.fillText(NumberFormatCurrency(dataset.data[i], 2), model.x, model.y - 12);
+                               }
+                           }
+                       });
+                   }
+               }
+           }
+       });
+       //===== End init Chart =====
+
+       //===== Init Daterangepicker =====
+       //=== Revenue Week
+       $(".daterange-revenue-week").daterangepickerknockout({
+           startDate: RevenueWeekDateFrom,
+           endDate: RevenueWeekDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'day',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               RevenueWeekDateFrom = startDate;
+               RevenueWeekDateTo = endDate;
+               // Get data for chart
+               ApplyRevenueWeek();
+           }
+       });
+       //=== Revenue Month
+       $("#daterange-revenue-month").daterangepickerknockout({
+           startDate: RevenueMonthDateFrom,
+           endDate: RevenueMonthDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'month',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               RevenueMonthDateFrom = startDate;
+               RevenueMonthDateTo = endDate;
+               // Get data for chart
+               ApplyRevenueMonth();
+           }
+       });
+       //=== Category-GLAccount Code Week
+       $(".daterange-category-week").daterangepickerknockout({
+           startDate: CategoryWeekDateFrom,
+           endDate: CategoryWeekDateTo,
+               forceUpdate: true,
+               hideWeekdays: false,
+               single: false,
+               period: 'day',
+               timeZone: timeZone,
+               firstDayOfWeek: 1, // Monday
+               callback: function (startDate, endDate, period) {
+                   $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+                   CategoryWeekDateFrom = startDate;
+                   CategoryWeekDateTo = endDate;
+                   ApplyCategoryChart();
+               }
+         });
+       //=== Category-GLAccount Code Month
+       $(".daterange-category-month").daterangepickerknockout({
+           startDate: CategoryMonthDateFrom,
+           endDate: CategoryMonthDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'month',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               CategoryMonthDateFrom = startDate;
+               CategoryMonthDateTo = endDate;
+               if (isCategoryFirstShow == false) {
+                   ApplyCategoryChart();
+               }
+           }
+       });
+       //=== Hourly Sales Week
+       $('#daterange-hourly-week').daterangepickerknockout({
+           startDate: HourlyWeekDateFrom,
+           endDate: HourlyWeekDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'day',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               HourlyWeekDateFrom = startDate;
+               HourlyWeekDateTo = endDate;
+               // Get data for chart
+               ApplyHourlySales();
+           }
+       });
+       //=== Houry Sales Month
+       $('#daterange-hourly-month').daterangepickerknockout({
+           startDate: HourlyMonthDateFrom,
+           endDate: HourlyMonthDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'month',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               HourlyMonthDateFrom = startDate;
+               HourlyMonthDateTo = endDate;
+               if (isHourlyFirstShow) {
+                   isHourlyFirstShow = false;
+               } else {
+                   // Get data for chart
+                   ApplyHourlySales();
+               }
+           }
+       });
+       //=== Top Sell Week
+       $('#daterange-top-sell-week').daterangepickerknockout({
+           startDate: TopSellWeekDateFrom,
+           endDate: TopSellWeekDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'day',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               TopSellWeekDateFrom = startDate;
+               TopSellWeekDateTo = endDate;
+               // Get data for chart
+               ApplyTopSellingChart();
+           }
+       });
+       //=== Top Sell Month
+       $('#daterange-top-sell-month').daterangepickerknockout({
+           startDate: TopSellMonthDateFrom,
+           endDate: TopSellMonthDateTo,
+           forceUpdate: true,
+           hideWeekdays: false,
+           single: false,
+           period: 'month',
+           timeZone: timeZone,
+           firstDayOfWeek: 1, // Monday
+           callback: function (startDate, endDate, period) {
+               $(this).val(startDate.format('MM/DD/YYYY') + ' – ' + endDate.format('MM/DD/YYYY'));
+               TopSellMonthDateFrom = startDate;
+               TopSellMonthDateTo = endDate;
+               if (isTopSaleFirstShow) {
+                   isTopSaleFirstShow = false;
+               } else {
+                   // Get data for chart
+                   ApplyTopSellingChart();
+               }
+           }
+       });
+       //===== End Init Daterangepicker =====
+
+       //===== Change type calendar of report =====
+       //=== Category chart
+       $('input[name="CategoryChartRequestModels.Type"]').on('ifChecked', function () {
+           // Hide daterangepicker
+           $('.daterangepickerknockout').removeClass('opened');
+
+           var radio = $(this);
+           if (radio.context.id == 'categoryTypeMonth') {
+               $('#daterange-category-week').hide();
+               $('#daterange-category-month').show();
+               isWeekSelected = false;
+               ApplyCategoryChart();
+           } else {
+               $('#daterange-category-week').show();
+               $('#daterange-category-month').hide();
+               isWeekSelected = true;
+               ApplyCategoryChart();
+           }
+       });
+       //=== Hourly chart
+       CheckDisplayHourlyCalendar();
+       //=== Top Sell chart
+       CheckDisplayTopSellCalendar();
+       //===== End change type calendar of report =====
+   });
+
+   //===Function ***
+   //=== Update StoreId
+   $(".list-stores-group").on("change", function () {
+       StoreId = $(".list-stores-group").val();
+       // Update data for all report
+       UpdateAllReport();
+   });
+
+   function CheckSession() {
+       var result = false;
+         $.ajax({
+             type: "POST",
+               async: false,
+               url: '@Url.Action("CheckSessionAvailable", "Login")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                    result=data;
+               }
+       });
+       return result;
+   }
+   //=== Get data for Revenue Week Chart
+   function ApplyRevenueWeek() {
+       if (totalCheckSession == 5 || totalCheckSession <= 0){
+           var sessionAvailable = CheckSession();
+           if (sessionAvailable == false) {
+               window.location = "/Login/Index";
+           }
+       }
+       totalCheckSession -= 1;
+       if (StoreId != null && StoreId != "") {
+           var data = {
+               ListStoreIds: [StoreId],
+               DateFrom: RevenueWeekDateFrom,
+               DateTo: RevenueWeekDateTo
+           };
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("RevenueWeekChart", "Home")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(data),
+               success: function (data) {
+                   var aLabels = data[0];
+                   var aDatasets1 = data[1];
+                   var aDatasets2 = data[2];
+                   var dataT = {
+                       labels: aLabels,
+                       datasets: [
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TC"))",
+                               data: aDatasets1,
+                               fill: false,
+                               backgroundColor: "#a70c6d",
+                           },
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Total"))",
+                               data: aDatasets2,
+                               fill: false,
+                               backgroundColor: "#49d1d2",
+                           }
+                       ]
+                   };
+                   revenueWeekChart.data = dataT;
+                   revenueWeekChart.update();
+               },
+               beforeSend: function () {
+                   //$('.se-pre-con').show();
+                   $('#loadingRevenueWeekChart').show();
+               },
+               complete: function () {
+                   //$('.se-pre-con').hide();
+                   $('#loadingRevenueWeekChart').hide();
+                   // Hide loading ... for update data of all chart
+                   totalChart -= 1;
+                   if (totalChart == 0) {
+                       //$('.se-pre-con-home').hide();
+                   }
+               }
+           });
+       }
+   }
+   //=== Get data for Revenue Month Chart
+   function ApplyRevenueMonth() {
+       if (totalCheckSession == 5 || totalCheckSession <= 0) {
+           var sessionAvailable = CheckSession();
+           if (sessionAvailable == false) {
+               window.location = "/Login/Index";
+           }
+       }
+       totalCheckSession -= 1;
+
+       if (StoreId != null && StoreId != "") {
+           var data = {
+               ListStoreIds: [StoreId],
+               DateFrom: RevenueMonthDateFrom,
+               DateTo: RevenueMonthDateTo
+           };
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("RevenueMonthChart", "Home")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(data),
+               success: function (data) {
+                    var aLabels = data[0];
+                   var aDatasets1 = data[1];
+                   var aDatasets2 = data[2];
+                   var dataT = {
+                       labels: aLabels,
+                       datasets: [
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TC"))",
+                               data: aDatasets1,
+                               fill: true,
+                               backgroundColor: "#a70c6d",
+                           },
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Total"))",
+                               data: aDatasets2,
+                               fill: true,
+                               backgroundColor: "#49d1d2",
+                           }
+                       ]
+                   };
+                   revenueMonthChart.data = dataT;
+                   revenueMonthChart.update();
+               },
+               beforeSend: function () {
+                   //$('.se-pre-con').show();
+                   $('#loadingRevenueMonthChart').show();
+               },
+               complete: function () {
+                   //$('.se-pre-con').hide();
+                   $('#loadingRevenueMonthChart').hide();
+                   // Hide loading ... for update data of all chart
+                   totalChart -= 1;
+                   if (totalChart == 0) {
+                       //$('.se-pre-con-home').hide();
+                   }
+               }
+           });
+       }
+   }
+
+   //===== Category chart =====
+   function ApplyCategoryChart() {
+       if (totalCheckSession == 5 || totalCheckSession <= 0) {
+           var sessionAvailable = CheckSession();
+           if (sessionAvailable == false) {
+               window.location = "/Login/Index";
+           }
+       }
+       totalCheckSession -= 1;
+
+       if (StoreId != null && StoreId != "") {
+           var type = 0;
+           if (isWeekSelected == false) {
+               type = 1;
+           }
+           var data = {
+               ListStoreIds: [StoreId],
+               DateFrom: CategoryWeekDateFrom,
+               DateTo: CategoryWeekDateTo,
+               DateMonthFrom: CategoryMonthDateFrom,
+               DateMonthTo: CategoryMonthDateTo,
+               Type: type
+           };
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("CategoryChart", "Home")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(data),
+               success: function (data) {
+                   // For Set background color
+                   var lengthData = data.GLAccountCode.length;
+                   var firstbackgroundColors = [];
+                   for (var i = 0; i < lengthData; i++) {
+                       // Default cuurent category is first element => set current backgroung color for it
+                       if (i == 0){
+                           firstbackgroundColors.push("#067a7b");
+                       } else {
+                           firstbackgroundColors.push("#49d1d2");
+                       }
+                   }
+
+                   listCategoryDetailsData = data.ListCategoryDetail;
+                   var dataT = {
+                       labels: data.GLAccountCode,
+                       datasets: [
+                           {
+                               label: "",
+                               data: data.ListReceiptTotals,
+                               fill: false,
+                               backgroundColor: firstbackgroundColors
+                           }
+                       ]
+                   };
+                   if (isCategoryFirstShow == false) {
+                       categoryChart.destroy();
+                   }
+                   categoryChart = new Chart(ctxCategoryChart, {
+                       type: 'horizontalBar',
+                       data: dataT,
+                       options: {
+                           responsive: true,
+                           title: { display: false, text: '' },
+                           legend: { display: false, position: 'bottom' },
+                           scales: {
+                               xAxes: [{
+                                   ticks: {
+                                       min: 0,
+                                       callback: function (value, index, values) {
+                                           return NumberFormatCurrency(value, 2);
+                                       }
+                                   },
+                               }],
+                               yAxes: [{
+                                   barPercentage: 0.4,
+                               }]
+                           }, //end scales
+                           tooltips: {
+                               mode: 'index',
+                               intersect: false,
+                               callbacks: {
+                                   label: function (t, d) {
+                                       return d.datasets[t.datasetIndex].label + ': ' + NumberFormatCurrency(t.xLabel, 2);
+                                   }
+                               }
+                           }, //end tooltips
+                           //events: ["mousemove", "mouseout", "click", "touchstart", "touchmove", "touchend"],
+                           events: ["mousemove", "mouseout", "click"],
+                           onClick: function (evt, elements) {
+                               // Redraw background color
+                               var datasetIndex;
+                               var dataset;
+                               if (elements.length) {
+                                   var index = elements[0]._index;
+                                   datasetIndex = elements[0]._datasetIndex;
+                                   var backgroundColors = [];
+                                   for (var i = 0; i < lengthData; i++) {
+                                       backgroundColors.push("#49d1d2");
+                                   }
+                                   // Reset old state
+                                   dataset = categoryChart.data.datasets[datasetIndex];
+                                   dataset.backgroundColor = backgroundColors;
+                                   dataset.backgroundColor[index] = "#067a7b"; // click color
+
+                                   categoryChart.update();
+
+                                   // Show category detail
+                                   var dataCateDetail = {};
+                                   var item = categoryChart.getElementAtEvent(evt);
+                                   if (item != null && item.length > 0) {
+                                       var glAcountCode = item[0]._model.label;
+                                       //var categoryDetail = listCategoryDetailsData.filter(obj => obj.GLAccountCode === glAcountCode)[0];
+                                       var categoryDetail = listCategoryDetailsData.filter(function (x) { return x.GLAccountCode === glAcountCode; })[0];
+                                       //detail
+                                       dataCateDetail = {
+                                           labels: categoryDetail.CategoryName,
+                                           datasets: [
+                                               {
+                                                   label: "",
+                                                   data: categoryDetail.ListReceiptTotals,
+                                                   fill: false,
+                                                   backgroundColor: categoryDetail.Colors,
+                                               }
+                                           ]
+                                       };
+                                   }
+                                   ShowCategoryDetailChart(dataCateDetail);
+
+                                   SettimeoutHideTooltip("categoryChart");
+                               }
+                           }
+                       }
+                   });
+                   isCategoryFirstShow = false;
+                   var dataCateDetail = {};
+                   if (data.GLAccountCode != null && data.GLAccountCode.length > 0) {
+                       //var categoryDetail = listCategoryDetailsData.filter(obj => obj.GLAccountCode === data.GLAccountCode[0])[0];
+                       var categoryDetail = listCategoryDetailsData.filter(function (x) { return x.GLAccountCode === data.GLAccountCode[0]; })[0];
+                       //detail
+                       dataCateDetail = {
+                           labels: categoryDetail.CategoryName,
+                           datasets: [
+                               {
+                                   label: "",
+                                   data: categoryDetail.ListReceiptTotals,
+                                   fill: false,
+                                   backgroundColor: categoryDetail.Colors,
+                               }
+                           ]
+                       };
+                   }
+                   ShowCategoryDetailChart(dataCateDetail);
+                   isCategoryDetailShow = true;
+               },
+               beforeSend: function () {
+                   //$('.se-pre-con').show();
+                    $('#loadingCategoryChart').show();
+
+               },
+               complete: function () {
+                   //$('.se-pre-con').hide();
+                    $('#loadingCategoryChart').hide();
+                   // Hide loading ... for update data of all chart
+                   totalChart -= 1;
+                   if (totalChart == 0) {
+                       //$('.se-pre-con-home').hide();
+                   }
+               }
+           });
+       }
+   }
+
+   //=== Category detail chart
+   function ShowCategoryDetailChart(dataCateDetail) {
+       if (isCategoryDetailShow == true) {
+           categoryDetailChart.destroy();
+       }
+       categoryDetailChart = new Chart(ctxCategoryDetailChart, {
+           type: 'doughnut',
+           data: dataCateDetail,
+           options: {
+               responsive: true,
+               maintainAspectRatio: false,
+               legend: { display: true, position: 'top', fullWidth: true },
+               tooltips: {
+                   enabled: true,
+                   mode: 'single',
+                   callbacks: {
+                       label: function (tooltipItem, data) {
+                           var label = data.labels[tooltipItem.index];
+                           var datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                           return label + ': ' + NumberFormatCurrency(datasetLabel,2);
+                       }
+                   }
+               }, //end tooltips
+               pieceLabel: {
+                   //mode: "percentage",
+                   render: function (args) {
+                       return NumberFormatCurrency(args.value, 2)  +' (' + args.percentage + '%)';
+                   },
+                   fontStyle: 'bold',
+                   position: 'outside',
+                   precision: 2,
+                   overlap: true
+               },
+               //events: ["mousemove", "mouseout", "click", "touchstart", "touchmove", "touchend"],
+               events: ["mousemove", "mouseout", "click"],
+               onClick: function () {
+                   SettimeoutHideTooltip("categoryDetailChart");
+               }
+           }
+       });
+   }
+
+   //=== Hourly Sales
+   function CheckDisplayHourlyCalendar() {
+       if ($("input[name=HourlySaleChartRequestModels\\.IsMonth]:checked").val() === "True") { // Month
+           $('#daterange-hourly-week').hide();
+           $('#daterange-hourly-month').show();
+       } else {
+           $('#daterange-hourly-week').show();
+           $('#daterange-hourly-month').hide();
+       }
+   }
+
+   //===
+   $('input.hourly-calendar').on("ifChecked", function () {
+       // Hide daterangepicker
+       $('.daterangepickerknockout').removeClass('opened');
+
+       CheckDisplayHourlyCalendar();
+
+       // Update data for chart
+       ApplyHourlySales();
+   });
+
+   //=== Update time for report
+   $(".hourly-time-from").on("change", function () {
+       // Update data fro report
+       ApplyHourlySales();
+   });
+
+   $(".hourly-time-to").on("change", function () {
+       // Update data fro report
+       ApplyHourlySales();
+   });
+
+   //=== Get data for Hourly sale chart
+   function ApplyHourlySales() {
+       if (totalCheckSession == 5 || totalCheckSession <= 0) {
+           var sessionAvailable = CheckSession();
+           if (sessionAvailable == false) {
+               window.location = "/Login/Index";
+           }
+       }
+       totalCheckSession -= 1;
+
+       if (StoreId != null && StoreId != "") {
+           var HourlyDateFrom = HourlyWeekDateFrom;
+           var HourlyDateTo = HourlyWeekDateTo;
+           if ($("input[name=HourlySaleChartRequestModels\\.IsMonth]:checked").val() === "True") { // Month
+               HourlyDateFrom = HourlyMonthDateFrom;
+               HourlyDateTo = HourlyMonthDateTo;
+           }
+           var data = {
+               ListStoreIds: [StoreId],
+               DateFrom: HourlyDateFrom,
+               DateTo: HourlyDateTo,
+               TimeFrom: $(".hourly-time-from").val(),
+               TimeTo: $(".hourly-time-to").val()
+           };
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("HourlySaleChart", "Home")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(data),
+               success: function (chData) {
+                   var aLabels = chData.ListTimes;
+                   var aDataRC = chData.ListReceiptTotals;
+                   var aDataTC = chData.ListTC;
+                   var aDataTA = chData.ListTA;
+                   var hourlySalesChartData = {
+                       labels: aLabels,
+                       datasets: [
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receipt Total"))",
+                               borderColor: "#03A9F4",
+                               backgroundColor: "#03A9F4",
+                               fill: false,
+                               data: aDataRC,
+                               yAxisID: "money",
+                           },
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TC"))",
+                               borderColor: "#f5b031",
+                               backgroundColor: "#f5b031",
+                               fill: false,
+                               data: aDataTC,
+                               yAxisID: "qly"
+                           },
+                           {
+                               label: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TA"))",
+                               borderColor: "#bbbaba",
+                               backgroundColor: "#bbbaba",
+                               fill: false,
+                               data: aDataTA,
+                               yAxisID: "money",
+                           }
+                       ]
+                   };
+                   hourlySalesChart.data = hourlySalesChartData;
+                   hourlySalesChart.update();
+               },
+               beforeSend: function () {
+                   //$('.se-pre-con').show();
+                   $('#loadingHourlySaleChart').show();
+               },
+               complete: function () {
+                   //$('.se-pre-con').hide();
+                                                           $('#loadingHourlySaleChart').hide();
+                   // Hide loading ... for update data of all chart
+                   totalChart -= 1;
+                   if (totalChart == 0) {
+                       //$('.se-pre-con-home').hide();
+                   }
+               }
+           });
+       }
+   }
+   //=== Top Selling
+   function CheckDisplayTopSellCalendar() {
+       if ($("input[name=TopSellingChartRequestModels\\.IsMonth]:checked").val() === "True") { // Month
+           $('#daterange-top-sell-week').hide();
+           $('#daterange-top-sell-month').show();
+       } else {
+           $('#daterange-top-sell-week').show();
+           $('#daterange-top-sell-month').hide();
+       }
+   }
+
+   //===
+   $('input.top-sell-calendar').on("ifChecked", function () {
+       // Hide daterangepicker
+       $('.daterangepickerknockout').removeClass('opened');
+
+       CheckDisplayTopSellCalendar();
+
+       // Update data for chart
+       ApplyTopSellingChart();
+   });
+
+   //=== Update number top sell for report
+   $(".top-sell-number").on("change", function () {
+       // Update data fro report
+       ApplyTopSellingChart();
+   });
+
+   //=== Update item type for report
+   $(".top-sell-item-type").on("change", function () {
+       // Update data fro report
+       ApplyTopSellingChart();
+   });
+
+   //=== Change yAxes title of Top Sell chart
+   $(".top-sell-item-type").on("change", function () {
+       topSellChart.options.scales.yAxes[0].scaleLabel.labelString = ($(".top-sell-item-type").val() == 0 ? "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Value"))"
+           : "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount"))");
+       topSaleType = $(".top-sell-item-type").val();
+   });
+
+   //=== Get data for Top Sell chart
+   function ApplyTopSellingChart() {
+       if (totalCheckSession == 5 || totalCheckSession <= 0) {
+           var sessionAvailable = CheckSession();
+           if (sessionAvailable == false) {
+               window.location = "/Login/Index";
+           }
+       }
+       totalCheckSession -= 1;
+
+       if (StoreId != null && StoreId != "") {
+           var TopSellDateFrom = TopSellWeekDateFrom;
+           var TopSellDateTo = TopSellWeekDateTo;
+           if ($("input[name=TopSellingChartRequestModels\\.IsMonth]:checked").val() === "True") { // Month
+               TopSellDateFrom = TopSellMonthDateFrom;
+               TopSellDateTo = TopSellMonthDateTo;
+           }
+           var data = {
+               ListStoreIds: [StoreId],
+               DateFrom: TopSellDateFrom,
+               DateTo: TopSellDateTo,
+               TopSell: $(".top-sell-number").val(),
+               ItemType: $(".top-sell-item-type").val(),
+           };
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("TopSellingChart", "Home")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(data),
+               success: function (chData) {
+                   topSellChart.data = chData;
+                   topSellChart.update();
+               },
+               beforeSend: function () {
+                   //$('.se-pre-con').show();
+                   $('#loadingTopSellingChart').show();
+               },
+               complete: function () {
+                   //$('.se-pre-con').hide();
+                                                           $('#loadingTopSellingChart').hide();
+                   // Hide loading ... for update data of all chart
+                   totalChart -= 1;
+                   if (totalChart == 0) {
+                       //$('.se-pre-con-home').hide();
+                   }
+               }
+           });
+       }
+   }
+
+   //=== Update all report chart
+   function UpdateAllReport() {
+       totalChart = 5;
+       totalCheckSession = 5;
+       //$('.se-pre-con-home').show();
+       ApplyRevenueWeek();
+       ApplyRevenueMonth();
+       ApplyCategoryChart();
+       ApplyHourlySales();
+       ApplyTopSellingChart();
+   }
+
+   //=== Format number, ex: 1,000,000.50
+   function NumberFormatCurrency(value, fixed) {
+       return parseFloat(value).toFixed(fixed).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+   }
+
+   //=== Auto hide tooltip when click
+   function SettimeoutHideTooltip(chartName) {
+       setTimeout(HideTooltip, 2000, chartName);
+   }
+   //===
+   function HideTooltip(chartName) {
+       switch (chartName) {
+           case "revenueWeekChart":
+               revenueWeekChart.options.hideTooltip = true;
+               revenueWeekChart.update();
+               break;
+           case "revenueMonthChart":
+               revenueMonthChart.options.hideTooltip = true;
+               revenueMonthChart.update();
+               break;
+           case "categoryChart":
+               categoryChart.options.hideTooltip = true;
+               categoryChart.update();
+               break;
+           case "hourlySalesChart":
+               hourlySalesChart.options.hideTooltip = true;
+               hourlySalesChart.update();
+               break;
+           case "categoryDetailChart":
+               categoryDetailChart.options.hideTooltip = true;
+               categoryDetailChart.update();
+               break;
+       }
+   }
+
+</script>

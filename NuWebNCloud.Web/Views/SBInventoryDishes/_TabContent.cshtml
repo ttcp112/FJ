@@ -1,0 +1,124 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Product.GroupProductModels
+
+<tr data-id="@Model.ID" style='@string.Format("display:{0}", Model.Status==9?"none":"table-row")'>
+    <td>
+        @Html.Hidden(string.Format("ListGroup[{0}].OffSet", Model.OffSet), Model.OffSet)
+        @Html.Hidden(string.Format("ListGroup[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+        @Html.Hidden(string.Format("ListGroup[{0}].SetMenuID", Model.OffSet), Model.SetMenuID)
+        @Html.Hidden(string.Format("ListGroup[{0}].ID", Model.OffSet), Model.ID)
+        @Html.TextBox(string.Format("ListGroup[{0}].Sequence", Model.OffSet), Model.Sequence, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @maxlength = 2,
+       @min = 0
+   })
+    </td>
+    <td>
+        @Html.TextBox(string.Format("ListGroup[{0}].Name", Model.OffSet), Model.Name, new
+   {
+       @class = "form-control",
+       @placeholder = "" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tab's Name") + ""
+   })
+        @Html.ValidationMessage(string.Format("ListGroup[{0}].Name", Model.OffSet), new { @class = "label" })
+    </td>
+    <td>
+        @Html.TextBox(string.Format("ListGroup[{0}].Description", Model.OffSet), Model.Description, new
+   {
+       @class = "form-control",
+       @placeholder = "" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Display Message") + ""
+   })
+        @Html.ValidationMessage(string.Format("ListGroup[{0}].Description", Model.OffSet))
+    </td>
+    <td style="width:80px;">
+        @Html.TextBox(string.Format("ListGroup[{0}].Maximum", Model.OffSet), Model.Maximum, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @min = 0,
+       @maxlength = 2
+   })
+        @Html.ValidationMessage(string.Format("ListGroup[{0}].Maximum", Model.OffSet))
+    </td>
+    <td>
+        @Html.DropDownList(string.Format("ListGroup[{0}].Type", Model.OffSet),
+               new SelectList(Model.ListModifierType, "Value", "Text", Model.Type),
+               null,
+               new
+               {
+                   @class = "form-control select2_multiple ddlModifierType",
+                   @style = "width:100%;"
+               })
+        @Html.ValidationMessage(string.Format("ListGroup[{0}].Type", Model.OffSet))
+    </td>
+    <td><button class="btn bg-fnb" type="button" onclick="ShowModalAddDish(this)">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Modifiers"))</button> </td>
+    <td width="50px">
+        <!-- Button Delete Tab Content-->
+        <a href="javascript:void(0)" onclick="DeleteTabPanel(this); return false;" style="font-size:28px; color:red;">
+            <i class="fa fa-remove"></i>
+        </a>
+
+        <!-- Modal Add Dishes-->
+        <div class="modal fade" id="modalDish" tabindex="-1" role="dialog" aria-labelledby="modalDishLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Modifiers"))</h4>
+                    </div>
+
+                    <!--Body-->
+                    <div class="modal-body scroll" id="popupTabConent">
+                        <div class="form-group-sm">
+                            <table class="table center-content">
+                                <thead>
+                                    <tr style="background-color:#34495e; color:#fff;">
+                                        <th width="10%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sequence"))</th>
+                                        <th width="50%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifier"))</th>
+                                        <th width="20%">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extra Price"))</th>
+                                        <th width="10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="body-dishes">
+                                    @if (Model.ListProductOnGroup != null && Model.ListProductOnGroup.Count > 0)
+                                    {
+                                        @Html.Partial("_DishModal", Model)
+                                    }
+                                    <tr>
+                                        <td colspan="4" style="padding-top:12px; text-align:left">
+                                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-choose-dishes" class="a-fnb" data-whatever="@Model.OffSet"
+                                               style="font-size:14px; color:#34495e;">
+                                                <i class="fa fa-plus"></i>
+                                                <span>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more"))</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <span></span>
+                        <button class="btn btn-default" onclick="PasteHtml($(this).parents('.modal-content:first').find('table > tbody'));" data-dismiss="modal">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))
+                        </button>
+                        <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" data-dismiss="modal">
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save Changes"))
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ddlModifierType").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Modifier Type"))',
+        });
+    });
+</script>

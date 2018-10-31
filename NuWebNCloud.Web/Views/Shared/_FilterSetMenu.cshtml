@@ -1,0 +1,120 @@
+﻿@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+
+@if (Model.ListStoreSetMenu != null && Model.ListStoreSetMenu.Count > 0)
+{
+    var lstStore = Model.ListStoreSetMenu;
+    <!-- start accordion -->
+    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+        @*@if (lstStore != null && lstStore.Count > 0)
+        {*@
+            @for (int s = 0; s < lstStore.Count; s++)
+                {
+                    var store = lstStore[s];
+                    var listSetMenuSel = store.ListSetMenuSel.OrderBy(oo => oo.Name).ToList();
+                    /*======================*/
+                    <div class="panel">
+                    <a class="panel-heading" role="tab" id="heading_set_@s" data-toggle="collapse" data-parent="#accordion" href="#set_s_@s"
+                       aria-expanded="@string.Format("{0}", s==0 ? "true" : "false")" aria-controls="set_s_@s" style="background-color: #337ab7; color: #fff;">
+                        <h4 class="panel-title" style="display: flow-root;">
+                            @store.StoreName&nbsp;&nbsp;
+                            <span class="pull-right"><input type="checkbox" onchange="ToogleCheckAll(this, '.setmenu-items-@s')" id="checkAllSetMenu-@s" class="chkAll chkReportZoom"></span>
+                        </h4>
+                    </a>
+                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].OffSet", s), Model.ListStoreSetMenu[s].OffSet)
+                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].StoreID", s), Model.ListStoreSetMenu[s].StoreID)
+                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].StoreName", s), Model.ListStoreSetMenu[s].StoreName)
+                    <div id="set_s_@s" class="panel-collapse collapse @string.Format("{0}", s==0 ? "in" : "")" role="tabpanel" aria-labelledby="heading_set_@s">
+                        <div class="">
+                            <table class="table table-bordered" style="margin-bottom:0px;">
+                                <tbody class="setmenu-items-@s">
+                                    @for (int i = 0; i < listSetMenuSel.Count; i++)
+                                    {
+                                        var item = listSetMenuSel[i];
+                                        <tr>
+                                            <td class="parent">&nbsp;+ @item.Name</td>
+                                            <td class="text-right">
+                                                <label>
+                                                    @Html.CheckBox(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].Checked", s, i), item.Checked, new
+                                               {
+                                                   @onClick = "checkItemSetMenu('" + s + "','" + i + "')",
+                                                   @id = "parent-" + s + "-" + i + "",
+                                                   @class = "chkReportZoom"
+                                               })
+
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].Id", s, i), item.Id)
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].Name", s, i), item.Name)
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].StoreId", s, i), item.StoreId)
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].StoreName", s, i), item.StoreName)
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].CategoryID", s, i), item.CategoryID)
+                                                    @Html.Hidden(string.Format("ListStoreSetMenu[{0}].ListSetMenuSel[{1}].CategoryName", s, i), item.CategoryName)
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        @*}*@
+    </div>
+    <!-- end of accordion -->
+
+    @*<table class="table table-hover">
+            <thead>
+                <tr style="background-color: #337ab7; color: #fff;">
+                    <td class="align-left"><label>Select All </label></td>
+                    <td class="align-right"><label><input type="checkbox" onchange="ToogleCheckAll(this, '.setmenu-items')" id="checkAllSet"></label></td>
+                </tr>
+            </thead>
+            <tbody class="setmenu-items">
+                @for (int i = 0; i < Model.ListSetMenu.Count; i++)
+                {
+                    <tr>
+                        <td class="align-left">@Model.ListSetMenu[i].StoreName - @Model.ListSetMenu[i].Name</td>
+                        <td class="align-right">
+                            <label>
+                                @Html.CheckBox(string.Format("ListSetMenu[{0}].Checked", i), Model.ListSetMenu[i].Checked, new { @onClick = "checkItem()" })
+                                @Html.Hidden(string.Format("ListSetMenu[{0}].Id", i), Model.ListSetMenu[i].Id)
+                                @Html.Hidden(string.Format("ListSetMenu[{0}].Name", i), Model.ListSetMenu[i].Name)
+                                @Html.Hidden(string.Format("ListSetMenu[{0}].StoreName", i), Model.ListSetMenu[i].StoreName)
+                            </label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>*@
+
+    <style>
+        /*.align-left {
+                    text-align: left !important;
+                }
+
+                .align-right {
+                    text-align: center !important;
+                }*/
+
+        .parent {
+            padding-left: 25px !important;
+        }
+
+        #accordion tr td {
+            background-color: #ededed;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('.chkAll').on('click', function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        function checkItemSetMenu(store, parent) {
+            var countchk = $('table > tbody.setmenu-items-' + store + ' input[type="checkbox"]').length;
+            var countchkCheck = $('table > tbody.setmenu-items-' + store + ' input[type="checkbox"]').filter(":checked").length;
+            $('#checkAllSetMenu-' + store).prop('checked', (countchkCheck == countchk));
+        }
+    </script>
+
+}

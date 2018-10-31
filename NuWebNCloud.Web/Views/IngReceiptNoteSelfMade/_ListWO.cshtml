@@ -1,0 +1,20 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+
+
+@if (Model.ListWorkOrder != null && Model.ListWorkOrder.Count > 0)
+{
+    for (int i = 0; i < Model.ListWorkOrder.Count; i++)
+    {
+        <tr class="WorkOrder">
+            <td class="text-center">
+                <input type="checkbox" onclick="TickItemCheckBox()" class="chkWO" data-id="@Model.ListWorkOrder[i].Id" data-ponumber="@Model.ListWorkOrder[i].WONumber" />
+                @Html.Hidden(string.Format("ListWorkOrder[{0}].Id", i), Model.ListWorkOrder[i].Id, new { @id = "hidPurchaseOrderId" })
+                @Html.Hidden(string.Format("ListWorkOrder[{0}].DateCompleted", i), Model.ListWorkOrder[i].DateCompleted, new { @id = "hidWorkOrderDateCompleted" })
+                @Html.Hidden(string.Format("ListWorkOrder[{0}].WONumber", i), Model.ListWorkOrder[i].WONumber, new { @id = "hidWorkOrderWONumber" })
+
+            </td>
+            <td class="text-center">@Model.ListWorkOrder[i].WONumber</td>
+            <td class="text-center">@Model.ListWorkOrder[i].DateCompleted.ToString("dd/MM/yyyy")</td>
+        </tr>
+    }
+}

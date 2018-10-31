@@ -1,0 +1,436 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientModel
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("CompanyId", Model.CompanyId)
+}
+@{
+    //var user = Session["User"] as NuWebNCloud.Shared.Models.UserSession;
+    //if (user.IndustryId == null)
+    //{
+    //}
+    //else
+    //{
+        <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+            @*Choose Company*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Company"))</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.DropDownListFor(model => model.CompanyId,
+            new SelectList(@ViewBag.ListCompany, "Value", "Text", Model.CompanyId), _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose company.").ToString(),
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "companyDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "companyDdl",
+                @style = "width:100%;"
+            })
+                    @Html.ValidationMessageFor(model => model.CompanyId, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*Active*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active"))  </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsActive, new { @class = "text-left" })
+                </div>
+            </div>
+            @*Name*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))  </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder =Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")), autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+            @*Code*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code"))  </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.Code, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code")), autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Code, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+            @*Description*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))  </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.Description, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")), autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Description, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*ReOrder*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ReOrdering Qty"))</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.ReOrderQty, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("ReOrdering Qty")), autocomplete = "off", type = "number", min = "0" })
+                    @Html.ValidationMessageFor(model => model.ReOrderQty, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*Min Alert*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Min Alert Qty")) </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.MinAlertQty, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Min Alert Qty")), autocomplete = "off", type = "number", min = "0" })
+                    @Html.ValidationMessageFor(model => model.MinAlertQty, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*PurchasePrice*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Price")) </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.PurchasePrice, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Price")), autocomplete = "off", type = "number", min = "0" })
+                    @Html.ValidationMessageFor(model => model.PurchasePrice, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*SalePrice*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sale Price"))</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(model => model.SalePrice, new { @class = "form-control", placeholder = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sale Price")), autocomplete = "off", type = "number", min = "0" })
+                    @Html.ValidationMessageFor(model => model.SalePrice, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*Type*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type"))  </label>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsPurchase, new { @class = "text-left", @id = "chkIsPurchase", @onclick = "fnIsCheckStockable(false);" })@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase")) 
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsSelfMode, new { @class = "text-left", @id = "chkIsSelfMode", @onclick = "fnIsCheckStockable(true);" })@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Self-made")) 
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    @if (Model.IsSelfMode)
+                    {
+                        @Html.CheckBoxFor(model => model.IsStockable, new { @class = "text-left", @id = "chkIsStockable" })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(model => model.IsStockable, new { @class = "text-left", @id = "chkIsStockable", @disabled = "disabled" })
+                    }
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stock-able")) 
+                </div>
+
+            </div>
+
+            @*Check Stock*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Check Stock"))  </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsCheckStock, new { @class = "text-left" })
+                </div>
+            </div>
+
+            @*Base UOM*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Base UOM")) </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.DropDownListFor(model => model.BaseUOMId,
+            new SelectList(Model.ListUOM, "Value", "Text", Model.BaseUOMId), _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Base UOM").ToString(),
+            new
+            {
+                @class = "form-control select2_multiple selectUOM",
+                @id = "BaseUOMddl",
+                @style = "width:100%;"
+            })
+                    @Html.ValidationMessageFor(model => model.BaseUOMId, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*Receiving UOM*@
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM")) </label>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    @Html.DropDownListFor(model => model.ReceivingUOMId,
+            new SelectList(Model.ListUOM, "Value", "Text", Model.ReceivingUOMId), _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose receiving uom").ToString(),
+            new
+            {
+                @class = "form-control select2_multiple selectUOM",
+                @id = "ReceivingUOMddl",
+                @style = "width:100%;"
+            })
+                    @Html.ValidationMessageFor(model => model.ReceivingUOMId, null, new { @class = "label label-danger" })
+                </div>
+                <div class="col-md-1 col-sm-1 col-xs-12 text-center" style="line-height:30px;">
+                    =
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="input-group">
+                        @Html.TextBoxFor(model => model.ReceivingQty, new { @class = "form-control text-center number", min = "0" })
+                        <span class="input-group-addon"> <span id="ltrReceivingUOM"></span>(@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Base UOM")) @*Base UOM*@)</span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.ReceivingQty, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity Tolerance")) @*Quantity Tolerance*@ </label>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    <div class="input-group">
+                        @Html.TextBoxFor(model => model.QtyTolerance, new { @class = "form-control text-center", min = "0" })
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.QtyTolerance, null, new { @class = "label label-danger" })
+                </div>
+            </div>
+
+            @*Add Usage UOM*@
+            <div class="form-group">
+                <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-0">
+                    <a class="btn btn-primary" data-toggle="modal" onclick="AddItemUOM(); return false;">
+                        <i class="fa fa-plus"></i> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Usage UOM")) @*Add Usage UOM*@
+                    </a>
+                </div>
+            </div>
+
+            @* List Usage UOM*@
+            <div id="listIngUsageUOM">
+                @if (Model.ListIngUOM != null && Model.ListIngUOM.Count > 0)
+                {
+                    for (int i = 0; i < Model.ListIngUOM.Count; i++)
+                    {
+                        @Html.Partial("_ItemUOM", Model.ListIngUOM[i])
+                    }
+                }
+            </div>
+            @*End Add Usage UOM*@
+
+            <div class="form-group">
+                <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:50px;"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier(s)")) @*Supplier(s)*@ </label>
+                <div class="col-md-8 col-sm-8 col-xs-12">
+                    <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#tab_SelectedSupplier" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                                    @(string.Format("{0}", string.IsNullOrEmpty(_ID) ? Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("All")).ToString() @*"All"*@ : Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Selected")).ToString() @*"Selected"*@))
+                                </a>
+                            </li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+
+                            <div class="form-group" style="padding:10px 5px 0 5px;">
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-md-10" placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier Name"))" onkeypress="HandleKeyPress(event)" id="txtSearch" />
+                                    <div class="input-group-btn">
+                                        <button type="button" onclick="SearchSupplier(this); return false;" class="btn bg-fnb">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane fade active in" id="tab_SelectedSupplier" aria-labelledby="home-tab">
+                                @if (Model.ListIngSupplier != null && Model.ListIngSupplier.Count > 0)
+                                {
+                                    @Html.Partial("_ListSupplier", Model)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_ID))
+            {
+                <div class="form-group">
+                    <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-2">
+                        <a class="btn btn-primary" onclick="return LoadIngredientUnSelect();">
+                            <i class="fa fa-plus"></i> &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add More Supplier")) 
+                        </a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 col-sm-2 col-xs-12" style="line-height:50px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier(s)"))  </label>
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                            <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#tab_UnSelectedIngredient" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UnSelected"))</a>
+                                </li>
+                            </ul>
+                            <div id="myTabContentUnSelected" class="tab-content">
+                                @*<div class="form-group" style="padding:10px 5px 0 5px;">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control col-md-10" placeholder="Ingredients Name" onkeypress="HandleKeyPress(event)" id="txtSearch" />
+                                                <div class="input-group-btn">
+                                                    <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                    </div>*@
+                                <div role="tabpanel" class="tab-pane fade active in" id="tab_UnSelectedSupplier" aria-labelledby="home-tab">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        //}
+}
+
+
+<script>
+    $(document).ready(function () {
+
+    });
+    function fnIsCheckStockable(flag) {
+        var _isCheck = $('[id=chkIsSelfMode]').is(':checked');
+        if (_isCheck && flag)
+        {
+            $('[id=chkIsStockable]').prop("disabled", false);
+            $('[id=chkIsStockable]').prop('checked', true);
+        }
+        else
+        {
+            $('[id=chkIsStockable]').prop("disabled", true);
+            $('[id=chkIsStockable]').prop('checked', false);
+        }
+           
+    }
+    //Add Item UOM Content
+    function AddItemUOM() {
+        $('.se-pre-con').show();
+        // Find OffSet
+        var currentOffset = $(".IngUsageUOM").length;
+        $.ajax({
+            url: '@Url.Action("AddItemUOM", "IngIngredients")',
+            type: 'get',
+            data: { currentOffset: currentOffset },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#listIngUsageUOM").append(data);
+                //====
+                GetIndexBaseUOM();
+            }
+        });
+    }
+
+    function DeleteItemUOM(btn) {
+        var result = confirm("@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Are you sure"))?");
+        var div = $(btn).parents('div:first');
+        if (result) {
+            //$(div).remove();
+            $(div).find('input.GroupStatus').val(9);
+            $(div).css('display', 'none');
+
+            GetIndexBaseUOM();
+        }
+        //=========
+    }
+
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(4);
+        });
+    });
+
+    $('#chkIsPurchase').bind('change', function () {
+        if ($(this).is(':checked'))
+            $('#chkIsSelfMode').prop('checked', false);
+    });
+
+    $('#chkIsSelfMode').bind('change', function () {
+        if ($(this).is(':checked'))
+            $('#chkIsPurchase').prop('checked', false);
+    });
+
+    function SearchSupplier(btn) {
+        var keySearch = $(btn).parents('div.form-group:first').find('input').val().toLowerCase();
+        var trs = $(btn).parents('#myTabContent:first').find('tbody tr');
+        var arrKeySearch = keySearch.split(' ');
+        if (keySearch != '') {
+            for (var i = 0; i < trs.length; i++) {
+                var name = $.trim($(trs[i]).find('td#search').text());
+                for (var j = 0; j < arrKeySearch.length; j++) {
+                    if (name.toLowerCase().indexOf(arrKeySearch[j]) != -1) {
+                        if ($(trs[i]).css('display') == 'none')
+                            $(trs[i]).css('display', 'table-row');
+                        break;
+                    }
+                    else
+                        if ($(trs[i]).css('display') == 'table-row')
+                            $(trs[i]).css('display', 'none');
+                }
+            }
+        }
+        else {
+            $(trs).each(function (e) {
+                if ($(this).css('display') == 'none')
+                    $(this).css('display', 'table-row');
+            });
+        }
+    }
+
+    /**/
+    function LoadIngredientUnSelect() {
+        $('#tab_UnSelectedSupplier').html('');
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LoadSupplierUnSelected", "IngIngredients")',
+            traditional: true,
+            data: {
+                Id: _IngredientId,
+                CompanyId: _CompnanyId,
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $('#tab_UnSelectedSupplier').html(data);
+                var heightDivSupplier = $('.cls_Supplier_Ingredient_UnSelected').length;
+                if (heightDivSupplier > 10) {
+                    $("#tab_UnSelectedSupplier").css({ "overflow": "auto", "height": "500px" })
+                }
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+</script>

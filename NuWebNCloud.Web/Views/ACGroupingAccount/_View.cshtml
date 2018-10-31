@@ -1,0 +1,217 @@
+﻿@using NuWebNCloud.Shared.Models.AccessControl
+@model NuWebNCloud.Shared.Models.AccessControl.RoleOrganizationModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Grouping Accounts - View Detail").ToString();
+}
+
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                                    new Dictionary<string, string> { { "A", "Access Control" }, { "B", "Roles & Accounts" }, { "C", "Roles - View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Organization Name")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.OrganizationName
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Role Name")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <label>
+                                            @Html.CheckBoxFor(model => model.IsActive, new
+                                            {
+                                                @disabled = "disabled"
+                                            })
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stores")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @if (Model.ListStore != null)
+                                        {
+                                            <table class="table table-bordered role-table">
+                                                <tr style="background-color:#34495e; color:#fff;">
+                                                    <th style="width:2%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("No")).</th>
+                                                    <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</th>
+                                                </tr>
+                                                <tbody id="list-stores">
+                                                    @*@for (int i = 0; i < Model.ListStore.Count; i++)
+                                                        {
+                                                            string styleRow = "row-evenItem";
+                                                            if (i % 2 == 0)
+                                                            {
+                                                                styleRow = "row-oddItem";
+                                                            }
+                                                            //if(Model.)
+                                                            if (Model.ListStore[i].Checked == true)
+                                                            {
+                                                                <tr class="@styleRow">
+                                                                    <td style="text-align:center;">
+                                                                        @(i + 1)
+                                                                    </td>
+                                                                    <td style="color:#34495e; font-weight:bold;">
+                                                                        @Model.ListStore[i].StoreName
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }*@
+
+                                                    @if (Model.ListCompany != null && Model.ListCompany.Count > 0)
+                                                    {
+                                                        for (int i = 0; i < Model.ListCompany.Count; i++)
+                                                        {
+                                                            string styleRow = "row-evenItem";
+                                                            if (i % 2 == 0)
+                                                            {
+                                                                styleRow = "row-oddItem";
+                                                            }
+                                                            <tr class="@styleRow">
+                                                                <td style="text-align:center; color:#d9534f; font-weight:bold;">
+                                                                    @(i + 1)
+                                                                </td>
+                                                                <td style="color:#d9534f; font-weight:bold;">
+                                                                    @Model.ListCompany[i].CompanyName
+                                                                </td>
+                                                            </tr>
+
+                                                            if (Model.ListCompany[i].ListStore != null && Model.ListCompany[i].ListStore.Count > 0)
+                                                            {
+                                                                for (int j = 0; j < Model.ListCompany[i].ListStore.Count; j++)
+                                                                {
+                                                                    styleRow = "row-evenItem";
+                                                                    if (j % 2 == 0)
+                                                                    {
+                                                                        styleRow = "row-oddItem";
+                                                                    }
+                                                                    if (Model.ListCompany[i].ListStore[j].Checked)
+                                                                    {
+                                                                        <tr class="@styleRow">
+                                                                            <td style="text-align:center;"></td>
+                                                                            <td style="color:#34495e; font-weight:bold; margin-left:20px;">
+                                                                                @Model.ListCompany[i].ListStore[j].StoreName
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        @*@Html.Raw(Model.RO)*@
+                                    </div>
+                                </div>
+
+                                @*<div class="form-group">
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-12">Created Date: </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            @Model.CreatedDate
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-12">Created User: </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            @Model.CreatedUser
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-12">Last Modified: </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            @Model.ModifiedDate
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-12">Modified User: </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            @Model.ModifiedUser
+                                        </div>
+                                    </div>*@
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modules")): </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        @helper ShowPermissions(List<ModulePermissionModels> permissions, string type, int level = 1, string parent = "")
+                                            {
+
+                                                for (int i = 0; i < permissions.Count; i++)
+                                                {
+
+                                                    var item = permissions[i];
+                                                    if (/*item.IsAction == true &&*/ item.IsActive == true/* && item.IsView == true*/)
+                                                    {
+                                                        <tr class="role-level-@level @level-@parent">
+                                                            <td>
+                                                                @item.Name
+                                                                @Html.Hidden(type + "[" + i + "]" + ".Id", item.Id)
+                                                                @Html.Hidden(type + "[" + i + "]" + ".ModuleID", item.ModuleID)
+                                                                @Html.Hidden(type + "[" + i + "]" + ".ModuleParentID", item.ModuleParentID)
+                                                            </td>
+                                                            <td class="table-actions">@Html.CheckBox(type + "[" + i + "]" + ".IsView", item.IsView)</td>
+                                                            <td class="table-actions">
+                                                                @if (item.Name.ToLower().Equals(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("reports")) || parent.ToLower().Equals(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("reports")))
+                                                                {
+                                                                    @Html.Hidden(type + "[" + i + "]" + ".IsAction", item.IsAction, new { @value = "true" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.CheckBox(type + "[" + i + "]" + ".IsAction", item.IsAction)
+                                                                }
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ListChild != null && item.ListChild.Count != 0)
+                                                        {
+                                                            @ShowPermissions(item.ListChild, type + "[" + i + "].ListChild", level + 1, item.Name)
+                                                        }
+                                                    }
+                                                }
+}
+                                        <table class="table table-bordered role-table">
+                                            <tr style="background-color:#34495e; color:#fff;">
+                                                <th>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Module Name"))</th>
+                                                <th class="table-actions">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</th>
+                                                <th class="table-actions">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action"))</th>
+                                            </tr>
+                                            <tr></tr>
+                                            @ShowPermissions(Model.ListModule, "ListModule")
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(':checkbox').attr('disabled', true);
+    })
+</script>

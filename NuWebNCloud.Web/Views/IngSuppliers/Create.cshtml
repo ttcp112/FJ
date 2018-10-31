@@ -1,0 +1,97 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.SupplierModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Suppliers - Create").ToString();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                    new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Purchasing" }, { "C", "Suppliers - Add new" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "create")
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save"))</a></li>
+                                <li><a href="@Url.Action("Index","IngSuppliers",new { area = "" })" class="btn btn-danger" id="btn-delete"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                            </ul>
+                        </div>
+                        <div class="box-body" style="display: block;">
+                            @using (@Html.BeginForm("Create", "IngSuppliers", FormMethod.Post, new { @class = "form-horizontal create-form", @enctype = "multipart/form-data" }))
+                            {
+                                @Html.Partial("_Form", Model)
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $("#Companydll").change(function () {
+            var CompanyId = this.value;
+            $('#txtSearch').val('');
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("LoadIngredient", "IngSuppliers")',
+                traditional: true,
+                data: { CompanyId: CompanyId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $('.se-pre-con').hide();
+                    $('#tab_SelectedIngredient').html(data);
+
+                    var heightDivIngredient = $('.cls_Ingredient_Supplier').length;
+                    if (heightDivIngredient > 10) {
+                        $("#tab_SelectedIngredient").css({ "overflow": "auto", "height": "500px" })
+                    }
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        });
+
+        function SubmitForm(form) {
+            $(form).submit();
+        }
+
+        $(document).ready(function () {
+            $("#Companydll").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose company."))',
+                allowClear: true
+            });
+            $("#CountryDll").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Country"))',
+                allowClear: true
+            });
+
+            // Updated 08292017
+            $("#countryDdl").select2({
+                placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Country"))",
+                allowClear: true
+            });
+        });
+    </script>
+}

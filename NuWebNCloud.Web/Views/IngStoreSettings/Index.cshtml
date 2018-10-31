@@ -1,0 +1,266 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StoreSettingViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Settings - View Data"));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                                                 new Dictionary<string, string> { { "A", "Inventory Management" }, { "B", "Recipe" }, { "C", "Store Settings" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "IngStoreSettings", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li><a href="javascript:void(0)" class="btn btn-success" id="btn-setup" onclick="LoadPopUp()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Set Up")) </a></li>
+                            </ul>
+                        </div>
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.ListStore,
+                                        new SelectList(@ViewBag.ListStore, "Value", "Text", Model.ListStore), null,
+                                        new
+                                        {
+                                            @class = "form-control select2_multiple",
+                                            @id = "storeDdlView",
+                                            @style = "width:100%;",
+                                            @multiple = "multiple"
+                                        })*@
+                                    @*<select name="ListStore" id="storeDdl" class="form-control list-stores-group" style="width:100%;"> </select>*@
+
+                                    @*Group by company, updated 07172018*@
+                                    @Html.DropDownListFor(model => model.ListStore, (SelectList)ViewBag.StoresInfoSession, new
+                                    {
+	                                    @class = "form-control select2_multiple list-stores-group",
+	                                    @id = "storeDdl",
+	                                    @multiple = "multiple",
+	                                    @style = "width:100%;"
+                                    })
+
+                                    @Html.ValidationMessageFor(model => model.ListStore, null, new { @class = "validateLevel label label-danger" })
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+
+        $(function () {
+            Search();
+
+            //////===== Updated 07192018
+            $("#storeDdl").select2({
+                placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+                allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.ListStore))).trigger('change.select2');
+
+             @*$('.list-stores-group').select2({
+                placeholder: _SStore,
+                multiple: true,
+                data: @Html.Raw(Json.Encode(ViewBag.Stores_Group)),
+            });*@
+
+            disableButton(false);
+        });
+
+        $(".search-form").submit(function (e) {
+            Search();
+            return false;
+        });
+
+        var lstIdSelected = [];
+
+        function toggleCheckedAll() {
+            var isCheckAll = $('#check-all').prop("checked");
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('data-id');
+                //var itemStoreId = $(listChk[i]).attr('data-storeId');
+
+                if (isCheckAll === true) {
+                    $(listChk[i]).prop('checked', true);
+                    lstIdSelected.push(item);
+                    //lstIdSelected.push(itemStoreId);
+                    disableButton(true);
+                } else {
+                    $(listChk[i]).prop('checked', false);
+                    disableButton(false);
+                }
+            }
+        }
+
+        function toggleChecked() {
+            var _count = 0;
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('data-id');
+                //var itemStoreId = $(listChk[i]).attr('data-storeId');
+                if ($(listChk[i]).prop('checked') === true) {
+                    lstIdSelected.push(item);
+                    //lstIdSelected.push(itemStoreId);
+                    _count++;
+                }
+                if (listChk.length !== _count) {
+                    $('#check-all').prop("checked", false);
+                }
+                else {
+                    $('#check-all').prop("checked", true);
+                }
+                if (_count === 0) {
+                    disableButton(false);
+                } else {
+                    disableButton(true);
+                }
+            }
+        }
+
+        function disableButton(status) {
+            if (!status) {
+                $('#btn-setup').addClass('disabled');
+            } else {
+                $('#btn-setup').removeClass('disabled');
+            }
+        }
+
+        function LoadPopUp() {
+            if (typeof lstIdSelected == 'undefined' || lstIdSelected.length == 0) {
+                alert("@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose least one ingredient")) !");
+                return;
+            }
+            $('.se-pre-con').show();
+            $.ajax({
+                url: '@Url.Action("LoadDetail", "IngStoreSettings")',
+                type: 'POST',
+                dataType: 'html',
+                cache: false,
+                data: { lstId: lstIdSelected },
+                success: function (data) {
+                    $('.se-pre-con').hide();
+                    $("#modelDetail").modal({
+                        keyboard: false,
+                        show: true,
+                    });
+                    $('#tbl-listDetail').html(data);
+                },
+                error: function () { }
+            });
+        };
+
+        function SaveData() {
+            var lstStoreId = $("#storeDdls").val();
+            var quan = $("#quantity").val();
+            var mina = $("#Minalert").val();
+            if (quan == "" && mina == "") {
+                $("#ValueValid1").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter value for at least 1 field before saving")) .');
+                $("#quantity").focus();
+                return false;
+            }
+            if (lstStoreId == "" || lstStoreId == null)
+            {
+                $("#ValueValid1").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose Store")) .');
+                return false;
+            }
+            if (quan == "") {
+                quan = "0";
+            }
+            if (mina == "") {
+                mina = "0";
+            }
+            if (quan < 0 || mina < 0) {
+                $("#ValueValid1").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter value > 0")) .');
+                return false;
+            }
+            else {
+                $(".se-pre-con").show();
+                $.ajax({
+                    url: '@Url.Action("SaveData", "IngStoreSettings")',
+                    type: 'POST',
+                    dataType: 'html',
+                    cache: false,
+                    data: { lstId: lstIdSelected, lstStore: lstStoreId, quantity: quan, Minalert: mina },
+                    success: function (data) {
+                        $(".se-pre-con").hide();
+                        $("#modelDetail").modal('hide');
+
+                        Search();
+                    },
+                    complete: function () {
+                        $('.se-pre-con').hide();
+                    }
+                });
+            }
+        };
+        @*function SaveData() {
+            //var lstStore = $("#storeDdlView").val();
+            var quan = $("#quantity").val();
+            var mina = $("#Minalert").val();
+            if (quan == "" && mina == "") {
+                $("#ValueValid1").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter value for at least 1 field before saving")) .');
+                $("#quantity").focus();
+                return false;
+            }
+            if (quan == "") {
+                quan = "0";
+            }
+            if (mina == "") {
+                mina = "0";
+            }
+            if (quan < 0 || mina < 0) {
+                $("#ValueValid1").html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter value > 0")) .');
+                return false;
+            }
+            else {
+                $(".se-pre-con").show();
+                $.ajax({
+                    url: '@Url.Action("SaveData", "IngStoreSettings")',
+                    type: 'POST',
+                    dataType: 'html',
+                    cache: false,
+                    data: { lstId: lstIdSelected, quantity: quan, Minalert: mina },
+                    success: function (data) {
+                        $(".se-pre-con").hide();
+                        $("#modelDetail").modal('hide');
+
+                        Search();
+                    },
+                    omplete: function () {
+                        $('.se-pre-con').hide();
+                    }
+                });
+            }
+        };*@
+</script>
+}

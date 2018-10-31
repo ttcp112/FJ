@@ -1,0 +1,252 @@
+﻿@model NuWebNCloud.Shared.Models.Reports.BaseReportModel
+
+@if (Model.ListStoreCate != null && Model.ListStoreCate.Count > 0)
+{
+    var lstStore = Model.ListStoreCate;
+    <!-- start accordion -->
+    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+        @if (lstStore != null && lstStore.Count > 0)
+        {
+            for (int s = 0; s < lstStore.Count; s++)
+            {
+                var store = lstStore[s];
+                /*======================*/
+                <div class="panel">
+                    <a class="panel-heading" role="tab" id="heading_@s" data-toggle="collapse" data-parent="#accordion" href="#s_@s"
+                       aria-expanded="@string.Format("{0}", s==0 ? "true" : "false")" aria-controls="s_@s" style="background-color: #337ab7; color: #fff;">
+                        <h4 class="panel-title" style="display: flow-root;">
+                            @store.StoreName&nbsp;&nbsp;
+                            <span class="pull-right"><input type="checkbox" onchange="ToogleCheckAll(this, '.cate-items-@s')" id="checkAllCate-@s" class="chkAll chkReportZoom"></span>
+                        </h4>
+                    </a>
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].OffSet", s), Model.ListStoreCate[s].OffSet)
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].StoreID", s), Model.ListStoreCate[s].StoreID)
+                    @Html.Hidden(string.Format("ListStoreCate[{0}].StoreName", s), Model.ListStoreCate[s].StoreName)
+                    <div id="s_@s" class="panel-collapse collapse @string.Format("{0}", s==0 ? "in" : "")" role="tabpanel" aria-labelledby="heading_@s">
+                        <div class="">
+                            <table class="table table-bordered" style="margin-bottom:0px;">
+                                @*=table-hover*@
+                                <tbody class="cate-items-@s">
+                                    @for (int i = 0; i < store.ListCategoriesSel.Count; i++)
+                                    {
+                                        var item = store.ListCategoriesSel[i];
+
+                                        <tr style="background-color:#ededed">
+                                            <td class="parent">&nbsp;+ @item.Name</td>
+                                            <td class="text-right">
+                                                <label>
+                                                    @Html.CheckBox(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].Checked", s, i), item.Checked, new
+                                               {
+                                                   @onClick = "checkItemCate('" + s + "','" + i + "','-1')",
+                                                   @id = "parent-" + s + "-" + i + "",
+                                                   @class = "chkReportZoom"
+                                               })
+                                                    @*set value*@
+                                                    @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].Id", s, i), item.Id)
+                                                    @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].Name", s, i), item.Name)
+                                                    @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].StoreId", s, i), item.StoreId)
+                                                    @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].StoreName", s, i), item.StoreName)
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        if (item.ListChilds != null && @item.ListChilds.Count > 0)
+                                        {
+                                            for (int j = 0; j < @item.ListChilds.Count; j++)
+                                            {
+                                                <tr>
+                                                    <td class="child">&nbsp;&nbsp;- @item.ListChilds[j].Name</td>
+                                                    <td class="text-right">
+                                                        <label>
+                                                            @Html.CheckBox(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].Checked", s, i, j),
+                                                           item.ListChilds[j].Checked,
+                                                                new
+                                                                {
+                                                                    @onClick = "checkItemCate('" + s + "','" + i + "','" + j + "',-1)",
+                                                                    @id = "child-" + s + "-" + i + "-" + j + "",
+                                                                    @class = "parentcate-" + s + "-" + i + " chkReportZoom subparentcate-"+s+"-"+i+"-"+j+""
+                                                                })
+                                                            @*set value*@
+                                                            @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].Id", s, i, j), item.ListChilds[j].Id)
+                                                            @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].Name", s, i, j), item.ListChilds[j].Name)
+                                                            @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].StoreId", s, i, j), item.ListChilds[j].StoreId)
+                                                            @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].StoreName", s, i, j), item.ListChilds[j].StoreName)
+                                                        </label>
+                                                    </td>
+                                                </tr>
+
+                                                if(item.ListChilds[j].ListChilds != null && item.ListChilds[j].ListChilds.Count > 0)
+                                                {
+                                                    <!--Sub child-->
+                                                    for(int k = 0; k < item.ListChilds[j].ListChilds.Count; k++)
+                                                    {
+                                                        <tr>
+                                                            <td class="subchild">&nbsp;&nbsp;&nbsp;&nbsp; @item.ListChilds[j].ListChilds[k].Name</td>
+                                                            <td class="text-right">
+                                                                @Html.CheckBox(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].ListChilds[{3}].Checked",s,i,j,k),
+                                                                        item.ListChilds[j].ListChilds[k].Checked,
+                                                                        new
+                                                                        {
+                                                                            @onClick = "checkItemCate('" + s + "','" + i + "','" + j + "','"+k+"')",
+                                                                            @id = "subchild-" + s + "-" + i + "-" + j + "-"+""+k+"",
+                                                                            @class = "subchildcate-" + s + "-" + i + "-"+j+ " chkReportZoom subchild-"+s+"-"+i+""
+                                                                        }
+                                                               )
+                                                                
+                                                                @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].ListChilds[{3}].Id", s, i, j,k), item.ListChilds[j].ListChilds[k].Id)
+                                                                @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].ListChilds[{3}].Name", s, i, j, k), item.ListChilds[j].ListChilds[k].Name)
+                                                                @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].ListChilds[{3}].StoreId", s, i, j, k), item.ListChilds[j].ListChilds[k].StoreId)
+                                                                @Html.Hidden(string.Format("ListStoreCate[{0}].ListCategoriesSel[{1}].ListChilds[{2}].ListChilds[{3}].StoreName", s, i, j, k), item.ListChilds[j].ListChilds[k].StoreName)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <!-- end of accordion -->
+
+    @*<table class="table table-hover">
+            <thead>
+                <tr style="background-color: #337ab7; color: #fff;">
+                    <td class="align-left"><label>Select All </label></td>
+                    <td class="align-right"><label><input type="checkbox" onchange="ToogleCheckAll(this, '.cate-items')" id="checkAllCate"></label></td>
+                </tr>
+            </thead>
+            <tbody class="cate-items">
+                @for (int i = 0; i < Model.ListCategories.Count; i++)
+                {
+                    if (@item.ListChilds != null && @item.ListChilds.Count > 0)
+                    {
+                        <tr>
+                            <td class="align-left" colspan="2" style="background-color:#ededed">@item.StoreName - @item.Name</td>
+                        </tr>
+                        for (int j = 0; j < @item.ListChilds.Count; j++)
+                        {
+                            <tr style="background-color:#ededed">
+                                <td class="align-left" style="padding-left:20px;">@item.ListChilds[j].StoreName - @item.ListChilds[j].Name</td>
+                                <td class="align-right">
+                                    <label>
+                                        @Html.CheckBox(string.Format("ListCategories[{0}].ListChilds[{1}].Checked", i, j), item.ListChilds[j].Checked, new { @onClick = "checkItem()" })
+                                        @Html.Hidden(string.Format("ListCategories[{0}].ListChilds[{1}].Id", i, j), item.ListChilds[j].Id)
+                                        @Html.Hidden(string.Format("ListCategories[{0}].ListChilds[{1}].Name", i, j), item.ListChilds[j].Name)
+                                        @Html.Hidden(string.Format("ListCategories[{0}].ListChilds[{1}].StoreName", i, j), item.ListChilds[j].StoreName)
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="align-left">@item.StoreName - @item.Name</td>
+                            <td class="align-right">
+                                <label>
+                                    @Html.CheckBox(string.Format("ListCategoriesSelListCategories[{0}].Checked", i), item.Checked, new { @onClick = "checkItem()" })
+                                    @Html.Hidden(string.Format("ListCategories[{0}].Id", i), item.Id)
+                                    @Html.Hidden(string.Format("ListCategories[{0}].Name", i), item.Name)
+                                    @Html.Hidden(string.Format("ListCategories[{0}].StoreName", i), item.StoreName)
+                                </label>
+                            </td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>*@
+
+    <style>
+        /*.align-left {
+            text-align: left !important;
+        }
+
+        .align-right {
+            text-align: center !important;
+        }*/
+
+        .parent {
+            padding-left: 25px !important;
+        }
+
+        .child {
+            padding-left: 60px !important;
+        }
+        .subchild {
+            padding-left: 70px !important;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('.chkAll').on('click', function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        //function checkItemCate(store, parent, child) {
+        //    if (child === '-1') {
+        //        var chkParent = $('#parent-' + store + '-' + parent + '').prop('checked');
+        //        $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).prop('checked', chkParent);
+
+        //    } else {
+        //        //Child
+        //        var countchkParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).length;
+        //        var countchkCheckParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).filter(":checked").length;
+        //        $('#parent-' + store + '-' + parent + '').prop('checked', (countchkCheckParent == countchkParent));
+        //    }
+        //    //==============
+        //    var countchk = $('table > tbody.cate-items-' + store + ' input[type="checkbox"]').length;
+        //    var countchkCheck = $('table > tbody.cate-items-' + store + ' input[type="checkbox"]').filter(":checked").length;
+        //    $('#checkAllCate-' + store).prop('checked', (countchkCheck == countchk));
+
+        //}
+
+        function checkItemCate(store, parent, child, subchild) {
+            //debugger;
+            if (child === '-1') {
+                var chkParent = $('#parent-' + store + '-' + parent + '').prop('checked');
+                $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).prop('checked', chkParent);
+                $('table > tbody.cate-items-' + store + ' input.subchild-' + store + '-' + parent).prop('checked', chkParent);
+
+            } else {
+                //Child
+                var countchkParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).length;
+                var countchkCheckParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).filter(":checked").length;
+                if (countchkParent > 0 && countchkCheckParent > 0) {
+                    $('#parent-' + store + '-' + parent + '').prop('checked', (countchkCheckParent == countchkParent));
+                }
+            }
+
+            if (subchild === -1)
+            {
+                var chkParent = $('table > tbody.cate-items-' + store + ' input.subparentcate-' + store + '-' + parent + '-' + child).is(":checked");
+                $('table > tbody.cate-items-' + store + ' input.subchildcate-' + store + '-' + parent + '-' + child).prop('checked', chkParent);
+            } else {
+                //Sub Child
+                var countchkSubParent = $('table > tbody.cate-items-' + store + ' input.subchildcate-' + store + '-' + parent + '-' + child).length;
+                var countchkCheckSubParent = $('table > tbody.cate-items-' + store + ' input.subchildcate-' + store + '-' + parent + '-' + child).filter(":checked").length;
+                $('#child-' + store + '-' + parent + '-' + child + '').prop('checked', (countchkCheckSubParent == countchkSubParent));
+
+                var countchkParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).length;
+                var countchkCheckParent = $('table > tbody.cate-items-' + store + ' input.parentcate-' + store + '-' + parent).filter(":checked").length;
+                if (countchkParent > 0 && countchkCheckParent > 0) {
+                    $('#parent-' + store + '-' + parent + '').prop('checked', (countchkCheckParent == countchkParent));
+                }
+            }
+            //==============
+            var countchk = $('table > tbody.cate-items-' + store + ' input[type="checkbox"]').length;
+            var countchkCheck = $('table > tbody.cate-items-' + store + ' input[type="checkbox"]').filter(":checked").length;
+            $('#checkAllCate-' + store).prop('checked', (countchkCheck == countchk));
+
+        }
+    </script>
+}
+
+

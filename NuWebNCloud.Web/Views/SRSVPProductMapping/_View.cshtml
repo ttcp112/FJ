@@ -1,0 +1,64 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.RSVPStoreProducMappingModels
+<div role="main" class="right_col">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+     new Dictionary<string, string> { { "A", "Settings" }, { "B", "RSVP Product Mapping" }, { "C", "View Detail" } })
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_content">
+                        <div class="row text-right">
+                            <ul class="header-buttons pull-right list-inline">
+                                <li>
+                                    <a href="#" onclick="CloseDetail(); return false;" class="btn btn-danger" id="btn-delete">
+                                        <i class="fa fa-times"></i>
+                                        &nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Close"))
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="row form-horizontal form-label-left">
+                            <div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name")) : </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12" style="color:#5b0101; font-size:16px; font-weight:bold;">
+                                        @Model.StoreName
+                                    </div>
+                                </div>
+                                @if (Model.ListRSVPProductMapping != null && Model.ListRSVPProductMapping.Count > 0)
+                                {
+                                    <div class="form-group" id="divDish_@Model.StoreID">
+                                        <label class="control-label col-md-2 col-xs-12"></label>
+                                        <div id="div-mediate_@Model.StoreID" class="col-md-offset-2 col-md-6" style="float:none;">
+                                            <table class="table center-content">
+                                                <thead>
+                                                    <tr style="background-color:#134F5C; color:#fff;">
+                                                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Dish/Set Menu Code")) </th>
+                                                        <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("RSVP Item Code"))</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var ProductItem in Model.ListRSVPProductMapping)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-center">@ProductItem.ProductCode</td>
+                                                            <td class="text-center">@ProductItem.ItemCode</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

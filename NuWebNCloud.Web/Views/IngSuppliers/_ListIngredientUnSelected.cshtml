@@ -1,0 +1,125 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.SupplierModels
+@using NuWebNCloud.Shared.Utilities;
+<div class="table-responsive">
+    <div class="">
+        <div class="x_content">
+            <div class="table-responsive">
+                @*<table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive-ing" cellspacing="0" style="width:100%;">*@
+                <table class="table center-content">
+                    <thead>
+                        <tr style="background-color:#34495e; color:#fff;">
+                            <th style="text-align:center; width:2%;"> <input type="checkbox" id="check-all-Ing-Un" onclick="toggleCheckedAllIngUn()" /></th>
+                            <th class="column-title" style=" width:15%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Code"))</th>
+                            <th class="column-title">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.ListSupIngUnSelected.Count; i++)
+                        {
+                            @*string styleRow = "row-evenItem";
+                                if (i % 2 == 0)
+                                {
+                                    styleRow = "row-oddItem";
+                                }
+                                <tr class="even pointer @styleRow ingredients">*@
+                            <tr class="even pointer cls_Ingredient_Supplier_UnSelected">
+                                <td class="a-center text-center">
+
+                                    @Html.CheckBoxFor(model => Model.ListSupIngUnSelected[i].IsActived, new { @class = "chkChildIngUn", @onclick = "toggleCheckedIngUn()" })
+
+                                    @Html.HiddenFor(model => Model.ListSupIngUnSelected[i].Id)
+                                    @Html.HiddenFor(model => Model.ListSupIngUnSelected[i].IngredientId)
+                                    @Html.HiddenFor(model => Model.ListSupIngUnSelected[i].IngredientCode)
+                                    @Html.HiddenFor(model => Model.ListSupIngUnSelected[i].IngredientName)
+                                    @Html.HiddenFor(model => Model.ListSupIngUnSelected[i].CompanyId)
+
+                                </td>
+                                <td>@Model.ListSupIngUnSelected[i].IngredientCode</td>
+                                <td id="search" style="cursor:pointer;">@Model.ListSupIngUnSelected[i].IngredientName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //=========================================
+    $(document).ready(function () {
+        //var handleDataTableButtons = function () {
+        //    if ($("#datatable-buttons").length) {
+        //        $("#datatable-buttons").DataTable({
+        //            dom: "Bfrtip",
+        //            responsive: true
+        //        });
+        //    }
+        //};
+
+        //TableManageButtons = function () {
+        //    "use strict";
+        //    return {
+        //        init: function () {
+        //            handleDataTableButtons();
+        //        }
+        //    };
+        //}();
+
+        //$('#datatable').dataTable();
+        //$('#datatable-keytable').DataTable({
+        //    keys: true
+        //});
+
+        //var table = $('#datatable-responsive-ing').DataTable({
+        //    "bSort": false,
+        //    //"searching": false,
+        //    "columnDefs": [
+        //        { "width": "1%", "targets": 0 },
+        //        { "width": "15%", "targets": [1, 2] },
+        //    ],
+        //    "order": [[1, 'asc']],
+        //});
+        //var table = $('#datatable-fixed-header').DataTable({
+        //    fixedHeader: true
+        //});
+        //TableManageButtons.init();
+
+        toggleCheckedIngUn();
+    });
+
+    //*****
+    function toggleCheckedAllIngUn() {
+        var isCheckAll = $('#check-all-Ing-Un').prop("checked");
+        var listChk = $('.chkChildIngUn');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            if (isCheckAll === true) {
+                $(listChk[i]).prop('checked', true);
+                lstIdSelected.push(item);
+            } else {
+                $(listChk[i]).prop('checked', false);
+            }
+        }
+    }
+
+    function toggleCheckedIngUn() {
+        var _count = 0;
+        var listChk = $('.chkChildIngUn');
+        lstIdSelected = [];
+        for (var i = 0; i < listChk.length; i++) {
+            var item = $(listChk[i]).attr('id');
+            if ($(listChk[i]).prop('checked') === true) {
+                lstIdSelected.push(item);
+                _count++;
+            }
+            if (listChk.length !== _count) {
+                $('#check-all-Ing-Un').prop("checked", false);
+            }
+            else {
+                $('#check-all-Ing-Un').prop("checked", true);
+            }
+        }
+    }
+</script>

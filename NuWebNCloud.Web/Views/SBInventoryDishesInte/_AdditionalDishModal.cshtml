@@ -1,0 +1,75 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.Product.InteGroupProductModels
+
+@if (Model != null && Model.ListProductOnGroup != null && Model.ListProductOnGroup.Count > 0)
+{
+    for (int i = 0; i < Model.ListProductOnGroup.Count; i++)
+    {
+        <tr data-id="@Model.ListProductOnGroup[i].ProductID" class="mediate-dish additional_dish_@Model.OffSet">
+            <td width="10%">
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].Sequence",
+               Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet),
+               Model.ListProductOnGroup[i].Sequence, new { @class = "form-control input-number text-center", @maxlength = 2, @Value = Model.ListProductOnGroup[i].Sequence })
+            </td>
+            <td width="50%">
+                <div class="input-group input-group-sm col-md-8" style="margin:0 auto; width: 90%;">
+                    @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].ProductName",
+                   Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet),
+                   Model.ListProductOnGroup[i].ProductName, new { @class = "form-control", @readonly = "readonly", @Value = Model.ListProductOnGroup[i].ProductName })
+
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].OffSet",
+                   Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet), Model.ListProductOnGroup[i].OffSet, new { @Value = Model.ListProductOnGroup[i].OffSet })
+
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].ProductID",
+                   Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet), Model.ListProductOnGroup[i].ProductID, new { @Value = Model.ListProductOnGroup[i].ProductID })
+
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].GroupID",
+                   Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet), Model.ListProductOnGroup[i].GroupID, new { @Value = Model.ListProductOnGroup[i].GroupID })
+
+                    @Html.Hidden(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].Status",
+                   Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet), Model.ListProductOnGroup[i].Status,
+                   new { @class = "DishStatus", @Value = Model.ListProductOnGroup[i].Status })
+                    <span class="input-group-btn">
+                        <button data-toggle="modal" data-target="#modal-change-additiondishes_@Model.StoreID" data-whatever="@Model.OffSet" class="btn btn-primary" type="button">
+                            <i class="glyphicon glyphicon-list"></i>
+                        </button>
+                    </span>
+                </div>
+            </td>
+            <td width="20%">
+                @Html.TextBox(string.Format("ListProductOnStore[{0}].ListProductGroup[{1}].ListProductOnGroup[{2}].ExtraPrice",
+               Model.StoreOffSet, Model.OffSet, Model.ListProductOnGroup[i].OffSet), Model.ListProductOnGroup[i].ExtraPrice,
+               new { @class = "form-control  text-center number", @Value = Model.ListProductOnGroup[i].ExtraPrice })
+            </td>
+            <td width="10%">
+                <a href="#" onclick="DeleteModifier(this); return false;">
+                    <i class="glyphicon glyphicon-minus-sign" style="font-size: 25px; color: red; padding: 5px 0px; "></i>
+                </a>
+            </td>
+        </tr>
+    }
+}
+
+<script>
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    this.value = parseFloat(this.value).toFixed(2);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value).toFixed(2);
+        });
+    });
+</script>

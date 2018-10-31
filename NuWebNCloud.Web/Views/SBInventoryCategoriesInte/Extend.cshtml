@@ -1,0 +1,304 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.InteCategoriesViewModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extend All"));
+}
+<style type="text/css">
+    #validateStoreFrom,
+    #validateStoreTo,
+    #validateItem {
+        background-color: #d9534f !important;
+        color: #fff;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #73879C !important;
+    }
+</style>
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "SandBox" }, { "B", "Inventory" }, { "C", "Categories - Extend All" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "extend")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Extend", "SBInventoryCategoriesInte", FormMethod.Post, new{ @class = "form-horizontal extend-form", enctype = "multipart/form-data" }))
+                    {
+                        <div class="form-group">
+                            <label for="FromDate" class="control-label col-md-2 col-sm-3 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extend From"))</label>
+                            <div class="col-md-3 col-sm-8 col-xs-12 ">
+                                @*@Html.DropDownListFor(model => model.StoreExtendFrom,
+                                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreExtendFrom), "Please choose store",
+                                new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdlViewFrom",
+                                    @style = "width:100%;",
+                                    @onChange = "LoadListCateExtend(this)",
+                                })*@
+
+                                @*Group by company, updated 041420180*@
+                                @Html.DropDownListFor(model => model.StoreExtendFrom, (SelectList)ViewBag.StoreID, new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdlViewFrom",
+                                    @style = "width:100%;",
+                                    //@onChange = "LoadListCateExtend(this)"
+                                })
+                                @Html.ValidationMessageFor(model => model.StoreExtendFrom, null, new { @class = "validateStoreFrom label label-danger" })
+                            </div>
+                            <label for="ToDate" class="control-label col-md-1 col-sm-3 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extend to"))</label>
+                            <div class="col-md-3 col-sm-8 col-xs-12 list-store-extend-to">
+                                @*@Html.DropDownListFor(model => model.StoreExtendTo,
+                                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreExtendTo), "Please choose store",
+                                new
+                                {
+                                    @class = "form-control select2_multiple",
+                                    @id = "storeDdlViewTo",
+                                    @style = "width:100%;",
+                                    @multiple = "multiple"
+                                })
+                                @Html.ValidationMessageFor(model => model.StoreExtendTo, null, new { @class = "validateStoreTo label label-danger" })*@
+
+                                @*Group by company, updated 041420180*@										
+                                @Html.Partial("_LoadListStoreExtendToOfCategory", Model)
+
+                            </div>
+                            <div class="col-md-1 col-sm-1 col-xs-12">
+                                <button type="submit" class="btn btn-primary" id="btn-extend"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Extend"))</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                @Html.ValidationMessageFor(model => model.ListItem, null, new { @class = "label" })
+                                <table class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" id="datatable-responsive" cellspacing="0" style="width:100%;">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th style="text-align:center;"><input type="checkbox" id="check-all" onclick="toggleCheckedAll()" /></th>
+                                            <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image"))</th>
+                                            <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category Name"))</th>
+                                            <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Category Parent"))</th>
+                                            <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Type"))</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tr-list-cate-extend">
+                                        @if (Model.ListItem != null)
+                                        {
+                                            @Html.Partial("_ListCateExtend", Model)
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        var tableStoreInfo = null;
+        var settingsStoreInfo = {
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 1] },
+                { "width": "1%", "targets": [0] },
+                { "width": "2%", "targets": [1] },
+                { "width": "10%", "targets": [2] },
+                { "width": "8%", "targets": [3] },
+                { "width": "3%", "targets": [4] },
+
+            ],
+            "order": [
+                [2, 'asc'],
+            ],
+            //"displayLength": 25,
+            "paging": false,
+            "ordering": true,
+            "info": false,
+            "searching": true,
+            "bLengthChange": true,
+            "autoWidth": false
+        };
+
+        $(document).ready(function () {
+            $("#storeDdlViewFrom").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                //allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.StoreExtendFrom))).trigger('change.select2');
+
+            @*$("#storeDdlViewTo").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                allowClear: true
+            });*@
+
+            var handleDataTableButtons = function () {
+                if ($("#datatable-buttons").length) {
+                    $("#datatable-buttons").DataTable({
+
+                        dom: "Bfrtip",
+                        responsive: true
+                    });
+                }
+            };
+
+            TableManageButtons = function () {
+                "use strict";
+                return {
+                    init: function () {
+                        handleDataTableButtons();
+                    }
+                };
+            }();
+
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable({
+                keys: true
+            });
+
+            tableStoreInfo = $('#datatable-responsive').DataTable($.extend(true, {}, settingsStoreInfo));
+
+            var table = $('#datatable-fixed-header').DataTable({
+                fixedHeader: true
+            });
+
+            TableManageButtons.init();
+        });
+
+        $("#storeDdlViewFrom").change(function () {
+            LoadListCateExtend(this);
+        });
+
+        function LoadListCateExtend(e, StoreID) {
+            var StoreID = $(e).val();
+            if (StoreID != null && StoreID != ""){
+                $.ajax({
+                    url: '@Url.Action("LoadCateExtend", "SBInventoryCategoriesInte")',
+                    type: 'POST',
+                    data: {
+                        storeID: StoreID
+                    },
+                    dataType: 'html',
+                    //contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        tableStoreInfo.destroy();
+                        $("#tr-list-cate-extend").html(data);
+                        tableStoreInfo = $('#datatable-responsive').DataTable($.extend(true, {}, settingsStoreInfo));
+
+                        // Reload list store extend to
+                        LoadListStoreExtendToOfCate(StoreID, ".list-store-extend-to");
+                    },
+                    beforeSend: function () {
+                        $('.se-pre-con').show();
+                    },
+                    complete: function () {
+                        $('.se-pre-con').hide();
+                    },
+                    error: function (jqXHR) {
+                        //do something
+                        $('.se-pre-con').hide();
+                    }
+                });
+            }
+
+
+            //$("#storeDdlViewTo").val([]).trigger('change');
+            //$("#storeDdlViewTo").empty();
+            //$("#storeDdlViewFrom option").each(function () {
+            //    var itemVal = $(this).val();
+            //    var itemText = $(this).text();
+            //    if (itemVal != StoreID) {
+            //        $("#storeDdlViewTo").prepend('<option value="' + itemVal + '">' + itemText + '</option>');
+            //    }
+            //});
+        }
+
+        var lstIdSelected = [];
+
+        function toggleCheckedAll() {
+            var isCheckAll = $('#check-all').prop("checked");
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('id');
+                if (isCheckAll === true) {
+                    $(listChk[i]).prop('checked', true);
+                    lstIdSelected.push(item);
+                } else {
+                    $(listChk[i]).prop('checked', false);
+                }
+            }
+        }
+
+        function toggleChecked() {
+            var _count = 0;
+            var listChk = $('.chkChild');
+            lstIdSelected = [];
+            for (var i = 0; i < listChk.length; i++) {
+                var item = $(listChk[i]).attr('id');
+                if ($(listChk[i]).prop('checked') === true) {
+                    lstIdSelected.push(item);
+                    _count++;
+                }
+                if (listChk.length !== _count) {
+                    $('#check-all').prop("checked", false);
+                }
+                else {
+                    $('#check-all').prop("checked", true);
+                }
+            }
+        }
+
+        // Updated 04192018
+        function LoadListStoreExtendToOfCate(StoreId, Component) {
+            $(".se-pre-con").show();
+            $.ajax({
+                url: CreateAbsoluteUrl("LoadListStoreExtendToOfCate"),
+                type: "post",
+                traditional: true,
+                data: { StoreId: StoreId },
+                dataType: 'html',
+                success: function (data) {
+                    $(".se-pre-con").hide();
+                    $(Component).html('');
+                    $(Component).html(data);
+                }
+            });
+        }
+        //$("#btn-extend").on('click', function () {
+        //    var _valStoreFrom = $("#storeDdlViewFrom").val();
+        //    var _valStoreTo = $("#storeDdlViewTo").val();
+        //    if (_valStoreFrom == '' || _valStoreFrom == null) {
+        //        $('.validateStoreTo').hide();
+        //        $('.extendcate').hide();
+        //        $('.validateStoreFrom').html("Please choose store");
+        //        return false;
+        //    }
+        //    if (_valStoreTo == '' || _valStoreTo == null) {
+        //        $('.validateStoreFrom').hide();
+        //        $('.extendcate').hide();
+        //        $('.validateStoreTo').show();
+        //        $('.validateStoreTo').html("Please choose store");
+        //        return false;
+        //    }
+        //    if (lstIdSelected.length == 0) {
+        //        $('.validateStoreFrom').hide();
+        //        $('.validateStoreTo').hide();
+        //        $('.extendcate').show();
+        //        $('.extendcate').html("Please choose item");
+        //        return false;
+        //    }
+        //});
+</script>
+}

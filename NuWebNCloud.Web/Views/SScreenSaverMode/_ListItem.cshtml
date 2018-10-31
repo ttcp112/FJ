@@ -1,0 +1,51 @@
+﻿@model List<NuWebNCloud.Shared.Models.Settings.ScreenSaverMode.ScreenSaverModeModels>
+@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@if (Model != null && Model.Any())
+{
+    for (var i = 0; i < Model.Count; i++)
+    {
+        <div class="col-md-2 ng-image-product text-center" id="image-@Model[i].OffSet">
+            @if (!string.IsNullOrEmpty(Model[i].ImageURL))
+            {
+                <div class="img-wrap">
+                    @if (!string.IsNullOrEmpty(Model[i].ID))
+                    {
+                        <span class="close" onclick="DeleteImageById('@Model[i].ID','@Model[i].StoreID')">&times;</span>
+                        @*<a href="javascript:void(0)"
+                           onclick="DeleteImageById('@Model[i].ID','@Model[i].StoreID')"
+                           class="btn btn-danger btn-xs delete details close"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>*@
+                    }
+                    else
+                    {
+                        <span class="close" onclick="DeleteImage('@Model[i].OffSet')">&times;</span>
+                        @*<a href="javascript:void(0)"
+                           onclick="DeleteImage('@Model[i].OffSet')"
+                           class="btn btn-danger btn-xs delete details close"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>*@
+                    }
+
+                    @*<span class="close">&times;</span>*@
+                    <img class="imageThumb" id="upload-preview-1-@Model[i].OffSet" src="@Model[i].ImageURL" style="width: 100%" />
+                </div>
+
+            }
+            else
+            {
+                <div class="img-wrap">
+                    <span class="close" onclick="DeleteImage('@Model[i].OffSet')">&times;</span>
+                    <img class="text-center imageThumb" id="upload-preview-1-@Model[i].OffSet" src="@Commons.Image200_100" style="width: 100%" />
+                </div>
+                
+            }
+            <br />
+            @Html.CheckBox(string.Format("ListProduct[{0}].IsActive",Model[i].OffSet), Model[i].IsActive) Active
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+
+            <input type="hidden" value="@Model[i].ImageURL" name="@string.Format("ListProduct[{0}].ImageURL",Model[i].OffSet)" />
+            <input type="hidden" value="@Model[i].ID" name="@string.Format("ListProduct[{0}].ID",Model[i].OffSet)" />
+            <input type="hidden" value="@Model[i].ImageName" name="@string.Format("ListProduct[{0}].ImageName", Model[i].OffSet)" id="image-name-1-@Model[i].OffSet" />
+            <input type="hidden" name="@string.Format("ListProduct[{0}].OffSet", Model[i].OffSet)" id="image-name-1-@Model[i].OffSet" value="@Model[i].OffSet" />
+            <input type="hidden" name="@string.Format("ListProduct[{0}].IsDelete", Model[i].OffSet)" id="image-name-1-@Model[i].OffSet" value="@Model[i].IsDelete" />
+        </div>
+    }
+}

@@ -1,0 +1,45 @@
+﻿@model NuWebNCloud.Shared.Models.Settings.RSVPProductMapping.RSVPProductMappingViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("RSVP Product Mapping").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Settings" }, { "B", "RSVP Product Mapping" }, { "C", "View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "SRSVPProductMapping", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+        $(function () {
+            Search();
+        });
+    </script>
+}

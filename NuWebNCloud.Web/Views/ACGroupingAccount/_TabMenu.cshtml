@@ -1,0 +1,15 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+<ul class="list-inline small-tab-list-buttons">
+    <li>
+        <a href="@Url.Action("Index", "ACGroupingAccount")" id="lnkViewData" class="btn btn-default btn-block menuTab @(Model == "ViewRoles" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-bars"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Roles"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Create", "ACGroupingAccount")" id="lnkCreate" class="btn btn-default btn-block menuTab @(Model == "AddRole" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-plus"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add Role"))</a>
+    </li>
+    <li>
+        <a href="@Url.Action("ViewAccounts", "ACGroupingAccount")" id="lnkImport" class="btn btn-default btn-block menuTab @(Model == "ViewAccounts" ? new HtmlString("active") :
+           new HtmlString(""))"><i class="fa fa-users"></i>&nbsp;&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View Accounts"))</a>
+    </li>
+</ul>

@@ -1,0 +1,106 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.MerchantSetting.MerchantSettingModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@Html.HiddenFor(model => model.Id)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @*@Html.Hidden("StoreID", Model.StoreID)*@
+}
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Store receives all payment of gift card purchase and recharge on Poins wallet*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store receives all payment of gift card purchase and recharge on Poins wallet"))
+                </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Stores"))</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+
+                        @*@Html.DropDownListFor(model => model.StoreID,
+                            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID),
+                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store")).ToString(), new
+                                       {
+                                           @class = "form-control select2_multiple",
+                                           @id = "storeDdl",
+                                           @style = "width:100%;"
+                                       })*@
+
+                        @Html.DropDownListFor(model => model.StoreID,
+                        (SelectList)ViewBag.StoreID, new
+                        {
+                            @class = "form-control select2_multiple",
+                            @id = "storeDdl",
+                            @style = "width:100%;"
+                        })
+
+                        @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Allow multi-store order on wallet*@
+    <div class="form-group">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box-header with-border">
+                <h4 class="box-title">
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allow multi-store order on wallet"))
+                </h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Companies"))</label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label lineHeight"></label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @if (Model.ListCompnayShow != null && Model.ListCompnayShow.Count > 0)
+                        {
+                            foreach (var item in Model.ListCompnayShow)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                        @Html.CheckBox(string.Format("ListCompnayShow[{0}].IsActive", item.OffSet), item.IsActive,
+                                           new { @id = "IsActive" + item.OffSet, @class= "js-switch" })
+                                    </label>
+                                    <div class="checkbox col-md-6 lighHeight" style="padding-top:0px;">
+                                        @item.CompanyName
+                                        @Html.Hidden(string.Format("ListCompnayShow[{0}].CompanyId", item.OffSet), item.CompanyId, new { @Value = item.CompanyId })
+                                        @Html.Hidden(string.Format("ListCompnayShow[{0}].CompanyName", item.OffSet), item.CompanyName, new { @Value = item.CompanyName })
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+        //Companies
+        if ($(".js-switch")[0]) {
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+            elems.forEach(function (html) {
+                var switchery = new Switchery(html, {
+                    color: '#26B99A'
+                });
+            });
+        }
+    });
+</script>

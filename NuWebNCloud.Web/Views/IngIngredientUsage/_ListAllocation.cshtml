@@ -1,0 +1,334 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.IngredientsUsageRequestViewModels
+@using NuWebNCloud.Shared.Utilities;
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display:none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding:10px 0px">
+                @Html.Partial("~/Views/Shared/_breadcrumb2.cshtml",
+                         new Dictionary<string, string> { { "A", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management") }, { "B", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory") }, { "C", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Usage Management") }, { "D", _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Usage >> Allocation") } })
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    <div class="clearfix"></div>
+                </div>
+                @*<div class="x_content">*@
+
+                <div class="row text-right">
+                    <ul class="header-buttons pull-right list-inline">
+                        <li><a href="javascript:void(0)" class="btn btn-success" id="btn-actives" onclick="SubmitForm('.create-form-SaveAllocateVariance')"><i class="fa fa-save"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Create"))</a></li>
+                        <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                    </ul>
+                </div>
+                @*<div class="table-responsive">*@
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Allocation"))</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content form-group">
+
+                        @using (@Html.BeginForm("SaveAllocateVariance", "IngIngredientUsage", FormMethod.Post,
+                    new
+                    {
+                        @class = "form-horizontal create-form-SaveAllocateVariance",
+                        @enctype = "multipart/form-data"
+                    }))
+                        {
+                            @Html.HiddenFor(ss => ss.StoreId)
+                            <div class="x_content">
+                                <table id="datatable-responsive-Allocation" class="table table-striped table-bordered dataTable no-footer" cellspacing="0" style="width:100%;">
+                                    <thead style="background-color:#34495e; color:#fff;">
+                                        <tr>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Business Day"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Code"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Actual Sold"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Sale"))</th>
+
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Damage"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Wastage"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Others"))</th>
+                                            <th class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reasons"))</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.ListItem != null && Model.ListItem.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.ListItem.Count; i++)
+                                            {
+                                                string styleRow = "row-evenItem";
+                                                if (i % 2 == 0)
+                                                {
+                                                    styleRow = "row-oddItem";
+                                                }
+                                                var item = Model.ListItem[i];
+
+
+
+                                                <tr class="@styleRow ng-Ingredient" data-IngId="@item.IngredientId">
+                                                    @Html.Hidden(string.Format("ListItem[{0}].VarianceQty", i), @item.VarianceQty, new
+                                           {
+
+                                               @id = "txtVarianceQty",
+                                           })
+                                                    <td class="text-center">
+                                                        @item.BusinessDayDisplay
+                                                        @*@item.Date.ToString("MM/dd/yyyy")*@
+                                                        @Html.Hidden(string.Format("ListItem[{0}].Date", i), @item.Date)
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @item.IngredientCode
+                                                        <br />
+                                                        @Html.ValidationMessage(string.Format("ListItem[{0}].Damage", i), new
+                                               {
+                                                   @id = "ltrValidate" + item.IngredientId,
+                                                   @class = "label label-danger"
+                                               })
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @item.IngredientName
+                                                        @Html.Hidden(string.Format("ListItem[{0}].StoreId", i), @item.StoreId, new
+                                                   {
+
+                                                       @id = "txtStoreId",
+                                                   })
+                                                        @Html.Hidden(string.Format("ListItem[{0}].IngredientId", i), @item.IngredientId)
+                                                        @Html.Hidden(string.Format("ListItem[{0}].CloseBal", i), @item.CloseBal)
+                                                        @Html.Hidden(string.Format("ListItem[{0}].OpenBal", i), @item.OpenBal)
+                                                        @Html.Hidden(string.Format("ListItem[{0}].DateDisplay", i), @item.DateDisplay)
+                                                        @Html.Hidden(string.Format("ListItem[{0}].BusinessId", i), @item.BusinessId)
+
+                                                    </td>
+                                                    <td class="text-center">@item.ActualSold</td>
+                                                    <td class="text-center">@item.Sales</td>
+                                                    <td class="text-center">
+                                                        @Html.TextBox(string.Format("ListItem[{0}].Damage", i), @item.Damage, new
+                                               {
+                                                   @class = "form-control text-center number",
+                                                   @min = 0,
+                                                   @style = "width: 80px;",
+                                                   @id = "txtDamage",
+                                                   @autocomplete = "off"
+                                               })
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @Html.TextBox(string.Format("ListItem[{0}].Wast", i), @item.Wast, new
+                                               {
+                                                   @class = "form-control text-center number",
+                                                   @min = 0,
+                                                   @style = "width: 80px;",
+                                                   @id = "txtWast",
+                                                   @autocomplete = "off"
+                                               })
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @Html.TextBox(string.Format("ListItem[{0}].Others", i), @item.Others, new
+                                               {
+                                                   @class = "form-control text-center number",
+                                                   @style = "width: 80px;",
+                                                   @id = "txtOthers",
+                                                   @autocomplete = "off"
+                                               })
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @Html.TextBox(string.Format("ListItem[{0}].Reasons", i), @item.Reasons, new
+                                               {
+                                                   @class = "form-control text-center",
+                                                   @id = "txtReasons",
+                                                   @autocomplete = "off"
+                                               })
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        }
+                    </div>
+                </div>
+                @*</div>*@
+                @*</div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+        var table = $('#datatable-responsive-Allocation').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [3, 4, 5, 6, 7, 8] },
+                 { "width": "17%", "targets": [0] },
+                  { "width": "10%", "targets": [1] },
+                { "width": "7%", "targets": [3, 4, 5, 6, 7] },
+                { "width": "4%", "targets": [8] },
+            ],
+            "order": [[0, 'desc']],
+            "displayLength": 100,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(0, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="9"><strong style="color:#d9534f;">' + (group === '' ? '|' : group) + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+        //var table = $('#datatable-fixed-header').DataTable({
+        //    fixedHeader: true
+        //});
+        //TableManageButtons.init();
+    });
+
+    // mini jQuery plugin that formats to two decimal places
+    (function ($) {
+        $.fn.numberFormat = function () {
+            this.each(function (i) {
+                $(this).change(function (e) {
+                    if (isNaN(parseFloat(this.value))) return;
+                    //this.value = parseFloat(this.value).toFixed(4);
+                });
+            });
+            return this; //for chaining
+        }
+    })(jQuery);
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        $(function () {
+            $('.number').numberFormat();
+        });
+        //===============
+        //$(".number").each(function (i) {
+        //    if (isNaN(parseFloat(this.value)))
+        //        return;
+        //    this.value = parseFloat(this.value).toFixed(4);
+        //});
+    });
+    //function disableButton(btn, status) {
+    //    if (status) {
+    //        $(btn).addClass('disabled');
+    //    } else {
+    //        $(btn).removeClass('disabled');
+    //    }
+    //}
+
+    $(".create-form-SaveAllocateVariance").submit(function (e) {
+        var isSubmit = true;
+        var DamageQty = 0;
+        var WastQty = 0;
+        var OthersQty = 0;
+        var VarianceQty = 0;
+
+        $.each($('.ng-Ingredient'), function () {
+            var div = $(this);
+            var IngId = $(div).attr("data-IngId");
+            if ($(div).css('display') !== 'none') {
+                var Damage = $(div).find('#txtDamage').val();
+                var Wast = $(div).find('#txtWast').val();
+                var Others = $(div).find('#txtOthers').val();
+                var varianceQty = $(div).find('#txtVarianceQty').val();
+
+                DamageQty = parseFloat(Damage);
+                WastQty = parseFloat(Wast);
+                OthersQty = parseFloat(Others);
+                VarianceQty = varianceQty;
+
+                if (isNaN(DamageQty) || DamageQty < 0) {
+                    $('#ltrValidate' + IngId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Damage is invalid"))');
+                    isSubmit = false;
+                } else {
+                    if (isNaN(WastQty) || WastQty < 0) {
+                        $('#ltrValidate' + IngId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Wast is invalid"))');
+                        isSubmit = false;
+                    } else {
+                        if (isNaN(OthersQty)) {
+                            $('#ltrValidate' + IngId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Others is invalid"))');
+                            isSubmit = false;
+                        } else {
+                            $('#ltrValidate' + IngId).html('');
+                        }
+                    }
+                }
+                if (DamageQty <= 0 && WastQty <= 0 && OthersQty == 0) {
+                    $('#ltrValidate' + IngId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please enter value for at least 1 field before saving"))');
+                    isSubmit = false;
+                }
+                if ((DamageQty + WastQty + OthersQty) > VarianceQty) {
+                    $('#ltrValidate' + IngId).html('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please input the amount of damaged, wastage or others less than or equal to"))' + '[' + VarianceQty +']');
+                    //$('#ltrValidate' + IngId).html('Do not input sum(damage, wast,others) more than ' + VarianceQty);
+                    isSubmit = false;
+                }
+            }
+        });
+        var countPOSelected = $('.ng-Ingredient').length;
+        if (countPOSelected == 0) {
+            alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose ingredient"))');
+            isSubmit = false;
+        }
+        //=====
+        if (isSubmit) {
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "post",
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                success: function () {
+                    $('.se-pre-con').hide();
+                    CloseDetail();
+                    Search();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $(".detail-view").html(jqXHR.responseText);
+                },
+                 complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+        e.preventDefault();
+    });
+
+</script>
+
+
+
+

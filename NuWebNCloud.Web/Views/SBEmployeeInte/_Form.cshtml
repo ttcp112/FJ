@@ -1,0 +1,462 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Integration.Models.Sandbox.InteEmployeeModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("ImageURL", Model.ImageURL)
+}
+<link rel="stylesheet" href='@Url.Content("~/vendors/periodpicker/jquery.periodpicker.min.css")'>
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+    <!--Image Placeholder-->
+    <div class="form-group">
+        <label class="col-md-2 control-label"> </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (!string.IsNullOrEmpty(Model.ImageURL))
+            {
+                <img id="upload-preview" src="@Model.ImageURL" height="100" width="100" class="img-circle" />
+            }
+            else
+            {
+                <img id="upload-preview" class="img-circle" src="@Commons.Image100_100" height="100" width="100" />
+            }
+        </div>
+    </div>
+    <!--IMAGE-->
+    <div class="form-group">
+        <label class="col-md-2 control-label">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Image")) </label>
+        <div class="col-md-6">
+            <button class="btn btn-default" type="button" onclick="showPictureUpload();">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose file"))</button>
+            @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage", })
+            @Html.ValidationMessageFor(model => model.PictureUpload, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@if (!string.IsNullOrEmpty(_ID))
+                {*@
+            <table class="table table-hover table-max-height">
+                <thead>
+                    <tr style="background-color: #337ab7; color: #fff;">
+                        <td class="align-left"><label>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store Name"))</label></td>
+                        <td class="align-right" style="width:2%;"><label>@*<input type="checkbox" onchange="ToogleCheckAll(this, '.store-items')" id="checkAllStore">*@</label></td>
+                    </tr>
+                </thead>
+                <tbody class="store-items">
+                    @*@for (int i = 0; i < Model.ListStore.Count; i++)
+                    {
+                        <tr>
+                            <td class="align-left">@Model.ListStore[i].Text</td>
+                            <td class="align-right">
+                                <label>
+                                    @Html.CheckBox(string.Format("ListStore[{0}].Selected", i), Model.ListStore[i].Selected,
+                                             //Model.ListStore[i].Disabled ? (object)new
+                                             //{
+                                             //    @onClick = "chkItemClick(this,'" + @Model.ListStore[i].Value
+                                             //    + "','" + @Model.ListStore[i].Text + "')",
+                                             //    @disabled = "disabled",
+                                             //    @id = "chkStore_" + @Model.ListStore[i].Value,
+                                             //    @class = "child_chkStore"
+                                             //} :
+                                             new
+                                             {
+                                                 @onClick = "chkItemClick(this,'" + @Model.ListStore[i].Value
+                                                 + "','" + @Model.ListStore[i].Text + "')",
+                                                 @id = "chkStore_" + @Model.ListStore[i].Value,
+                                                 @class = "child_chkStore",
+                                                 @data_disabled = "" + Model.ListStore[i].Disabled + ""
+                                             })
+                                    @Html.Hidden(string.Format("ListStore[{0}].Value", i), Model.ListStore[i].Value)
+                                    @Html.Hidden(string.Format("ListStore[{0}].Text", i), Model.ListStore[i].Text)
+                                </label>
+                            </td>
+                        </tr>
+                    }*@
+
+                    @*Group by company, updated 041420180*@
+                    @{ 
+                        var lstStoreGroup = Model.ListStore.GroupBy(gg => gg.Group.Name).OrderBy(oo => oo.Key).ToList();
+                        int index = 0;
+                        foreach (var company in lstStoreGroup)
+                        {
+                            <tr class="company-name"><td colspan="2">@Html.Raw(company.Key)</td></tr>
+                            var lstStores = company.ToList();
+                            lstStores = lstStores.OrderBy(oo => oo.Text).ToList();
+
+                            for (int i = 0; i < lstStores.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="align-left">@lstStores[i].Text</td>
+                                    <td class="align-right">
+                                        <label>
+                                            @Html.CheckBox(string.Format("ListStore[{0}].Selected", index), lstStores[i].Selected,
+                                              new
+                                              {
+                                                  @onClick = "chkItemClick(this,'" + @lstStores[i].Value
+                                                  + "','" + @lstStores[i].Text + "')",
+                                                  @id = "chkStore_" + @lstStores[i].Value,
+                                                  @class = "child_chkStore",
+                                                  @data_disabled = "" + lstStores[i].Disabled + ""
+                                              })
+                                            @Html.Hidden(string.Format("ListStore[{0}].Value", index), lstStores[i].Value)
+                                            @Html.Hidden(string.Format("ListStore[{0}].Text", index), lstStores[i].Text)
+                                        </label>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+            @Html.ValidationMessageFor(model => model.ListStore, null, new { @class = "label" })
+            @*}
+                else
+                {
+                    @Html.DropDownListFor(model => model.ListStoreID,
+                         new SelectList(@ViewBag.ListStore, "Value", "Text", Model.ListStoreID), null,
+                         new
+                         {
+                             @class = "form-control multipleSelect",
+                             @id = "storeDdlNew",
+                             @style = "width:100%;",
+                             @multiple = "multiple"
+                         })
+                    <br />
+                    @Html.ValidationMessageFor(model => model.ListStoreID, null, new { @class = "label" })
+                }*@
+        </div>
+    </div>
+
+    @*Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Phone*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Phone"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Email*@
+    <div class="form-group">
+        <label for="CustomerEmail" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Email"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @id = "txtEmail" })
+            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*PinCode*@
+    <div class="form-group">
+        <label for="CustomerEmail" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Pin Code"))  </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Pincode, new { @class = "form-control", @type = "password", @id = "txtPincode" })
+            @Html.ValidationMessageFor(model => model.Pincode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Role*@
+    @*<div class="form-group">
+            <label for="Role" class="col-sm-2 control-label">Role </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="role">
+                    @Html.DropDownListFor(model => model.RoleID, new SelectList(Model.ListRole, "Value", "Text", Model.RoleID),
+                   "---- Please choose Category ----", new
+                   {
+                       @class = "form-control select2_multiple",
+                       @id = "ddlRole",
+                       @style = "width:100%;"
+                   })
+                </div>
+                @Html.ValidationMessageFor(model => model.RoleID, null, new { @class = "label" })
+            </div>
+        </div>*@
+
+    @*Gender*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Gender")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.Gender, "true", new { @checked = "checked", @id = "gender-male" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Male"))
+            </label>
+            <label class="radio-inline">
+                @Html.RadioButtonFor(model => model.Gender, "false", new { @id = "gender-female" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Female"))
+            </label>
+        </div>
+    </div>
+
+    @*Marital*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Marital Status"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.DropDownListFor(model => model.Marital,
+            new SelectList(Model.ListMarital, "Value", "Text", Model.Marital), null,
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "MaritalStatusDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.Marital, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Active*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Active")) </label>
+        <div class="checkbox col-md-6">
+            <label>
+                @Html.CheckBoxFor(model => model.IsActive)
+            </label>
+        </div>
+    </div>
+
+    @*Hired  Date*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Hired Date"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (Model.HiredDate != null)
+            {
+                @Html.TextBox("HiredDate", string.Format("{0:MM/dd/yyyy}", Model.HiredDate), new { @id = "HiredDate", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.HiredDate, null, new { @class = "label" })
+            }
+            else
+            {
+                @Html.TextBox("HiredDate", DateTime.Now.ToShortDateString(), new { @id = "HiredDate", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.HiredDate, null, new { @class = "label" })
+            }
+        </div>
+    </div>
+
+    @*Birthday*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Birthday")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @if (Model.BirthDate != null)
+            {
+                @Html.TextBox("BirthDate", string.Format("{0:MM/dd/yyyy}", Model.BirthDate),
+               new { @id = "BirthDate", @class = "form-control datepicker", @placeholder = "mm/dd/yyyy", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.BirthDate, null, new { @class = "label" })
+            }
+            else
+            {
+                @Html.TextBox("BirthDate", "", new
+           {
+               @id = "BirthDate",
+               @class = "form-control datepicker",
+               @placeholder = "mm/dd/yyyy",
+               @readonly = "readonly"
+           })
+                @Html.ValidationMessageFor(model => model.BirthDate, null, new { @class = "label" })
+            }
+        </div>
+    </div>
+
+    @*Home Address*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Home Address")) </label>
+    </div>
+
+    @*Street*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Street")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Street, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Street, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*City*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("City")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.City, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Country*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Country")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Country, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Country, null, new { @class = "label" })
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    @*ZIP Code*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12" style="font-weight:lighter">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Zip Code"))</label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Zipcode, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Zipcode, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Working Time*@
+    @*<div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                Working Time
+            </label>
+        </div>
+
+        <div class="form-group">
+            @if (Model.ListWorkingTime != null)
+                {
+                    for (int i = 0; i < Model.ListWorkingTime.Count; i++)
+                    {
+                    <div class="form-group margin_left_50px">
+                        <label class="col-xs-offset-2 control-label col-md-1 col-sm-1 col-xs-2 text-right">@Model.ListWorkingTime[i].StrDate</label>
+                        @Html.HiddenFor(model => model.ListWorkingTime[i].Day)
+                        <div class="col-sm-4">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    @Html.TextBoxFor(model => model.ListWorkingTime[i].From, new { @class = "form-control timepicker", @style = "text-align:center;" })
+                                </div>
+                                <div class="col-sm-2" style="text-align:center">
+                                    <label class="control-label">--</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    @Html.TextBoxFor(model => model.ListWorkingTime[i].To, new { @class = "form-control timepicker", @style = "text-align:center;" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.ValidationMessage("WorkingTime", new { @class = "label" })
+            </div>
+        </div>*@
+
+    @*Div Auto*@
+    <div class="form-group" id="divAuto">
+        @if (Model.ListRoleWorkingTime != null && Model.ListRoleWorkingTime.Count > 0)
+        {
+            for (int i = 0; i < Model.ListRoleWorkingTime.Count; i++)
+            {
+                @Html.Partial("_RoleWorkingTime", Model.ListRoleWorkingTime[i])
+            }
+        }
+    </div>
+</div>
+
+@*TimePicker*@
+<script src="@Url.Content("~/vendors/periodpicker/jquery.periodpicker.full.min.js")"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //$('.child_chkStore').each(function (index, value) {
+        //    if ($(this).val()) {
+        //        $(this).prop("cheked", true);
+        //    }
+        //});
+
+        @*$(".ddlRoleAuto").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role"))",
+            allowClear: true
+        });*@
+    });
+
+    //Set Timepicker for Input
+    $('.timepicker').TimePickerAlone({
+        //hours: true,
+        //minutes: true,
+        //seconds: false,
+        //ampm: false,
+        inputFormat: 'HH:mm',
+        twelveHoursFormat: true
+    });
+
+    function AddMoreRoleWorkingTIme(_StoreID, _StoreName) {
+        $('.se-pre-con').show();
+        var currentOffset = $(".role-workingtime").length;
+        $.ajax({
+            url: '@Url.Action("AddRoleWorkingTime", "SBEmployeeInte")',
+            type: 'get',
+            data: {
+                currentOffset: currentOffset,
+                StoreID: _StoreID,
+                StoreName: _StoreName
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $("#divAuto").append(data);
+            }
+        });
+    }
+
+    function DeleteTabPanelSpending(StoreID, _OffSet) {
+        var chkStore = $('#chkStore_' + StoreID);
+        var disabled = $(chkStore).attr("data-disabled");
+        //if (!chkStore.is(':disabled')) {
+        //if (disabled == 'False') {
+        var div = $('#divStore_' + StoreID + '-' + _OffSet);
+        $(div).find('input.GroupStatus').val(9);
+        $(div).css('display', 'none');
+        $('#chkStore_' + StoreID).prop('checked', false);
+        //} else {
+        //    $(chkStore).prop('checked', true);
+        //}
+    }
+
+    function chkItemClick(e, _StoreID, _StoreName) {
+        StoreID = _StoreID;
+        var checked = $(e).prop('checked');
+        //var disabled = $(e).attr("data-disabled");
+        //if (disabled == 'True') {
+        //    $(e).prop('checked', true);
+        //}
+        //else {
+        if (checked) {
+            $('.se-pre-con').show();
+            ItemType = '@NuWebNCloud.Shared.Commons.EProductType.Dish.ToString("d")';
+            var StoreName = _StoreName;
+            AddMoreRoleWorkingTIme(StoreID, StoreName);
+        } else {
+            var div = $('.cls_' + StoreID);
+            $(div).find('input.GroupStatus').val(9);
+            $(div).css('display', 'none');
+        }
+        //}
+    }
+
+    function showPictureUpload() {
+        $('[id=urlImage]').click();
+    }
+
+    // for  each item of working time
+    function chkItem(e, index) {
+        var isCheck = $(e).prop("checked");
+        if (isCheck) {
+            $('#txtFrom_' + index + '').val('00:00');
+            $('#txtTo_' + index + '').val('00:00');
+        } else {
+            $('#txtFrom_' + index + '').val('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OFF"))');
+            $('#txtTo_' + index + '').val('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("OFF"))');
+        }
+    }
+
+</script>

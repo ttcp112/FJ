@@ -1,0 +1,43 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.WOIngredientViewModels
+
+@if (Model.ListItemView != null)
+{
+    <table class="table center-content">
+        <thead>
+            <tr style="background-color:#34495e; color:#fff;">
+                <th style="width:10%;text-align:center;"><input type="checkbox" onclick="TickAllCheckBox(this)" /></th>
+                <th style="width:35%;text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredient Name"))</th>
+                <th style="width:35%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</th>
+                <th style="width:20%; text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving UOM"))</th>
+            </tr>
+        </thead>
+        <tbody id="body-dishes0">
+            @for (int i = 0; i < Model.ListItemView.Count; i++)
+                {
+                    string styleRow = "row-even";
+                    if (i % 2 == 0)
+                    {
+                        styleRow = "row-odd";
+                    }
+                    <tr class="mediate-dish @styleRow">
+                        <td style="text-align:center;">
+                            @Html.CheckBoxFor(model => model.ListItemView[i].IsSelect, new { @tabindex = "-1" })
+
+                            @Html.HiddenFor(model => model.ListItemView[i].IngredientId, new { @id = "hidIngredientId" })
+                            @Html.HiddenFor(model => model.ListItemView[i].IngredientName, new { @id = "hidIngredientName" })
+                            @Html.HiddenFor(model => model.ListItemView[i].IngredientCode, new { @id = "hidIngredientCode" })
+                            @Html.HiddenFor(model => model.ListItemView[i].Description, new { @id = "hidDescription" })
+                            @Html.HiddenFor(model => model.ListItemView[i].BaseUOM, new { @id = "hidBaseUOM" })
+                            @Html.HiddenFor(model => model.ListItemView[i].IngReceivingQty, new { @id = "hidIngReceivingQty" })
+                            @Html.HiddenFor(model => model.ListItemView[i].Qty, new { @id = "hidQty" })
+                            @Html.HiddenFor(model => model.ListItemView[i].WorkPrice, new { @id = "hidWorkPrice" })
+                        </td>
+                        <td id="search" style="cursor:pointer;" onclick="TickCheckBox(this)">@Model.ListItemView[i].IngredientName</td>
+                        <td style="text-align:center;" onclick="TickCheckBox(this)">@Model.ListItemView[i].Description</td>
+                        <td style="text-align:center;" onclick="TickCheckBox(this)">@Model.ListItemView[i].BaseUOM</td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+}

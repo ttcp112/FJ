@@ -1,0 +1,118 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+
+@if (Model.ListPurchaseOrder != null && Model.ListPurchaseOrder.Count > 0)
+{
+    for (int i = 0; i < Model.ListPurchaseOrder.Count; i++)
+    {
+        /*Parent*/
+        <tr data-poId="@Model.ListPurchaseOrder[i].Id" class="ng-PurchaseOrder">
+            <td colspan="7" class="text-left" style="font-size:20px; font-weight:bold;">
+                &nbsp;&nbsp;@Model.ListPurchaseOrder[i].PONumber
+                @Html.Hidden(string.Format("ListPurchaseOrder[{0}].Id", i), Model.ListPurchaseOrder[i].Id, new { @id = "POId" })
+                @Html.Hidden(string.Format("ListPurchaseOrder[{0}].Delete", i), Model.ListPurchaseOrder[i].Delete, new { @class = "POStatus" })
+            </td>
+            <td>
+                <a href="" class="a-fnb" onclick="DeleteTabPanel('@Model.ListPurchaseOrder[i].Id'); return false;">
+                    <i class="fa fa-remove" style="font-size:20px; color:red; padding-top:5px;"></i>
+                </a>
+            </td>
+        </tr>
+
+        if (Model.ListPurchaseOrder[i].ListItem != null && Model.ListPurchaseOrder[i].ListItem.Count > 0)
+        {
+            int rowCount = Model.ListPurchaseOrder[i].ListItem.Count;
+            for (int j = 0; j < Model.ListPurchaseOrder[i].ListItem.Count; j++)
+            {
+                /*Child*/
+                <tr data-poId="@Model.ListPurchaseOrder[i].Id" class="ng-PurchaseOrder_@Model.ListPurchaseOrder[i].Id">
+                    @if (j == 0)
+                    {
+                        <td rowspan="@rowCount" style="background-color: #fff;"></td>
+                    }
+                    <td class="text-center">
+                        @Model.ListPurchaseOrder[i].ListItem[j].IngredientCode
+                        @Html.ValidationMessage(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceivingQty", i, j), new
+                   {
+                       @id = "ltrValidate" + Model.ListPurchaseOrder[i].ListItem[j].Id,
+                       @class = "label label-danger"
+                   })
+                    </td>
+                    <td>@Model.ListPurchaseOrder[i].ListItem[j].IngredientName</td>
+                    <td class="text-center">@Model.ListPurchaseOrder[i].ListItem[j].BaseUOM</td>
+                    <td><span id="ltrOrderQty">@Model.ListPurchaseOrder[i].ListItem[j].Qty</span></td>
+                    <td>
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IngredientId", i, j), Model.ListPurchaseOrder[i].ListItem[j].IngredientId)
+
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].Id", i, j), Model.ListPurchaseOrder[i].ListItem[j].Id, new { @id = "PODId" })
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceivedQty", i, j), Model.ListPurchaseOrder[i].ListItem[j].ReceivedQty)
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceiptNoteQty", i, j), Model.ListPurchaseOrder[i].ListItem[j].ReceiptNoteQty)
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReturnReceiptNoteQty", i, j), Model.ListPurchaseOrder[i].ListItem[j].ReturnReceiptNoteQty)
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].Qty", i, j), Model.ListPurchaseOrder[i].ListItem[j].Qty)
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].UnitPrice", i, j), Model.ListPurchaseOrder[i].ListItem[j].UnitPrice)
+
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].BaseQty", i, j), Model.ListPurchaseOrder[i].ListItem[j].BaseQty)
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IsVisible", i, j), Model.ListPurchaseOrder[i].ListItem[j].IsVisible)
+
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].QtyToleranceS", i, j),
+                       Model.ListPurchaseOrder[i].ListItem[j].QtyToleranceS, new { @id = "hidQtyToleranceS" })
+
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].QtyToleranceP", i, j),
+                       Model.ListPurchaseOrder[i].ListItem[j].QtyToleranceP, new { @id = "hidQtyToleranceP" })
+
+                        @Html.Hidden(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].IsVisible", i, j),
+                       Model.ListPurchaseOrder[i].ListItem[j].IsVisible, new { @id = "hidIsVisible" })
+
+                        @*@if ((Model.ListPurchaseOrder[i].ListItem[j].Qty - Model.ListPurchaseOrder[i].ListItem[j].RemainingQty) > 0)
+        {*@
+                        @Html.TextBox(string.Format("ListPurchaseOrder[{0}].ListItem[{1}].ReceivingQty", i, j),
+                                    Model.ListPurchaseOrder[i].ListItem[j].ReceivingQty,
+
+                                    Model.ListPurchaseOrder[i].ListItem[j].IsVisible ? (object)new
+                                    {
+                                        @class = "form-control text-center",
+                                        @disabled = "disabled",
+                                        @id = "txtQty",
+                                        @autocomplete = "Off"
+                                    } : new
+                                    {
+                                        @class = "form-control text-center",
+                                        @min = 0,
+                                        @id = "txtQty",
+                                        @autocomplete = "Off"
+                                    })
+                        @*}*@
+                    </td>
+                    <td class="text-center"><span id="ltrRemainingQty">@Model.ListPurchaseOrder[i].ListItem[j].RemainingQty</span></td>
+                    <td></td>
+                </tr>
+            }
+        }
+    }
+
+    @*<script>
+        // mini jQuery plugin that formats to two decimal places
+        (function ($) {
+            $.fn.numberFormat = function () {
+                this.each(function (i) {
+                    $(this).change(function (e) {
+                        if (isNaN(parseFloat(this.value))) return;
+                        this.value = parseFloat(this.value).toFixed(4);
+                    });
+                });
+                return this; //for chaining
+            }
+        })(jQuery);
+        $(document).ready(function () {
+            // apply the numberFormat behaviour to elements with 'number' as their class
+            $(function () {
+                $('.number').numberFormat();
+            });
+            //===============
+            $(".number").each(function (i) {
+                if (isNaN(parseFloat(this.value)))
+                    return;
+                this.value = parseFloat(this.value).toFixed(4);
+            });
+        });
+    </script>*@
+}

@@ -1,0 +1,94 @@
+﻿@model NuWebNCloud.Shared.Models.Sandbox.Inventory.Product.ProductViewModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    ViewBag.Title = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Modifiers").ToString();
+}
+<div role="main" class="right_col">
+    <div class="se-pre-con"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Sandbox" }, { "B", "Inventory" }, { "C", "Modifiers - View Data" } })
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_title">
+                    @Html.Partial("_TabMenu", "view")
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    @using (Html.BeginForm("Search", "SBInventoryModifier", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+                    {
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="form-group">
+                                <div class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">
+                                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    @*@Html.DropDownListFor(model => model.StoreID,
+                                    new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                                    new
+                                    {
+                                        @class = "form-control select2_single",
+                                        @id = "storeDdlView",
+                                        @style = "width:100%;",
+                                        @tabindex = "-1"
+                                    })*@
+
+                                    @*Group by company, updated 041420180*@
+                                    @Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, new
+                                       {
+                                           @class = "form-control select2_single",
+                                           @id = "storeDdlView",
+                                           @style = "width:100%;",
+                                           @tabindex = "-1"
+                                       })
+                                </div>
+                                <div class="col-md-2 col-sm-2 col-xs-12">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Load Data"))</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="gridview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="detail-view" style="height:100%;">
+        <!-- detail partial view -->
+    </div>
+</div>
+
+@section Scripts{
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#storeDdlView").select2({
+                placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))',
+                //allowClear: true
+            }).val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+        });
+        $(".search-form").submit(function (e) {
+            var storeid = $("#storeDdlView").val();
+            if (storeid !== "")
+                Search();
+            return false;
+        });
+        $(function () {
+            //ready
+            Search();
+        });
+
+        $('.datepicker').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_2",
+            maxDate: new Date()
+        }, function (start, end, label) {
+        });
+
+</script>
+}

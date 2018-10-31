@@ -1,0 +1,47 @@
+﻿@using NuWebNCloud.Shared
+@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.DeliverySettingDTO
+
+<tr data-id="@Model.ID" style='@string.Format("display:{0}", Model.Status==9?"none":"table-row")' class="deliveryFeeRow">
+    <td style="font-weight:bold;line-height: 40px;min-width:44px"></td>
+    <td>
+        @Html.Hidden(string.Format("ListDeliveryFee[{0}].OffSet", Model.OffSet), Model.OffSet)
+        @Html.Hidden(string.Format("ListDeliveryFee[{0}].Status", Model.OffSet), Model.Status, new { @class = "GroupStatus" })
+        @Html.Hidden(string.Format("ListDeliveryFee[{0}].ID", Model.OffSet), Model.ID)
+        @Html.Hidden(string.Format("ListDeliveryFee[{0}].Type", Model.OffSet), Model.Type)
+    </td>
+    <td>
+        Fee
+        @Html.TextBox(string.Format("ListDeliveryFee[{0}].Value1", Model.OffSet), Model.Value1, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @min = 0
+       //@maxlength = 2
+   })
+        @Html.ValidationMessage(string.Format("ListDeliveryFee[{0}].Value1", Model.OffSet))
+    </td>
+
+    <td>
+        On Order With Amount >=
+        @Html.TextBox(string.Format("ListDeliveryFee[{0}].Value2", Model.OffSet), Model.Value2, new
+   {
+       @class = "form-control input-number",
+       @type = "number",
+       @min = 0
+       //@maxlength = 2
+   })
+        @Html.ValidationMessage(string.Format("ListDeliveryFee[{0}].Value2", Model.OffSet))
+    </td>
+    
+    <td width="50px">
+        <a href="#" onclick="DeleteTabPanelDeliveryFee(this); return false;" style="font-size:28px; color:red; @string.Format("display:{0}", Model.OffSet == 0 ? "none" : "block")">
+            <i class="fa fa-remove"></i>
+        </a>
+    </td>
+</tr>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+</script>

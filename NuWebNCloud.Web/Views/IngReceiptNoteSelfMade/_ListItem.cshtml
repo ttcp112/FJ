@@ -1,0 +1,85 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteSelfMadeModels
+
+@if (Model.ListItem != null && Model.ListItem.Count > 0)
+{
+    string _WONumber = "";
+
+    for (int i = 0; i < Model.ListItem.Count; i++)
+    {
+        string CurWONumber = Model.ListItem[i].WONumber;
+        if (_WONumber != CurWONumber)
+        {
+            _WONumber = CurWONumber;
+            <text>
+                <tr data-poId="@Model.ListItem[i].Id" class="ng-woParent" id="_woParent-@CurWONumber">
+                    <td colspan="7" class="text-left" style="font-size:20px; font-weight:bold;">
+                        &nbsp;&nbsp;@Model.ListItem[i].WONumber
+                    </td>
+                </tr>
+            </text>
+        }
+
+        //Child
+        <tr data-index="index_@Model.ListItem[i].OffSet" class="ng-IngredientNew ng-woItem-@Model.ListItem[i].WONumber"
+            data-ingreId="@Model.ListItem[i].IngredientId" data-offset="@Model.ListItem[i].OffSet">
+            <td class="text-center">
+                <span id="index_@Model.ListItem[i].IngredientId">@Model.ListItem[i].IngredientCode</span>
+            </td>
+            <td>
+                @Model.ListItem[i].IngredientName
+                <span id="ltrValidate_@Model.ListItem[i].OffSet" class="label label-danger"></span>
+                @Html.ValidationMessage(string.Format("error_msg{0}", @Model.ListItem[i].IngredientId), new { @class = "label label-danger" })
+            </td>
+            <td class="text-center">@Model.ListItem[i].BaseUOM</td>
+            <td class="text-center">@Model.ListItem[i].Qty</td>
+            <td>
+                @Html.Hidden(string.Format("ListItem[{0}].OffSet", i), Model.ListItem[i].OffSet, new { @id = "hidOffSetId" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientId", i), Model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientCode", i), Model.ListItem[i].IngredientCode, new { @id = "hidIngredientCode" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientName", i), Model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].BaseUOM", i), Model.ListItem[i].BaseUOM, new { @id = "hidBaseUOM" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].IsSelfMode", i), Model.ListItem[i].IsSelfMode, new { @id = "hidIsSelfMode" })
+                @Html.Hidden(string.Format("ListItem[{0}].IsStockAble", i), Model.ListItem[i].IsStockAble, new { @id = "hidIsStockAble" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].BaseQty", i), Model.ListItem[i].BaseQty, new { @id = "hidBaseQty" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].IsVisible", i), Model.ListItem[i].IsVisible, new { @id = "hidIsVisible" })
+                @Html.Hidden(string.Format("ListItem[{0}].Status", i), Model.ListItem[i].Status, new { @id = "IngredientStatus" })
+                @Html.Hidden(string.Format("ListItem[{0}].Id", i), Model.ListItem[i].Id, new { @id = "IngredientIdRow" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].WOId", i), Model.ListItem[i].WOId, new { @id = "hidenWOIdRow" })
+                @Html.Hidden(string.Format("ListItem[{0}].WONumber", i), Model.ListItem[i].WONumber, new { @id = "hidenWONumber" })
+
+                @Html.Hidden(string.Format("ListItem[{0}].Qty", i), Model.ListItem[i].Qty, new { @id = "Quantity" })
+                @*@Html.Hidden(string.Format("ListItem[{0}].ReceivingQty", i), Model.ListItem[i].ReceivingQty, new { @id = "ReceivingQty" })*@
+                @Html.Hidden(string.Format("ListItem[{0}].RemainingQty", i), Model.ListItem[i].RemainingQty, new { @id = "RemainingQty" })
+                @Html.TextBox(string.Format("ListItem[{0}].ReceivingQty", i),
+                                    Model.ListItem[i].ReceivingQty,
+
+                                    Model.ListItem[i].IsVisible ? (object)new
+                                    {
+                                        @class = "form-control text-center",
+                                        @disabled = "disabled",
+                                        @id = "txtReceivingQty",
+                                        @autocomplete = "Off"
+                                    } : new
+                                    {
+                                        @class = "form-control text-center",
+                                        @min = 0,
+                                        @id = "txtReceivingQty",
+                                        @autocomplete = "Off"
+                                    })
+            </td>
+            <td class="text-center">@Model.ListItem[i].RemainingQty</td>
+            <td>
+                <a href="javascript:void(0)" class="a-fnb" onclick="DeleteTabPanel('@Model.ListItem[i].OffSet', '@Model.ListItem[i].WONumber'); return false;">
+                    <i class="fa fa-remove" style="font-size:20px; color:red; padding-top:5px;"></i>
+                </a>
+            </td>
+        </tr>
+    }
+}

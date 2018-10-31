@@ -1,0 +1,713 @@
+﻿@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.PurchaseOrderModels
+@using NuWebNCloud.Shared.Utilities;
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.CreatedBy)
+@Html.HiddenFor(model => model.ModifierBy)
+@Html.HiddenFor(model => model.SubTotal, new { @id = "hidsubTotal" })
+@Html.HiddenFor(model => model.Total, new { @id = "hidTotal" })
+@Html.HiddenFor(model => model.TaxAmount, new { @id = "hidTaxAmount" })
+@Html.HiddenFor(model => model.StoreIntegrate, new { @id = "hidStoreIntegrate" })
+
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+    @Html.Hidden("SupplierId", Model.SupplierId)
+    @Html.Hidden("PONumber", Model.PONumber)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @if (!string.IsNullOrEmpty(_ID))
+    {
+        <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Purchase Order Number"))</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <strong style="font-size:25px;">@Model.PONumber</strong>
+            </div>
+        </div>
+    }
+
+    @*Choose Store*@
+    @*<div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                @Html.DropDownListFor(model => model.StoreID,
+                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })
+                @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label label-danger", @id = "validationStore" })
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+                new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), "---- Please choose store ----",
+                 new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })*@
+
+            @*Group by company, updated 041420180*@
+            @*@Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "storeDdl",
+                    @style = "width:100%;"
+                })*@
+
+            @Html.DropDownListFor(model => model.StoreID, (SelectList)ViewBag.StoreID, !string.IsNullOrEmpty(_ID) ? (object)new
+               {
+                   @class = "form-control select2_multiple",
+                   @disabled = "disabled",
+                   @id = "storeDdl",
+                   @style = "width:100%;"
+               } : new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "storeDdl",
+                   @style = "width:100%;"
+               })
+
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label label-danger", @id = "validationStore" })
+        </div>
+    </div>
+    @*<div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier")) </label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                @Html.DropDownListFor(model => model.SupplierId,
+                new SelectList(Model.ListSupplier, "Value", "Text", Model.SupplierId), "Please choose supplier",
+                !string.IsNullOrEmpty(_ID) ? (object)new
+                {
+                    @class = "form-control select2_multiple",
+                    @disabled = "disabled",
+                    @id = "SupplierDdl",
+                    @style = "width:100%;"
+                } : new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "SupplierDdl",
+                    @style = "width:100%;"
+                })
+
+                @Html.ValidationMessageFor(model => model.SupplierId, null, new { @class = "label label-danger" })
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier")) </label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            @*@Html.DropDownListFor(model => model.SupplierId,
+                new SelectList(Model.ListSupplier, "Value", "Text", Model.SupplierId), "Please choose supplier",
+                 new
+                {
+                    @class = "form-control select2_multiple",
+                    @id = "SupplierDdl",
+                    @style = "width:100%;",
+                    @onchange="ClearIngredientExists(this.value)"
+                })*@
+
+            @Html.DropDownListFor(model => model.SupplierId,
+            new SelectList(Model.ListSupplier, "Value", "Text", Model.SupplierId), ""+ Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier")) + "",
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple ddl-supplier-store",
+                @disabled = "disabled",
+                @id = "SupplierDdl",
+                @style = "width:100%;",
+                @onchange = "ClearIngredientExists(this.value)"
+            } : new
+            {
+                @class = "form-control select2_multiple ddl-supplier-store",
+                @id = "SupplierDdl",
+                @style = "width:100%;",
+                @onchange = "ClearIngredientExists(this.value)"
+            })
+            @Html.ValidationMessageFor(model => model.SupplierId, null, new { @class = "label label-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO Date"))</label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.PODate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.PODate, null, new { @class = "label label-danger" })
+        </div>
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delivery Date"))</label>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            @Html.TextBoxFor(model => model.DeliveryDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.DeliveryDate, null, new { @class = "label label-danger" })
+        </div>
+    </div>
+
+    <div class="form-group div_tax_not_integrate">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax")): </label>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            @Html.DropDownListFor(model => model.TaxType,
+            new SelectList(Model.ListTaxType, "Value", "Text", Model.TaxType), null,
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "TaxDdl",
+                @Value = Model.TaxType,
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.TaxType, null, new { @class = "label label-danger taxType" })
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.TaxValue, new
+           {
+               @class = "form-control text-center",
+               autocomplete = "off",
+               @id = "TaxValue",
+               @Value = Model.TaxValue,
+               @onchange = "SetValueTax()"
+           })
+                <span class="input-group-addon" id="basic-addon2">%</span>
+            </div>
+        </div>
+        @Html.ValidationMessageFor(model => model.TaxValue, null, new { @class = "label label-danger" })
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Note")) </label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Note, null, new { @class = "label label-danger" })
+        </div>
+    </div>
+
+    <div class="box-body form-group" style="text-align:center;">
+        <table class="tbCustom">
+            <thead>
+                <tr>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("#"))</td>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description"))</td>
+                    <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity"))</td>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                    <td style="width:10%;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unit Price"))</td>
+                    <!--Tax-->
+                    <td style="width:10%; display:none;" id="colTax">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax"))</td>
+                    <!--End Tax-->
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Amount"))</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody id="divListItemNew">
+                @if (Model.ListItem != null)
+                {
+                    @Html.Partial("_ListItemNew", Model)
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @*Add More Item && Subtotal*@
+    <div class="form-group">
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            <a class="btn btn-primary" data-toggle="modal" data-target="#popupAddMoreIngredients"
+               onclick="ShowModalAddIngredient();">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more item"))
+            </a>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-4 borderBottomDot">
+            <div class="col-md-2 col-sm-2 col-xs-12">
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Subtotal"))
+            </div>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+                <div>
+                    <span class="symbol">@Model.Symbol</span>
+                    <span id="ltrSubTotal">@Html.DisplayFor(model => model.SubTotal)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*TAX*@<!-- Tax Old-->
+    <div class="form-group div_tax_not_integrate" id="div_tax_info_not_integrate">
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-6 borderBottomDot">
+            <div class="col-md-2 col-sm-2 col-xs-12">
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Tax")):
+                <br />
+                <span id="ltrShowTax">
+                    @switch (Model.TaxType)
+                    {
+                        case (int)Commons.ETax.AddOn:
+                            @Html.Raw("(" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.AddOn.ToString()) + ")")
+                            break;
+                        case (int)Commons.ETax.Inclusive:
+                            @Html.Raw("(" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.Inclusive.ToString()) + ")")
+                            break;
+                    }
+                </span>
+            </div>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+                <div>
+                    <span class="symbol">@Model.Symbol</span>
+                    <span id="ltrTax"> @Html.DisplayFor(model => model.TaxAmount)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAX Integrate  update Tax -->
+    <div class="row" id="listItemTaxIntegrate" style="display:none;">
+        @Html.Partial("_ListItemTax", Model)
+    </div>
+    <!-- End TAX Integrate  update Tax -->
+    @*Additional*@
+    <div class="form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-6 borderBottomDot" style="padding-bottom:5px;">
+            <div class="col-md-2 col-sm-2 col-xs-12 lineHeight">
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Additional")):
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                @Html.TextBoxFor(model => model.Additional, new
+           {
+               @class = "form-control text-center",
+               @type = "number",
+               @min = "0",
+               @id = "txtAdditional",
+               @Value = Model.Additional,
+               @onchange = "SetValueAdditional()"
+           })
+                @Html.ValidationMessageFor(model => model.Additional, null, new { @class = "label label-danger", @id = "ltrAdditional" })
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Reason"))
+            </div>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                @Html.TextAreaFor(model => model.AdditionalReason, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    @*TOTAL*@
+    <div class="form-group" style="font-size:25px;">
+        <div class="col-md-2 col-sm-2 col-md-offset-6">
+            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("TOTAL"))
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <div>
+                <span class="symbol">@Model.Symbol</span>
+                <span id="ltrTotal"> @Html.DisplayFor(model => model.Total)</span>
+            </div>
+            @Html.HiddenFor(model => model.Symbol, new { @id = "hidSymbol", @Value = Model.Symbol })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h5><span class="label label-danger" id="ltrMsg"></span></h5>
+    </div>
+</div>
+
+<!-- Modal Add Ingredient-->
+<div class="modal fade" id="modalIngredient" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" style="color:#34495e; font-weight:bold;"><i class="fa fa-plus"></i>&nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more ingredients"))</h4>
+            </div>
+            <div class="modal-body scroll" style="padding:0;">
+
+                <div class="form-group" style="padding:10px 5px 0 5px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control col-md-10" placeholder="@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(" Ingredients Name"))" onkeypress="HandleKeyPress(event)" />
+                        <div class="input-group-btn">
+                            <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbl-add-ingredient" class="form-group-sm">
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center;">
+                <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var TaxIntegrate = 0;
+    var TaxExclusiveIntegrate = 0;
+
+    $(document).ready(function () {
+        $('#ltrSubTotal').html(getMoney('@Model.SubTotal'));
+        $('#ltrTotal').html(getMoney('@Model.Total'));
+
+        //=== Select Store, updated 04172018
+        $("#storeDdl").select2().val('@Model.StoreID').trigger('change.select2');
+        $("#TaxDdl").select2().val('@Model.TaxType').trigger('change.select2');
+    });
+
+    function ClearIngredientExists(val) {
+        $('#divListItemNew').html("");
+        Calculator();
+        listItemNew = [];
+    }
+    /**/
+    function ShowModalAddIngredient() {
+        $('#tbl-add-ingredient').html();
+        var modal = $("#modalIngredient");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        LoadIngredient('#tbl-add-ingredient', modal);
+    }
+
+    function LoadIngredient(container, modal) {
+
+        var storeId = $('#storeDdl').val();
+        var supplerId = $('#SupplierDdl').val();
+
+        if (storeId === '' || storeId === null) {
+            alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))');
+            return false;
+        }
+
+        if (supplerId === '' || supplerId === null) {
+            alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))');
+            return false;
+        }
+        var obj = {
+            ListItemNew: listItemNew,
+            SupplierId: supplerId,
+            StoreId: storeId
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LoadIngredient", "IngPurchaseOrders")',
+            traditional: true,
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+                //if (e.status == 200) {
+                //}
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $(modal).modal({
+                    keyboard: false,
+                    show: true,
+                    //backdrop: false
+                });
+                $(container).html(data);
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function AddIngredient(btn) {
+        var trs = $('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var isSelect = $(tr).find('td input[type="checkbox"]').prop('checked');
+            var IngredientName = $(tr).find('td #hidIngredientName').val();
+            var IngredientCode = $(tr).find('td #hidIngredientCode').val();
+            var PurchasePrice = $(tr).find('td #hidPurchasePrice').val();
+            var Description = $(tr).find('td #hidDescription').val();
+            var IngredientId = $(tr).find('td #hidIngredientId').val();
+            var BaseUOM = $(tr).find('td #hidBaseUOM').val();
+            var IngReceivingQty = $(tr).find('td #hidIngReceivingQty').val();
+            var qty = $(tr).find('td #hidQty').val();
+            var Id = $(tr).find('td #hidId').val();
+
+            if (isSelect) {
+                var Ingredient = {
+                    Id: Id,
+                    IngredientId: IngredientId,
+                    IngredientName: IngredientName,
+                    IngredientCode: IngredientCode,
+                    Description: Description,
+                    BaseUOM: BaseUOM,
+                    IngReceivingQty: IngReceivingQty,
+                    IsSelect: isSelect,
+                    Qty: qty,
+                    UnitPrice: PurchasePrice
+                };
+                data.push(Ingredient);
+                listItemNew.push(IngredientId);
+            }
+        }
+
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var IngredientCode = $(div).find('#hidIngredientCode').val();
+                var IngredientName = $(div).find('#hidIngredientName').val();
+                var Description = $(div).find('#hidDescription').val();
+                var BaseUOM = $(div).find('#hidBaseUOM').val();
+                var IngReceivingQty = $(div).find('#hidIngReceivingQty').val();
+                var Id = $(div).find('#hidId').val();
+
+                //-----
+                var IngTaxId = $(div).find('#ddlTax').val();
+                var IngTaxAmount = $(div).find('#hidIngTaxAmount').val();
+                var IngIsShowTax = $(div).find('#hidIngIsShowTax').val();
+                var IngTaxPercent = $(div).find('#hidIngTaxPercent').val();
+                var IngTaxType = $(div).find('#hidIngTaxType').val();
+
+                //-----
+                var Qty = $(div).find('#txtQty').val();
+                var UnitPrice = $(div).find('#txtUnitPrice').val();
+                var Amount = (Qty * UnitPrice);
+
+                var Ingredient = {
+                    Id: Id,
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    Description: Description,
+                    BaseUOM: BaseUOM,
+                    IngReceivingQty: IngReceivingQty,
+                    Qty: Qty,
+                    UnitPrice: UnitPrice,
+                    Amount: Amount,
+                    //-----
+                    TaxId: IngTaxId,
+                    TaxAmount: IngTaxAmount,
+                    IsShowTax: IngIsShowTax,
+                    TaxPercent: IngTaxPercent,
+                    TaxType: IngTaxType
+                    //-----
+                };
+                data.push(Ingredient);
+            }
+        });
+
+        var storeId = $('#storeDdl').val();
+        var POIngredientViewModels = {
+            StoreId: storeId,
+            ListItemView: data
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddIngredient", "IngPurchaseOrders")',
+                traditional: true,
+                data: JSON.stringify(POIngredientViewModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                    //if (e.status == 200) {
+                    //} else {
+                    //    $('#ltrMsg').text('Have a error when you add an Ingredient');
+                    //}
+                },
+                success: function (data) {
+                    $('#modalIngredient').modal('hide');
+                    $('#divListItemNew').html(data);
+                    //----
+                    UpdateColumnTax();
+                    //----
+                    Calculator();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function UpdateValueSelectTax() {
+        TaxIntegrate = 0;
+        TaxExclusiveIntegrate = 0;
+        //var _value = e.options[e.selectedIndex].value;
+        $.each($('.ng-tax-integrate'), function () {
+            var divTax = $(this);
+            var taxid = $(this).data('taxid');
+            var Percent = $(divTax).find('#hidPercent').val();
+            var TaxType = $(divTax).find('#hidTaxType').val();
+            var TaxAmountIntegrate = 0;
+            $.each($('.ng-IngredientNew:visible'), function () {
+                var div = $(this);
+                var IngTaxId = $(div).find('#ddlTax option:selected').val();
+                if (IngTaxId === taxid){
+                    var UnitPrice = $(div).find('#txtUnitPrice').val();
+                    var TaxAmount = 0;
+                    if (TaxType === '@Commons.ETax.Inclusive.ToString("d")') {
+                        TaxAmount = (UnitPrice * Percent)/(100 + Percent);
+                    } else {
+                        TaxAmount = UnitPrice * (Percent/100);
+                        TaxExclusiveIntegrate += TaxAmount;
+                    }
+                    //------
+                    $(div).find('#hidIngTaxAmount').val(TaxAmount);
+                    $(div).find('#hidIngTaxPercent').val(Percent);
+                    $(div).find('#hidIngTaxType').val(TaxType);
+                    //------
+                    TaxAmountIntegrate += TaxAmount;
+                }
+            });
+            TaxIntegrate += TaxAmountIntegrate;
+            console.log('TaxAmountIntegrate: ' + TaxAmountIntegrate);
+            if (TaxAmountIntegrate > 0) {
+                $(divTax).show();
+            } else {
+                $(divTax).hide();
+            }
+            $(divTax).find('#ltrAmoutTaxIntegrate').html(TaxAmountIntegrate.toFixed(2));
+        });
+    }
+
+    function UpdateColumnTax() {
+        var hidIngIsShowTax = false;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                hidIngIsShowTax = $(div).find('#hidIngIsShowTax').val();
+                return false;
+            }
+        });
+        if (hidIngIsShowTax === 'False') {
+            $('#colTax').hide();
+            $('.row-tax').hide();
+
+        } else {
+            $('#colTax').show();
+            $('.row-tax').show();
+        }
+    }
+
+    function DeleteTabPanel(id) {
+        var div = $(".tbCustom").find("[data-ingreId='" + id + "']");
+        $(div).find('input.IngredientStatus').val(9);
+        //$(div).remove();
+        $(div).css('display', 'none');
+        var index = listItemNew.indexOf(id);
+        listItemNew.splice(index, 1);
+        index = 1;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var Qty = $(div).find('#txtQty').val();
+                $('#index_' + IngredientId).html(index);
+                index++;
+            }
+        });
+        Calculator();
+    }
+
+    /*===*/
+    var tax = 0;
+    function SetValueTax() {
+        Calculator();
+    }
+    $("#TaxDdl").change(function () {
+        SetValueTax();
+    });
+
+    var Additional = 0;
+    function SetValueAdditional() {
+        Calculator();
+    }
+
+    function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function Calculator() {
+        Additional = parseFloat($("#txtAdditional").val());
+        //if (!isNumeric($("#txtAdditional").val())) {
+        //    $('#ltrAdditional').html('');
+        //}
+        var total = 0;
+        var subTotal = 0;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var id = $(div).attr("data-ingreId");
+                var UnitPrice = $(div).find('#txtUnitPrice').val();
+                var Qty = $(div).find('#txtQty').val();
+                var amount = parseFloat((Qty * UnitPrice));
+                $('#Amount_' + id).html(getMoney(amount));
+                subTotal += amount;
+            }
+        });
+        $('#ltrSubTotal').html(getMoney(subTotal));
+        //-------------------
+        var TaxValue = 0; var amountNotTax = 0;
+
+        //Updated
+        var _isIntegrate = $('#hidStoreIntegrate').val();
+        console.log('_isIntegrate: ' + _isIntegrate);
+        if (_isIntegrate === 'True' || _isIntegrate === 'true') {
+            UpdateValueSelectTax();
+            tax = TaxIntegrate;
+            TaxValue = TaxExclusiveIntegrate;
+            //console.log('TaxValue: '+ TaxValue);
+        }
+        else {
+            //AddOn|Exclusive
+            if ($('#TaxDdl').val() === '@Commons.ETax.AddOn.ToString("d")') {
+                tax = parseFloat($("#TaxValue").val());
+                tax = subTotal * (tax / 100);
+                TaxValue = tax;
+                $('#ltrShowTax').html('@Html.Raw("(" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.AddOn.ToString()) + ")")');
+            } else { //Inclusive
+                TaxValue = 0;
+                var taxPer = parseFloat($("#TaxValue").val());
+                amountNotTax = subTotal / (1 + taxPer/100);
+                tax = subTotal - amountNotTax;
+                $('#ltrShowTax').html('@Html.Raw("(" + _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.ETax.Inclusive.ToString()) + ")")');
+            }
+        }
+
+        //End updated
+
+        //--Sum
+        $("#ltrTax").html(tax.toFixed(2));
+        TaxValue = parseFloat(TaxValue.toFixed(2));
+
+        total = (subTotal + TaxValue + Additional);
+        //console.log('total: '+total);
+        $('#ltrTotal').html(getMoney(total));
+        //--------
+        $('#hidsubTotal').val(subTotal.toFixed(2));
+        $('#hidTotal').val(total.toFixed(2));
+        $('#hidTaxAmount').val(tax.toFixed(2));
+    }
+
+</script>

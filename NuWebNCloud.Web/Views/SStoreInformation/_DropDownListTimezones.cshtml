@@ -1,0 +1,18 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Settings.SStoreModels
+
+@Html.DropDownListFor(model => model.TimeZone, new SelectList(Model.ListTimezones, "Value", "Text", Model.ListTimezones),
+new
+{
+    @class = "form-control select2_multiple",
+    @id = "timeZoneDdl",
+    @style = "width:100%;"
+})
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#timeZoneDdl").select2({
+            allowClear: true
+        });
+    });
+</script>

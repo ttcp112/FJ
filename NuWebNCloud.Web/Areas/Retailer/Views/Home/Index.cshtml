@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Retailer - Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="gridview">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                @Html.Partial("~/Views/Shared/_breadcrumb.cshtml",
+                        new Dictionary<string, string> { { "A", "Retailer" }, { "B", "Home" }, { "C", "View Data" } })
+            </div>
+        </div>
+    </div>
+</div>
+

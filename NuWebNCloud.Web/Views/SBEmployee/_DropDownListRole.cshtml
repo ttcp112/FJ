@@ -1,0 +1,19 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Sandbox.EmployeeModels
+
+@Html.DropDownList("RoleID", Model.ListRole,
+               Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role")).ToString(), new
+               {
+                   @class = "form-control select2_multiple",
+                   @id = "ddlRole",
+                   @style = "width:100%;"
+               })
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlRole").select2({
+            placeholder: '@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose role"))',
+            allowClear: true
+        });
+    });
+</script>

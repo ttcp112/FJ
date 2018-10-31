@@ -1,0 +1,369 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Ingredients.WorkOrderModels
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.CreatedBy)
+@Html.HiddenFor(model => model.ModifierBy)
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.Id;
+}
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @*@Html.Hidden("StoreID", Model.StoreId)*@
+    @Html.Hidden("WONumber", Model.WONumber)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @if (!string.IsNullOrEmpty(_ID))
+    {
+        <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Work Order Number"))</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <strong style = "font-size:25px;" > @Model.WONumber </strong >
+            </div >
+        </div >
+    }
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store"))</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreId,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreId), null,
+            //!string.IsNullOrEmpty(_ID) ? (object) new
+            //{
+            //    @class = "form-control select2_multiple",
+            //    @disabled = "disabled",
+            //    @id = "storeDdl",
+            //    @style = "width:100%;"
+            //} :
+            new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;",
+                @onchange = "ClearIngredientExists(this.value)"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreId, (SelectList)ViewBag.StoreID, new
+                {
+	                @class = "form-control select2_multiple",
+	                @id = "storeDdl",
+	                @style = "width:100%;",
+                    @onchange = "ClearIngredientExists(this.value)"
+                })
+
+            @Html.ValidationMessageFor(model => model.StoreId, null, new { @class = "label label-danger", @id = "validationStore" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("WO Date"))</label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            @Html.TextBoxFor(model => model.WODate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" })
+            @Html.ValidationMessageFor(model => model.WODate, null, new { @class = "label label-danger" })
+        </div>
+        <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Completed Date"))</label>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            @Html.TextBoxFor(model => model.DateCompleted, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" })
+            @Html.ValidationMessageFor(model => model.DateCompleted, null, new { @class = "label label-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Note"))</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Note, null, new { @class = "label label-danger" })
+        </div>
+    </div>
+
+    <div class="box-body form-group" style="text-align:center;">
+        <table class="tbCustom">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                    <td > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name")) </td >
+                    <td > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Description")) </td >
+                    <td style = "width:10%;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Quantity")) </td >
+                    <td > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM")) </td >
+                    @*<td style="width:10%;">Unit Price</td>
+                    <td>Amount</td>*@
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody id="divListItemNew">
+                @if (Model.ListItem != null)
+                {
+                    @Html.Partial("_ListItemNew", Model)
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @*Add More Item && Subtotal*@
+    <div class="form-group">
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            <a class="btn btn-primary" data-toggle="modal" data-target="#popupAddMoreIngredients"
+               onclick="ShowModalAddIngredient();">
+                <i class="fa fa-plus"></i>
+                &nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more item"))
+            </a >
+        </div >
+    </div >
+
+    @*TOTAL*@
+    @*<div class="form-group" style="font-size:25px;">
+        <div class="col-md-2 col-sm-2 col-md-offset-6">
+            TOTAL
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <div>
+                <span class="symbol">@Model.Symbol</span>
+                <span id="ltrTotal"> @Html.DisplayFor(model => model.Total)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h5><span class="label label-danger" id="ltrMsg"></span></h5>
+    </div>*@
+</div>
+
+<!-- Modal Add Ingredient-->
+<div class="modal fade" id="modalIngredient" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" style="color:#34495e; font-weight:bold;"><i class="fa fa-plus"></i>&nbsp; @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add more ingredients"))</h4>
+            </div>
+            <div class="modal-body scroll" style="padding:0;">
+
+                <div class="form-group" style="padding:10px 5px 0 5px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control col-md-10" placeholder=@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Ingredients Name")) onkeypress="HandleKeyPress(event)" />
+                        <div class="input-group-btn">
+                            <button type="button" onclick="SearchIngredient(this); return false;" class="btn bg-fnb">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbl-add-ingredient" class="form-group-sm">
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center;">
+                <button id="btn-save-dish" type="button" class="btn btn-beauty bg-fnb" onclick="AddIngredient()">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Add"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#ltrTotal').html(getMoney('@Model.Total'));
+
+        //=== Select Store
+        $("#storeDdl").select2().val('@Model.StoreId').trigger('change.select2');
+    });
+
+    function ClearIngredientExists(val) {
+        //alert(val);
+        $('#divListItemNew').html("");
+        Calculator();
+        listItemNew = [];
+    }
+    /**/
+    function ShowModalAddIngredient() {
+        $('#tbl-add-ingredient').html();
+        var modal = $("#modalIngredient");
+        var contentWidth = ($("html").width() - $(".main-sidebar").width()) / 2;
+        var marginLeft = (contentWidth - 450) + $(".main-sidebar").width();
+        LoadIngredient('#tbl-add-ingredient', modal);
+    }
+
+    function LoadIngredient(container, modal) {
+
+        var storeId = $('#storeDdl').val();
+        var supplerId = $('#SupplierDdl').val();
+        if (supplerId == '') {
+            alert('@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose supplier"))');
+            return false;
+        }
+        var obj = {
+            ListItemNew: listItemNew,
+            StoreId: storeId
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LoadIngredient", "IngWorkOrders")',
+            traditional: true,
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            error: function (e) {
+            },
+            success: function (data) {
+                $('.se-pre-con').hide();
+                $(modal).modal({
+                    keyboard: false,
+                    show: true,
+                    backdrop: 'static'
+                });
+                $(container).html(data);
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+
+    function AddIngredient(btn) {
+        var trs = $('.modal-body table tbody tr');
+        var data = [];
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var isSelect = $(tr).find('td input[type="checkbox"]').prop('checked');
+            var IngredientName = $(tr).find('td #hidIngredientName').val();
+            var IngredientCode = $(tr).find('td #hidIngredientCode').val();
+            var WorkPrice = $(tr).find('td #hidWorkPrice').val();
+            var Description = $(tr).find('td #hidDescription').val();
+            var IngredientId = $(tr).find('td #hidIngredientId').val();
+            var BaseUOM = $(tr).find('td #hidBaseUOM').val();
+            var IngReceivingQty = $(tr).find('td #hidIngReceivingQty').val();
+            var qty = $(tr).find('td #hidQty').val();
+            var Id = $(tr).find('td #hidId').val();
+
+            if (isSelect) {
+                var Ingredient = {
+                    Id: Id,
+                    IngredientId: IngredientId,
+                    IngredientName: IngredientName,
+                    IngredientCode: IngredientCode,
+                    Description: Description,
+                    BaseUOM: BaseUOM,
+                    IngReceivingQty: IngReceivingQty,
+                    IsSelect: isSelect,
+                    Qty: qty,
+                    UnitPrice: WorkPrice
+                };
+                data.push(Ingredient);
+                listItemNew.push(IngredientId);
+            }
+        }
+
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var IngredientCode = $(div).find('#hidIngredientCode').val();
+                var IngredientName = $(div).find('#hidIngredientName').val();
+                var Description = $(div).find('#hidDescription').val();
+                var BaseUOM = $(div).find('#hidBaseUOM').val();
+                var IngReceivingQty = $(div).find('#hidIngReceivingQty').val();
+                var Id = $(div).find('#hidId').val();
+
+                var Qty = $(div).find('#txtQty').val();
+                var UnitPrice = $(div).find('#txtUnitPrice').val();
+                var Amount = (Qty * UnitPrice);
+
+                var Ingredient = {
+                    Id: Id,
+                    IngredientId: IngredientId,
+                    IngredientCode: IngredientCode,
+                    IngredientName: IngredientName,
+                    Description: Description,
+                    BaseUOM: BaseUOM,
+                    IngReceivingQty: IngReceivingQty,
+                    Qty: Qty,
+                    UnitPrice: UnitPrice,
+                    Amount: Amount,
+                };
+                data.push(Ingredient);
+            }
+        });
+
+        var WOIngredientViewModels = {
+            ListItemView: data
+        }
+        if (data.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddIngredient", "IngWorkOrders")',
+                traditional: true,
+                data: JSON.stringify(WOIngredientViewModels),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                beforeSend: function () {
+                    $('.se-pre-con').show();
+                },
+                error: function (e) {
+                },
+                success: function (data) {
+                    $('#modalIngredient').modal('hide');
+                    $('#divListItemNew').html(data);
+                    Calculator();
+                },
+                complete: function () {
+                    $('.se-pre-con').hide();
+                }
+            });
+        }
+    }
+
+    function DeleteTabPanel(id) {
+        var div = $(".tbCustom").find("[data-ingreId='" + id + "']");
+        $(div).find('input.IngredientStatus').val(9);
+        $(div).css('display', 'none');
+        var index = listItemNew.indexOf(id);
+        listItemNew.splice(index, 1);
+        var index = 1;
+        $.each($('.ng-IngredientNew'), function () {
+            var div = $(this);
+            if ($(div).css('display') !== 'none') {
+                var IngredientId = $(div).find('#hidIngredientId').val();
+                var Qty = $(div).find('#txtQty').val();
+                $('#index_' + IngredientId).html(index);
+                index++;
+            }
+        });
+        Calculator();
+    }
+
+    /*===*/
+    function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function Calculator() {
+        //var total = 0;
+        //var subTotal = 0;
+        //$.each($('.ng-IngredientNew'), function () {
+        //    var div = $(this);
+        //    if ($(div).css('display') !== 'none') {
+        //        var id = $(div).attr("data-ingreId");
+        //        var UnitPrice = $(div).find('#txtUnitPrice').val();
+        //        var Qty = $(div).find('#txtQty').val();
+        //        var amount = parseFloat((Qty * UnitPrice));
+        //        $('#Amount_' + id).html(getMoney(amount));
+        //        total += amount;
+        //    }
+        //});
+        //$('#ltrTotal').html(getMoney(total));
+        ////==============
+        //$('#hidTotal').val(total.toFixed(2));
+    }
+</script> 

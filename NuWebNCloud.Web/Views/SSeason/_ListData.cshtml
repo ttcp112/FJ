@@ -1,0 +1,223 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.Season.SeasonModelsView
+<div class="table-responsive">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Slot")) </h2 >
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id = "datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap table table-striped jambo_table bulk_action" cellspacing="0" style="width:100%;">
+                <thead style = "background-color:#34495e; color:#fff;" >
+                    <tr >
+                        <th style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Name")) </th >
+                        <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Repeat Type")) </th >
+                        <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Day Range")) </th >
+                        <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Store")) </th >
+                        <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Time")) </th >
+                        <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Time")) </th >
+                         <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Date")) </th >
+                         <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Date")) </th >
+                         <th style = "text-align:center;" > @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Action")) </th >
+                     </tr>
+                 </thead>
+                 <tbody>
+
+                     @if(Model.List_Season != null)
+                     {
+                                     for (int i = 0; i < Model.List_Season.Count; i++)
+                                     {
+                                         string styleRow = "row-evenItem";
+                                         if (i % 2 == 0)
+                                         {
+                                             styleRow = "row-oddItem";
+                                         }
+                                         var item = Model.List_Season[i];
+                            <tr class="@styleRow">
+                                <td style = "color:#34495e; font-weight:bold;" > &nbsp;&nbsp;+&nbsp;@Model.List_Season[i].Name</td>
+                                <td style = "text-align:center;" >
+                                    @if (Model.List_Season[i].RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfWeek));
+                                    }
+                                    else if (Model.List_Season[i].RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(Commons.PromotionDayOfMonth));
+                                        }
+                                </td >
+                                <td >
+                                    @if(Model.List_Season[i].RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+                         {
+                                            Model.List_Season[i].ListWeekDayV2 = Model.List_Season[i].ListWeekDayV2.Where(x => x.IsActive == true).ToList();
+
+                                            if (Model.List_Season[i].ListWeekDayV2.Count == 7)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of week"))
+                                                                                }
+                                            else if (Model.List_Season[i].ListWeekDayV2.Count == 0)
+                                            {
+                                                @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                                                                                }
+                                            else
+                                            {
+                                                for (int d = 1; d <= Model.List_Season[i].ListWeekDayV2.Count; d++)
+                                                {
+                                                    int day = Model.List_Season[i].ListWeekDayV2[d - 1].Index;
+                                               @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@Model.List_Season[i].ListWeekDayV2[d - 1].Name))
+                                            if (d % 4 == 0)
+                                               {
+                                                   @Html.Raw("<br/>")
+                                                }
+                                               else
+                                               {
+                                                   if (!(d == Model.List_Season[i].ListWeekDayV2.Count))
+                                                   {
+                                                        @:-
+                                                }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if (Model.List_Season[i].RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+                                    {
+                                        Model.List_Season[i].ListMonthDayV2 = Model.List_Season[i].ListMonthDayV2.Where(x => x.IsActive == true).ToList();
+                                        if (Model.List_Season[i].ListMonthDayV2.Count == 31)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day of month"))
+                                        }
+                                        else if (Model.List_Season[i].ListMonthDayV2.Count == 0)
+                                        {
+                                            @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("None"))
+                                        }
+                                            else
+                                            {
+                                                for (int d = 1; d <= Model.List_Season[i].ListMonthDayV2.Count; d++)
+                                                {
+                                                    int day = Model.List_Season[i].ListMonthDayV2[d - 1].Index;
+                                                @:@day
+                                                if (d % 10 == 0)
+                                                {
+                                                    @Html.Raw("<br/>")
+                                                }
+                                                else
+                                                {
+                                                    if (!(d == Model.List_Season[i].ListMonthDayV2.Count))
+                                                    {
+                                                    @:-
+                                                }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Every day"))
+                                    }
+                                </td>
+                                <td style="text-align:center;">@Model.List_Season[i].StoreName</td>
+                                
+                                @if (!Model.List_Season[i].Unlimited)
+                                {
+                                    <td style="text-align:center;">@Model.List_Season[i].StartTime.Value.ToString("HH:mm")</td>
+                                    <td style="text-align:center;">@Model.List_Season[i].EndTime.Value.ToString("HH:mm")</td>
+                                }
+                                else
+                                {
+                                    <td style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))</td>
+                                    <td style="text-align:center;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))</td>
+
+                                }
+                                
+                                <td style="text-align:center;">@Model.List_Season[i].StartDate.ToString("MM/dd/yyyy")</td>
+                                <td style="text-align:center;">@Model.List_Season[i].EndDate.ToString("MM/dd/yyyy")</td>
+                                <td style="text-align:center;">
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("View", "SSeason", new { StoreID= Model.List_Season[i].StoreID, id = Model.List_Season[i].ID })')"
+                                       class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("View"))</a>
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Edit", "SSeason", new { StoreID= Model.List_Season[i].StoreID, id = Model.List_Season[i].ID })')"
+                                       class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Edit"))</a>
+                                    <a href="javascript:void(0)"
+                                       onclick="ShowView('@Url.Action("Delete", "SSeason", new { StoreID= Model.List_Season[i].StoreID, id = Model.List_Season[i].ID })')"
+                                       class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Delete"))</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowView(url) {
+        ShowViewOrEdit(url);
+        return false;
+    }
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+                $("#datatable-buttons").DataTable({
+
+                    dom: "Bfrtip",
+                    responsive: true
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        var table = $('#datatable-responsive').DataTable({
+            "columnDefs": [
+                { "orderable": false, "targets": [8] },
+                { "width": "8%", "targets": 1 },
+                { "width": "20%", "targets": 2 },
+                { "width": "5%", "targets": 3 },
+                { "width": "5%", "targets": 4 },
+                { "width": "5%", "targets": 5 },
+                { "width": "5%", "targets": 6 },
+                { "width": "5%", "targets": 7 },
+                { "width": "10%", "targets": 8 },
+            ],
+            "order": [[3, 'asc']],
+            "displayLength": 25,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                //Column Group
+                api.column(3, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="9"><strong style="color:#d9534f;">' + group + '</strong></td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        TableManageButtons.init();
+    });
+
+    $("tr.td").find("td").val("00:00").replaceWith("Unlimited");
+
+</script>

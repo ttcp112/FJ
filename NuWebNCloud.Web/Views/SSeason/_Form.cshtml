@@ -1,0 +1,332 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@using NuWebNCloud.Shared
+@model NuWebNCloud.Shared.Models.Settings.Season.SeasonModels
+@{
+    Html.EnableUnobtrusiveJavaScript(true);
+    var _ID = Model.ID;
+}
+@Html.HiddenFor(model => model.ID)
+@if (!string.IsNullOrEmpty(_ID))
+{
+    @Html.Hidden("StoreID", Model.StoreID)
+}
+
+<div class="row form-horizontal form-label-left" style="margin-bottom:15px;">
+
+    @*Choose Store*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Choose Store")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @*@Html.DropDownListFor(model => model.StoreID,
+            new SelectList(@ViewBag.ListStore, "Value", "Text", Model.StoreID), null,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })*@
+
+            @*Group by company, updated 041420180*@
+            @Html.DropDownListFor(model => model.StoreID,
+            (SelectList)ViewBag.StoreID,
+            !string.IsNullOrEmpty(_ID) ? (object)new
+            {
+                @class = "form-control select2_multiple",
+                @disabled = "disabled",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            } : new
+            {
+                @class = "form-control select2_multiple",
+                @id = "storeDdl",
+                @style = "width:100%;"
+            })
+            @Html.ValidationMessageFor(model => model.StoreID, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Season Name*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Slot Name")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = _AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Time Slot Name"), autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "label" })
+        </div>
+    </div>
+
+    @*Date*@
+    <div class="form-group">
+        @*Start*@
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Date")) </label>
+        <div class="control-label col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.StartDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "Start Date" })
+            @Html.ValidationMessageFor(model => model.StartDate, null, new { @class = "label" })
+        </div>
+        @*End*@
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Date")) </label>
+        <div class="control-label col-md-2 col-sm-2 col-xs-12">
+            @Html.TextBoxFor(model => model.EndDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker", placeholder = "End Date" })
+        </div>
+    </div>
+
+    @*Unlimited*@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12"></label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            @Html.CheckBoxFor(model => model.Unlimited, new { @id = "chbUnlimited", @class = "chbTime", onchange = "TogglePromotionTime(this)" }) @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Unlimited"))
+        </div>
+    </div>
+
+    @*Time*@
+    <div class="form-group">
+        @*Start*@
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Start Time")) </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="control-label col-md-4 col-sm-4 col-xs-4">
+                <div class="bootstrap-timepicker">
+                    <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+
+                        @Html.TextBoxFor(model => model.TStartTime,
+                    new
+                    {
+
+                        @class = "form-control timepicker FromTime",
+                        @placeholder = "Start Time"
+                    })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.TStartTime, null, new { @class = "label" })
+                </div>
+            </div>
+            @*End*@
+            <label for="EndTime" class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("End Time")) </label>
+            <div class="control-label col-md-4 col-sm-4 col-xs-4">
+                <div class="bootstrap-timepicker">
+                    <div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">12</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">15</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        @Html.TextBoxFor(model => model.TEndTime,
+                    new
+                    {
+                        @class = "form-control timepicker ToTime",
+                        @placeholder = "End Time"
+                    })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.TEndTime, null, new { @class = "label" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Day Range *@
+    <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Day Range")) </label>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div>
+                @Html.DropDownListFor(model => model.RepeatType,
+                new SelectList(Model.ListRepeatType, "Value", "Text", Model.RepeatType), /*"---- Please choose repeat type ----"*/ null,
+                new
+                {
+                    @class = "form-control select2_multiple ",
+                    @id = "ddlRepeatType",
+                    @style = "width:100%;"
+                })
+            </div>
+            @Html.ValidationMessageFor(model => model.RepeatType, null, new { @class = "label" })
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12" style="line-height:35px;">
+            <a href="#" data-toggle="modal" data-target="#myModalWeek" style="font-size:16px;" id="divDayOfWeek"><i class="fa fa-calendar-check-o"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select")) </a>
+            <a href="#" data-toggle="modal" data-target="#myModalMonth" style="font-size:16px;" id="divDayOfMonth"><i class="fa fa-calendar"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select")) </a>
+        </div>
+    </div>
+    @*Specific Days Week*@
+    <div class="modal fade" id="myModalWeek" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Specific date in a week")) </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Configure specific promotion days in week")) </div>
+                    <br />
+                    <div class="form-group">
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfWeek('true');"><i class="fa fa-check"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select All")) </a> &nbsp;
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfWeek('false');"><i class="fa fa-ban"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deselect All")) </a>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons">
+                        @for (int i = 0; i < Model.ListWeekDayV2.Count; i++)
+                        {
+                            var item = Model.ListWeekDayV2[i];
+                            <label class="btn btn-dayofweek wWeek @string.Format("{0}", Model.ListWeekDayV2[i].IsActive ?"active":"")" onclick="ActiveDayWeek(this)">
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Index)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Name)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].IsActive)
+                                @Html.HiddenFor(model => model.ListWeekDayV2[i].Status, new { @class = "GroupStatusDay" })
+                                <input type="checkbox" autocomplete="off"> @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey(@item.Name))
+                            </label >
+                        }
+                    </div >
+                    <br />
+                </div >
+                <div class="modal-footer">
+                    <button type = "button" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel")) </button>
+                    <button type = "button" class="btn btn-primary" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save")) </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Specific Days Month *@
+    <div class="modal fade" id="myModalMonth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Specific date in a month")) </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Configure specific promotion days in month")) </div>
+                    <br />
+                    <div class="form-group">
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfMonth('true');"><i class="fa fa-check"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Select All")) </a> &nbsp;
+                        <a href="javascript:void(0)" style="font-size:16px;" onclick="SelectAllDateOfMonth('false');"><i class="fa fa-ban"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Deselect All")) </a>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons">
+                        @for (int i = 0; i < Model.ListMonthDayV2.Count; i++)
+                        {
+                            var item = Model.ListMonthDayV2[i];
+                            <label class="btn btn-calender wCalender @string.Format("{0}", Model.ListMonthDayV2[i].IsActive ?"active":"")" onclick="ActiveDayMonth(this)">
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Index)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Name)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].IsActive)
+                                @Html.HiddenFor(model => model.ListMonthDayV2[i].Status, new { @class = "GroupStatusMonth" })
+                                <input type="checkbox" autocomplete="off"> @item.Name
+                            </label>
+                        }
+                    </div>
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel")) </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Save")) </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#ddlRepeatType").change(function() {
+                        var val = this.value;
+                        if (val == 2)
+                        {                 //Week
+            $("#divDayOfWeek").show();
+            $("#divDayOfMonth").hide();
+                        }
+                        else if (val == 3)
+                        {          //Month
+            $("#divDayOfWeek").hide();
+            $("#divDayOfMonth").show();
+                        }
+                    });
+
+                    function TogglePromotionTime(c)
+                    {
+        $(".FromTime").attr('disabled', $(c).prop('checked'));
+        $(".ToTime").attr('disabled', $(c).prop('checked'));
+
+                    }
+
+    $(document).ready(function () {
+
+        //=== Select Store
+        $("#storeDdl").select2().val(@Html.Raw(Json.Encode(Model.StoreID))).trigger('change.select2');
+
+        @if(Model.Unlimited)
+        {
+            @:$(".FromTime").attr('disabled', 'true');
+                    @:$(".ToTime").attr('disabled', 'true');
+                }
+
+        @if (string.IsNullOrEmpty(_ID))
+        {
+            @:$("#ddlRepeatType").val(2);
+                    @:$("#divDayOfMonth").hide();
+                }
+        else
+        {
+            @:$("#divDayOfMonth").hide();
+                    if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfWeek)
+            {
+                @:$("#divDayOfWeek").show();
+                        @:$("#divDayOfMonth").hide();
+                    }
+            else if (Model.RepeatType == (byte)Commons.ERepeatType.DayOfMonth)
+            {
+                @: $("#divDayOfWeek").hide();
+                        @: $("#divDayOfMonth").show();
+                    }
+            else
+            {
+                @:$("#divDayOfMonth").hide();
+                    }
+        }
+    });
+
+    //==============
+    function SelectAllDateOfWeek(val) {
+        $('.wWeek').each(function (index, value) {
+            if (val === 'true') {
+                $(this).addClass('active');
+                $(this).find('input.GroupStatusDay').val(1);
+            }
+            else {
+                $(this).removeClass('active');
+                $(this).find('input.GroupStatusDay').val(9);
+            }
+        })
+    }
+    function ActiveDayWeek(day) {
+        if ($(day).hasClass('active')) {
+            $(day).find('input.GroupStatusDay').val(9);
+            $(day).removeClass('active');
+        } else {
+            $(day).addClass('active');
+            $(day).find('input.GroupStatusDay').val(1);
+        }
+    }
+    //==============
+    function SelectAllDateOfMonth(val) {
+        $('.wCalender').each(function (index, value) {
+            if (val === 'true') {
+                $(this).addClass('active');
+                $(this).find('input.GroupStatusMonth').val(1);
+            }
+            else {
+                $(this).removeClass('active');
+                $(this).find('input.GroupStatusMonth').val(9);
+            }
+        })
+    }
+    function ActiveDayMonth(day) {
+        if ($(day).hasClass('active')) {
+            $(day).find('input.GroupStatusMonth').val(9);
+            $(day).removeClass('active');
+        } else {
+            $(day).addClass('active');
+            $(day).find('input.GroupStatusMonth').val(1);
+        }
+    }
+</script>

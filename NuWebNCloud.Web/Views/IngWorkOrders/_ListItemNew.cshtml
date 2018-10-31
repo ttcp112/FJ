@@ -1,0 +1,90 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.WorkOrderModels
+
+@if (Model.ListItem != null)
+{
+    int index = 0;
+    for (int i = 0; i < Model.ListItem.Count; i++)
+    {
+        //var item = Model.ListItem[i];
+        index = i;
+        <tr class="ng-IngredientNew" data-ingreId="@Model.ListItem[i].IngredientId" style='@string.Format("display:{0};", Model.ListItem[i].Delete==9?"none":"table-row")'>
+            <td>
+                <span id="index_@Model.ListItem[i].IngredientId">@(i + 1)</span>
+
+                @Html.Hidden(string.Format("ListItem[{0}].Id", index), Model.ListItem[i].Id, new { @id = "hidId" })
+                @Html.Hidden(string.Format("ListItem[{0}].OffSet", index), Model.ListItem[i].OffSet)
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientId", index), Model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientName", index), Model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientCode", index), Model.ListItem[i].IngredientCode, new { @id = "hidIngredientCode" })
+                @Html.Hidden(string.Format("ListItem[{0}].Description", index), Model.ListItem[i].Description, new { @id = "hidDescription" })
+                @Html.Hidden(string.Format("ListItem[{0}].BaseUOM", index), Model.ListItem[i].BaseUOM, new { @id = "hidBaseUOM" })
+                @Html.Hidden(string.Format("ListItem[{0}].Delete", index), Model.ListItem[i].Delete, new { @class = "IngredientStatus" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngReceivingQty", index), Model.ListItem[i].IngReceivingQty, new { @class = "hidIngReceivingQty" })
+
+            </td>
+            <td>
+                @Model.ListItem[i].IngredientCode<br />
+                @Html.ValidationMessage(string.Format("ListItem[{0}].Qty", index), new
+           {
+               @id = "ltrValidate" + Model.ListItem[i].IngredientId,
+               @class = "label field-validation-error label-danger"
+           })
+            </td>
+            <td>@Model.ListItem[i].IngredientName</td>
+            <td>@Model.ListItem[i].Description</td>
+            <td>
+                @Html.TextBox(string.Format("ListItem[{0}].Qty", index), Model.ListItem[i].Qty, new
+           {
+               @class = "form-control text-center",
+               @type = "number",
+               @min = 0,
+               @id = "txtQty",
+               @onchange = "Calculator()"
+           })
+            </td>
+            <td>@Model.ListItem[i].BaseUOM</td>
+            @*<td>
+                @Html.TextBox(string.Format("ListItem[{0}].UnitPrice", index), Model.ListItem[i].UnitPrice, new
+           {
+               @class = "form-control text-center number",
+               @id = "txtUnitPrice",
+               @onchange = "Calculator()"
+           })
+            </td>
+            <td>
+                <span id="Amount_@Model.ListItem[i].IngredientId">@string.Format("{0} {1:N2}", Model.Symbol, Model.ListItem[i].Amount)</span>
+            </td>*@
+            <td>
+                <a href="" class="a-fnb" onclick="DeleteTabPanel('@Model.ListItem[i].IngredientId'); return false;">
+                    <i class="fa fa-remove" style="font-size:20px; color:red; padding-top:5px;"></i>
+                </a>
+            </td>
+        </tr>
+    }
+}
+
+<script>
+    //// mini jQuery plugin that formats to two decimal places
+    //(function ($) {
+    //    $.fn.numberFormat = function () {
+    //        this.each(function (i) {
+    //            $(this).change(function (e) {
+    //                if (isNaN(parseFloat(this.value))) return;
+    //                this.value = parseFloat(this.value).toFixed(2);
+    //            });
+    //        });
+    //        return this; //for chaining
+    //    }
+    //})(jQuery);
+    //$(document).ready(function () {
+    //    $(function () {
+    //        $('.number').numberFormat();
+    //    });
+    //    $(".number").each(function (i) {
+    //        if (isNaN(parseFloat(this.value)))
+    //            return;
+    //        this.value = parseFloat(this.value).toFixed(2);
+    //    });
+    //});
+</script>

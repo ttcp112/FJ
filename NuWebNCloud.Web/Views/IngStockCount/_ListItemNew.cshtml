@@ -1,0 +1,67 @@
+﻿@model NuWebNCloud.Shared.Models.Ingredients.StockCountModels
+@if (Model.ListItem != null)
+{
+    int index = 0;
+    for (int i = 0; i < Model.ListItem.Count; i++)
+    {
+        index = i;
+        <tr class="ng-IngredientNew" data-ingreId="@Model.ListItem[i].IngredientId">
+            <td>
+                <span id="index_@Model.ListItem[i].IngredientId">@Model.ListItem[i].IngredientCode</span>
+                @Html.Hidden(string.Format("ListItem[{0}].Id", index), Model.ListItem[i].Id)
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientId", index), Model.ListItem[i].IngredientId, new { @id = "hidIngredientId" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientName", index), Model.ListItem[i].IngredientName, new { @id = "hidIngredientName" })
+                @Html.Hidden(string.Format("ListItem[{0}].IngredientCode", index), Model.ListItem[i].IngredientCode, new { @id = "hidIngredientCode" })
+            </td>
+            <td>
+                @Model.ListItem[i].IngredientName<br />
+                @Html.ValidationMessage(string.Format("ListItem[{0}].CloseBal", index), new
+           {
+               @id = "ltrValidate" + Model.ListItem[i].IngredientId,
+               @class = "label field-validation-error"
+           })
+            <td>
+                @Html.TextBox(string.Format("ListItem[{0}].CloseBal", index), Model.ListItem[i].CloseBal, new
+           {
+               @class = "form-control text-center number",
+               @min = 0,
+               @id = "txtCloseBal",
+           })
+            </td>
+        </tr>
+    }
+}
+
+<script>
+    // mini jQuery plugin that formats to two decimal places
+    //(function ($) {
+    //    $.fn.numberFormat = function () {
+    //        this.each(function (i) {
+    //            $(this).change(function (e) {
+    //                if (isNaN(parseFloat(this.value))) return;
+    //                this.value = parseFloat(this.value).toFixed(4);
+    //            });
+    //        });
+    //        return this; //for chaining
+    //    }
+    //})(jQuery);
+
+    $(document).ready(function () {
+        // apply the numberFormat behaviour to elements with 'number' as their class
+        //$(function () {
+        //    $('.number').numberFormat();
+        //});
+        //===============
+        $(".number").each(function (i) {
+            if (isNaN(parseFloat(this.value)))
+                return;
+            this.value = parseFloat(this.value);
+        });
+    });
+
+</script>
+
+
+
+
+

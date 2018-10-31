@@ -1,0 +1,20 @@
+﻿@model NuWebNCloud.Shared.Integration.Models.Sandbox.Inventory.InteCategoriesViewModels
+@using NuWebNCloud.Shared.Utilities;
+
+@*Group by company, updated 041420180*@
+@Html.DropDownList("StoreExtendTo", (SelectList)Model.ListStoreTo, new
+{
+    @class = "form-control select2_multiple",
+    @id = "storeDdlViewTo",
+    @style = "width:100%;",
+    @multiple = "multiple"
+})
+@Html.ValidationMessage("StoreExtendTo", null, new { @class = "validateStoreTo label label-danger" })
+
+<script>
+    $(document).ready(function () {
+        $("#storeDdlViewTo").select2({
+            placeholder: "@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Please choose store"))",
+        }).val(@Html.Raw(Json.Encode(Model.StoreExtendTo))).trigger('change.select2');
+    });
+</script>

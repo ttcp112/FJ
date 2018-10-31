@@ -1,0 +1,125 @@
+﻿@using NuWebNCloud.Shared.Utilities;
+@model NuWebNCloud.Shared.Models.Ingredients.ReceiptNoteModels
+@{
+    ViewBag.Title = @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note - View Detail"));
+}
+
+<div role="main" class="right_col">
+    <div class="se-pre-con" style="display: none;"></div>
+    <div class="">
+        <div class="page-title">
+            <div class="title_left" style="padding: 10px 0px;">
+                <h4>
+                    @Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Inventory Management")) <small>
+                        <i class="fa fa-angle-double-right"></i><a href="@Url.Action("Index","IngReceiptNote",new { area = "" })">
+                            <span style="font-size:16px;">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Transaction Data"))</span>
+                        </a>&nbsp;<i class="fa fa-angle-double-right"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note - View Detail"))
+                    </small>
+                </h4>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 x_panel">
+                    <div class="x_title">
+                        @Html.Partial("_TabMenu", "returnnote")
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="row text-right">
+                        <ul class="header-buttons pull-right list-inline">
+                            <li><a href="javascript:void(0)" class="btn btn-danger" id="btn-delete" onclick="CloseDetail(); return false;"><i class="fa fa-times"></i>&nbsp;@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Cancel"))</a></li>
+                        </ul>
+                    </div>
+                    <div class="x_content form-horizontal ">
+                        <div class="box-body" style="display: block;">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Note")):</label>
+                                <div class="col-md-2 col-sm-2 col-xs-12">@Model.ReceiptNo</div>
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Supplier")):</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">@Model.SupplierName</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received Date")):</label>
+                                <div class="col-md-2 col-sm-2 col-xs-12">@Model.ReceiptDate.ToString("dd/MM/yyyy")</div>
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Received by")):</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">@Model.ReceiptBy</div>
+                            </div>
+
+                            @if (Model.ListReturnNote != null && Model.ListReturnNote.Count > 0)
+                            {
+                                List<string> lstRTNo = new List<string>();
+                                for (int i = 0; i < Model.ListReturnNote.Count; i++)
+                                {
+                                    /*List RT*/
+                                    var itemRT = Model.ListReturnNote[i];
+
+                                    if (!lstRTNo.Contains(itemRT.ReturnNoteNo))
+                                    {
+                                        lstRTNo.Add(itemRT.ReturnNoteNo);
+                                        <div class="form-group" style="background-color:#000; color:#fff; padding:10px 0;">
+                                            <div class="col-md-10 col-sm-10 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Note")): @itemRT.ReturnNoteNo</div>
+                                            <div class="col-md-2 col-sm-2 col-xs-12">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return by")): @itemRT.CreatedBy</div>
+                                        </div>
+                                    }
+                                    <div class="box-body form-group" style="text-align:center; padding-bottom:10px;">
+                                        <table class="tbCustom">
+                                            <thead>
+                                                <tr>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("PO"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Code"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Item Name"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("UOM"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Order Quantity"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Receiving Quantity"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Remaining Quantity"))</td>
+                                                    <td class="text-center">@Html.Raw(_AttributeForLanguage.CurrentUser.GetLanguageTextFromKey("Return Quantity"))</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (itemRT.ListPurchaseOrder != null && itemRT.ListPurchaseOrder.Count > 0)
+                                                {
+                                                    /*List PO*/
+                                                    for (int j = 0; j < itemRT.ListPurchaseOrder.Count; j++)
+                                                    {
+                                                        var itemPO = itemRT.ListPurchaseOrder[j];
+                                                        <tr>
+                                                            <td colspan="7" class="text-left" style="font-size:20px; padding-left:5px;">@itemPO.PONumber</td>
+                                                            <td></td>
+                                                        </tr>
+
+                                                        if (itemPO.ListItem != null && itemPO.ListItem.Count > 0)
+                                                        {
+                                                            int rowCount = itemPO.ListItem.Count;
+                                                            for (int k = 0; k < itemPO.ListItem.Count; k++)
+                                                            {
+                                                                var child = itemPO.ListItem[k];
+                                                                /*Child*/
+                                                                <tr data-poId="@itemPO.Id">
+                                                                    @if (k == 0)
+                                    {
+                                                                        <td rowspan="@rowCount" style="background-color: #fff;"></td>
+                                                                    }
+                                                                    <td class="text-center">@child.IngredientCode</td>
+                                                                    <td>@child.IngredientName</td>
+                                                                    <td class="text-center">@child.BaseUOM</td>
+                                                                    <td>@child.Qty</td>
+                                                                    <td>@child.ReceivingQty</td>
+                                                                    <td class="text-center">@child.RemainingQty</td>
+                                                                    <td>@child.ReturnQty</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
